@@ -5,12 +5,12 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"golang.org/x/oauth2"
 )
 
@@ -78,12 +78,32 @@ func Callback(c *gin.Context) {
 		return
 	}
 
-	session.Set("id_token", token.Extra("id_token"))
 	session.Set("access_token", token.AccessToken)
 	session.Set("username", profile["name"])
-	session.Set("picture_url", profile["picture"])
 
-	fmt.Println(profile)
+	var existingUser User
+
+	if err = dbase.First(&existingUser, "id = ?", profile["sub"]).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			user := User{
+				ID:         profile["sub"].(string),
+				Username:   profile["name"].(string),
+				PictureURL: profile["picture"].(string),
+			}
+
+			if err = dbase.Create(&user).Error; err != nil {
+				c.HTML(http.StatusInternalServerError, "error", gin.H{
+					"error": err,
+				})
+				return
+			}
+		} else {
+			c.HTML(http.StatusInternalServerError, "error", gin.H{
+				"error": err,
+			})
+			return
+		}
+	}
 
 	err = session.Save()
 	if err != nil {

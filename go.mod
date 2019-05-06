@@ -6,13 +6,16 @@ require (
 	cloud.google.com/go v0.38.0 // indirect
 	github.com/gin-contrib/multitemplate v0.0.0-20190301062633-f9896279eead
 	github.com/gin-contrib/sessions v0.0.0-20190226023029-1532893d996f
+	github.com/gin-contrib/static v0.0.0-20190301062546-ed515893e96b
 	github.com/gin-gonic/gin v1.3.0
 	github.com/golang/mock v1.3.0 // indirect
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.3.0 // indirect
 	github.com/google/pprof v0.0.0-20190502144155-8358a9778bd1 // indirect
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
+	github.com/jinzhu/gorm v1.9.7
 	github.com/joho/godotenv v1.3.0
+	github.com/lib/pq v1.1.1 // indirect
 	golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734 // indirect
 	golang.org/x/exp v0.0.0-20190429183610-475c5042d3f1 // indirect
 	golang.org/x/image v0.0.0-20190501045829-6d32002ffd75 // indirect
@@ -27,4 +30,5 @@ require (
 	google.golang.org/genproto v0.0.0-20190502173448-54afdca5d873 // indirect
 	google.golang.org/grpc v1.20.1 // indirect
 	honnef.co/go/tools v0.0.0-20190418001031-e561f6794a2a // indirect
+	upper.io/db.v3 v3.5.7+incompatible
 )

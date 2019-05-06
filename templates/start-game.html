@@ -12,8 +12,11 @@
     <div class="uk-margin">
       <label for="red-goalie" class="uk-form-label">Red Goalie</label>
       <div uk-form-custom="target: > * > span:last-child">
-        <select name="red_goalie" id="red-goalie" class="uk-select">
+        <select name="red_goalie" id="red-goalie" class="uk-select" required>
           <option disabled selected>Red Goalie</option>
+          {{ range .users }}
+          <option value="{{ .ID }}">{{ .Username }}</option>
+          {{ end }}
         </select>
 
         <span class="uk-link">
@@ -27,8 +30,11 @@
     <div class="uk-margin">
       <label for="red-forward" class="uk-form-label">Red Forward</label>
       <div uk-form-custom="target: > * > span:last-child">
-        <select name="red_forward" id="red-forward" class="uk-select">
+        <select name="red_forward" id="red-forward" class="uk-select" required>
           <option disabled selected>Red Forward</option>
+          {{ range .users }}
+          <option value="{{ .ID }}">{{ .Username }}</option>
+          {{ end }}
         </select>
 
         <span class="uk-link">
@@ -42,7 +48,7 @@
     <div class="uk-margin">
       <label for="blue-goalie" class="uk-form-label">Blue Goalie</label>
       <div uk-form-custom="target: > * > span:last-child">
-        <select name="blue_goalie" id="blue-goalie" class="uk-select">
+        <select name="blue_goalie" id="blue-goalie" class="uk-select" required>
           <option disabled selected>Blue Goalie</option>
           {{ range .users }}
           <option value="{{ .ID }}">{{ .Username }}</option>
@@ -60,8 +66,11 @@
     <div class="uk-margin">
       <label for="blue-forward" class="uk-form-label">Blue Forward</label>
       <div uk-form-custom="target: > * > span:last-child">
-        <select name="blue_forward" id="blue-forward" class="uk-select">
+        <select name="blue_forward" id="blue-forward" class="uk-select" required>
           <option disabled selected>Blue Forward</option>
+          {{ range .users }}
+          <option value="{{ .ID }}">{{ .Username }}</option>
+          {{ end }}
         </select>
 
         <span class="uk-link">
