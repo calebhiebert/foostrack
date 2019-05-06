@@ -1,0 +1,80 @@
+{{ define "title"}}Start Game{{ end }}
+
+{{ define "content" }}
+
+<form method="POST" class="uk-form-stacked">
+  <fieldset class="uk-fieldset">
+    <legend class="uk-legend">
+      Start Game
+    </legend>
+
+    <!-- Red Goalie -->
+    <div class="uk-margin">
+      <label for="red-goalie" class="uk-form-label">Red Goalie</label>
+      <div uk-form-custom="target: > * > span:last-child">
+        <select name="red_goalie" id="red-goalie" class="uk-select">
+          <option disabled selected>Red Goalie</option>
+        </select>
+
+        <span class="uk-link">
+          <span uk-icon="icon: user"></span>
+          <span></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Red Forward -->
+    <div class="uk-margin">
+      <label for="red-forward" class="uk-form-label">Red Forward</label>
+      <div uk-form-custom="target: > * > span:last-child">
+        <select name="red_forward" id="red-forward" class="uk-select">
+          <option disabled selected>Red Forward</option>
+        </select>
+
+        <span class="uk-link">
+          <span uk-icon="icon: user"></span>
+          <span></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Blue Goalie -->
+    <div class="uk-margin">
+      <label for="blue-goalie" class="uk-form-label">Blue Goalie</label>
+      <div uk-form-custom="target: > * > span:last-child">
+        <select name="blue_goalie" id="blue-goalie" class="uk-select">
+          <option disabled selected>Blue Goalie</option>
+          {{ range .users }}
+          <option value="{{ .ID }}">{{ .Username }}</option>
+          {{ end }}
+        </select>
+
+        <span class="uk-link">
+          <span uk-icon="icon: user"></span>
+          <span></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Blue Forward -->
+    <div class="uk-margin">
+      <label for="blue-forward" class="uk-form-label">Blue Forward</label>
+      <div uk-form-custom="target: > * > span:last-child">
+        <select name="blue_forward" id="blue-forward" class="uk-select">
+          <option disabled selected>Blue Forward</option>
+        </select>
+
+        <span class="uk-link">
+          <span uk-icon="icon: user"></span>
+          <span></span>
+        </span>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="uk-margin">
+    <button class="uk-button uk-button-primary" type="submit">Start Game</button>
+  </div>
+</form>
+
+{{ end }}

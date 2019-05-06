@@ -1,0 +1,4 @@
+CLIENT_ID=
+DOMAIN=
+CLIENT_SECRET=
+REDIRECT_URL=http://localhost:8080/callback
