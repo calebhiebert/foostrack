@@ -26,12 +26,35 @@ func Login(c *gin.Context) {
 
 	session := sessions.Default(c)
 	session.Set("state", state)
-	session.Save()
+	err := session.Save()
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "error", gin.H{
+			"error":   err,
+			"general": c.GetStringMapString("general"),
+		})
+		return
+	}
 
 	audience := oauth2.SetAuthURLParam("audience", aud)
 	url := conf.AuthCodeURL(state, audience)
 
-	c.Redirect(http.StatusMovedPermanently, url)
+	c.Redirect(302, url)
+}
+
+func Logout(c *gin.Context) {
+
+	session := sessions.Default(c)
+	session.Clear()
+	err := session.Save()
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "error", gin.H{
+			"error":   err,
+			"general": c.GetStringMapString("general"),
+		})
+		return
+	}
+
+	c.Redirect(302, "/index")
 }
 
 func Callback(c *gin.Context) {
@@ -40,9 +63,17 @@ func Callback(c *gin.Context) {
 	session := sessions.Default(c)
 
 	queryState := c.Query("state")
-	state := session.Get("state").(string)
+	sessionState := session.Get("state")
 
-	if queryState != state {
+	if sessionState == nil {
+		c.HTML(http.StatusBadRequest, "error", gin.H{
+			"error":   "Missing state",
+			"general": c.GetStringMapString("general"),
+		})
+		return
+	}
+
+	if queryState != sessionState.(string) {
 		c.HTML(http.StatusBadRequest, "error", gin.H{
 			"error":   "Invalid state parameter",
 			"general": c.GetStringMapString("general"),
@@ -82,7 +113,6 @@ func Callback(c *gin.Context) {
 		return
 	}
 
-	session.Clear()
 	session.Set("id", profile["sub"])
 	err = session.Save()
 
@@ -120,7 +150,7 @@ func Callback(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusMovedPermanently, "/index")
+	c.Redirect(302, "/index")
 }
 
 func getOauth2Config() *oauth2.Config {

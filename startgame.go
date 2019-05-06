@@ -25,8 +25,6 @@ func GetStartGame(c *gin.Context) {
 }
 
 func PostStartGame(c *gin.Context) {
-	fmt.Println("Stuff", c.PostForm("blue_goalie"))
-
 	game := Game{}
 
 	if err := dbase.Create(&game).Error; err != nil {

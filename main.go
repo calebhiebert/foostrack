@@ -50,7 +50,12 @@ func main() {
 			general["username"] = user.Username
 			general["picture_url"] = user.PictureURL
 			general["user_id"] = user.ID
+		} else {
+			general["isloggedin"] = "false"
 		}
+
+		c.Set("general", general)
+		session.Save()
 
 		c.Next()
 	})
@@ -72,6 +77,7 @@ func main() {
 	r.POST("/startgame", PostStartGame)
 
 	r.GET("/login", Login)
+	r.GET("/logout", Logout)
 	r.GET("/callback", Callback)
 
 	r.GET("/game/:id", GetGame)
