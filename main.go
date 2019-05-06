@@ -28,6 +28,33 @@ func main() {
 	r.Use(sessions.Sessions("session", store))
 	r.Use(static.Serve("/assets", static.LocalFile("templates/assets", false)))
 
+	r.Use(func(c *gin.Context) {
+		session := sessions.Default(c)
+
+		general := make(map[string]string)
+
+		id := session.Get("id")
+
+		if id != nil && id.(string) != "" {
+			var user User
+
+			if err := dbase.First(&user, "id = ?", id).Error; err != nil {
+				c.HTML(http.StatusInternalServerError, "error", gin.H{
+					"error":   err,
+					"general": c.GetStringMapString("general"),
+				})
+				return
+			}
+
+			general["isloggedin"] = "true"
+			general["username"] = user.Username
+			general["picture_url"] = user.PictureURL
+			general["user_id"] = user.ID
+		}
+
+		c.Next()
+	})
+
 	r.GET("/index", func(c *gin.Context) {
 		session := sessions.Default(c)
 
@@ -37,6 +64,7 @@ func main() {
 			"title":       "this is a title",
 			"username":    session.Get("username"),
 			"picture_url": session.Get("picture_url"),
+			"general":     c.GetStringMapString("general"),
 		})
 	})
 

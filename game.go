@@ -54,18 +54,22 @@ func GetGame(c *gin.Context) {
 
 	if err := dbase.Find(&game, "id = ?", id).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			c.HTML(http.StatusBadRequest, "notfound", nil)
+			c.HTML(http.StatusBadRequest, "notfound", gin.H{
+				"general": c.GetStringMapString("general"),
+			})
 			return
 		} else {
 			c.HTML(http.StatusBadRequest, "error", gin.H{
-				"error": err,
+				"error":   err,
+				"general": c.GetStringMapString("general"),
 			})
 			return
 		}
 	}
 
 	c.HTML(http.StatusOK, "game", gin.H{
-		"id":   id,
-		"game": game,
+		"id":      id,
+		"game":    game,
+		"general": c.GetStringMapString("general"),
 	})
 }

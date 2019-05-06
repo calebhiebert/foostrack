@@ -44,7 +44,8 @@ func Callback(c *gin.Context) {
 
 	if queryState != state {
 		c.HTML(http.StatusBadRequest, "error", gin.H{
-			"error": "Invalid state parameter",
+			"error":   "Invalid state parameter",
+			"general": c.GetStringMapString("general"),
 		})
 		return
 	}
@@ -54,7 +55,8 @@ func Callback(c *gin.Context) {
 	token, err := conf.Exchange(context.Background(), code)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error": err,
+			"error":   err,
+			"general": c.GetStringMapString("general"),
 		})
 		return
 	}
@@ -63,7 +65,8 @@ func Callback(c *gin.Context) {
 	resp, err := client.Get("https://" + os.Getenv("DOMAIN") + "/userinfo")
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error": err,
+			"error":   err,
+			"general": c.GetStringMapString("general"),
 		})
 		return
 	}
@@ -73,13 +76,15 @@ func Callback(c *gin.Context) {
 	var profile map[string]interface{}
 	if err = json.NewDecoder(resp.Body).Decode(&profile); err != nil {
 		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error": err,
+			"error":   err,
+			"general": c.GetStringMapString("general"),
 		})
 		return
 	}
 
-	session.Set("access_token", token.AccessToken)
-	session.Set("username", profile["name"])
+	session.Clear()
+	session.Set("id", profile["sub"])
+	err = session.Save()
 
 	var existingUser User
 
@@ -93,22 +98,24 @@ func Callback(c *gin.Context) {
 
 			if err = dbase.Create(&user).Error; err != nil {
 				c.HTML(http.StatusInternalServerError, "error", gin.H{
-					"error": err,
+					"error":   err,
+					"general": c.GetStringMapString("general"),
 				})
 				return
 			}
 		} else {
 			c.HTML(http.StatusInternalServerError, "error", gin.H{
-				"error": err,
+				"error":   err,
+				"general": c.GetStringMapString("general"),
 			})
 			return
 		}
 	}
 
-	err = session.Save()
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error": err,
+			"error":   err,
+			"general": c.GetStringMapString("general"),
 		})
 		return
 	}

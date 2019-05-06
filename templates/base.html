@@ -13,7 +13,13 @@
       <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
           <li><a href="/startgame">Start Game</a></li>
-          <li><a href="/login">Login</a></li>
+          <li>{{ index .general "isloggedin" }}</li>
+
+          {{ if eq (index .general "isloggedin") "true" }}
+            <li>{{ .general.username }}</li>
+          {{ else }}
+            <li><a href="/login">Login</a></li>
+          {{ end }}
         </ul>
       </div>
     </nav>
