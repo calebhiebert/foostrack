@@ -178,10 +178,10 @@ func MarkGoal(c *gin.Context) {
 	var scoreUser User
 
 	if err := dbase.Raw(`SELECT users.*
-												FROM game_events
-													JOIN users ON game_events.user_id = users.id
-												WHERE game_id = 2
-												AND game_events.id = (SELECT MAX(id) FROM game_events WHERE position = ? AND team = ?)`, position, team).
+						FROM game_events
+							JOIN users ON game_events.user_id = users.id
+						WHERE game_id = ?
+						AND game_events.id = (SELECT MAX(id) FROM game_events WHERE position = ? AND team = ?)`, game.ID, position, team).
 		Scan(&scoreUser).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 	}
