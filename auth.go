@@ -15,6 +15,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Login will begin an oauth2 flow
 func Login(c *gin.Context) {
 	aud := "https://foostrack.panchem.io"
 
@@ -39,6 +40,7 @@ func Login(c *gin.Context) {
 	c.Redirect(http.StatusFound, url)
 }
 
+// Logout will clear the user session and redirect them to the home page
 func Logout(c *gin.Context) {
 
 	session := sessions.Default(c)
@@ -52,6 +54,7 @@ func Logout(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/index")
 }
 
+// Callback will process an oauth2 login callback
 func Callback(c *gin.Context) {
 	conf := getOauth2Config()
 

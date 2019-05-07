@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetStartGame returns the form that should be filled out to start a game
 func GetStartGame(c *gin.Context) {
 	if !EnsureLoggedIn(c) {
 		return
@@ -24,6 +25,7 @@ func GetStartGame(c *gin.Context) {
 	})
 }
 
+// PostStartGame will create a new game
 func PostStartGame(c *gin.Context) {
 	if !EnsureLoggedIn(c) {
 		return

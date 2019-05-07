@@ -47,6 +47,7 @@ type GameEvent struct {
 	Position  string
 }
 
+// CurrentGameState represents the current state of a single game
 type CurrentGameState struct {
 	Game        Game
 	BlueGoalie  User
@@ -158,6 +159,7 @@ func GetGame(c *gin.Context) {
 	})
 }
 
+// MarkGoal records a single goal for a given team
 func MarkGoal(c *gin.Context) {
 	gameID := c.Param("id")
 	team := c.Query("team")
@@ -201,6 +203,7 @@ func MarkGoal(c *gin.Context) {
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
 }
 
+// MarkStarted marks a game as begun
 func MarkStarted(c *gin.Context) {
 	gameID := c.Param("id")
 
@@ -228,6 +231,7 @@ func MarkStarted(c *gin.Context) {
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
 }
 
+// MarkEnded marks a game as complete
 func MarkEnded(c *gin.Context) {
 	gameID := c.Param("id")
 
@@ -255,6 +259,7 @@ func MarkEnded(c *gin.Context) {
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
 }
 
+// ListGames lists out a page with all games
 func ListGames(c *gin.Context) {
 
 	var games []GameInfo
