@@ -2,88 +2,78 @@
 
 {{ define "content" }}
 
-<form method="POST" class="uk-form-stacked">
-  <fieldset class="uk-fieldset">
-    <legend class="uk-legend">
+<form method="POST">
+  <fieldset>
+    <h2 class="title is-2">
       Start Game
-    </legend>
-
-    <!-- Red Goalie -->
-    <div class="uk-margin">
-      <label for="red-goalie" class="uk-form-label">Red Goalie</label>
-      <div uk-form-custom="target: > * > span:last-child">
-        <select name="red_goalie" id="red-goalie" class="uk-select" required>
-          <option disabled selected>Red Goalie</option>
-          {{ range .users }}
-          <option value="{{ .ID }}">{{ .Username }}</option>
-          {{ end }}
-        </select>
-
-        <span class="uk-link">
-          <span uk-icon="icon: user"></span>
-          <span></span>
-        </span>
-      </div>
-    </div>
-
-    <!-- Red Forward -->
-    <div class="uk-margin">
-      <label for="red-forward" class="uk-form-label">Red Forward</label>
-      <div uk-form-custom="target: > * > span:last-child">
-        <select name="red_forward" id="red-forward" class="uk-select" required>
-          <option disabled selected>Red Forward</option>
-          {{ range .users }}
-          <option value="{{ .ID }}">{{ .Username }}</option>
-          {{ end }}
-        </select>
-
-        <span class="uk-link">
-          <span uk-icon="icon: user"></span>
-          <span></span>
-        </span>
-      </div>
-    </div>
+    </h2>
 
     <!-- Blue Goalie -->
-    <div class="uk-margin">
-      <label for="blue-goalie" class="uk-form-label">Blue Goalie</label>
-      <div uk-form-custom="target: > * > span:last-child">
-        <select name="blue_goalie" id="blue-goalie" class="uk-select" required>
-          <option disabled selected>Blue Goalie</option>
-          {{ range .users }}
-          <option value="{{ .ID }}">{{ .Username }}</option>
-          {{ end }}
-        </select>
+    <div class="field">
+      <label for="blue-goalie" class="label">Blue Goalie</label>
 
-        <span class="uk-link">
-          <span uk-icon="icon: user"></span>
-          <span></span>
-        </span>
+      <div class="control">
+        <div class="select">
+          <select name="blue_goalie" id="blue-goalie" class="select" required>
+            <option disabled selected>Blue Goalie</option>
+            <!-- {{ range.users }} -->
+            <option value="{{ .ID }}">{{ .Username }}</option>
+            <!-- {{ end }} -->
+          </select>
+        </div>
       </div>
     </div>
 
     <!-- Blue Forward -->
-    <div class="uk-margin">
-      <label for="blue-forward" class="uk-form-label">Blue Forward</label>
-      <div uk-form-custom="target: > * > span:last-child">
-        <select name="blue_forward" id="blue-forward" class="uk-select" required>
-          <option disabled selected>Blue Forward</option>
-          {{ range .users }}
-          <option value="{{ .ID }}">{{ .Username }}</option>
-          {{ end }}
-        </select>
+    <div class="field">
+      <label for="blue-forward" class="label">Blue Forward</label>
 
-        <span class="uk-link">
-          <span uk-icon="icon: user"></span>
-          <span></span>
-        </span>
+      <div class="control">
+        <div class="select">
+          <select name="blue_forward" id="blue-forward" class="select" required>
+            <option disabled selected>Blue Forward</option>
+            <!-- {{ range.users }} -->
+            <option value="{{ .ID }}">{{ .Username }}</option>
+            <!-- {{ end }} -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Red Goalie -->
+    <div class="field">
+      <label for="red-goalie" class="label">Red Goalie</label>
+
+      <div class="control">
+        <div class="select">
+          <select name="red_goalie" id="red-goalie" class="select" required>
+            <option disabled selected>Red Goalie</option>
+            <!-- {{ range.users }} -->
+            <option value="{{ .ID }}">{{ .Username }}</option>
+            <!-- {{ end }} -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Red Forward -->
+    <div class="field">
+      <label for="red-forward" class="label">Red Forward</label>
+
+      <div class="control">
+        <div class="select">
+          <select name="red_forward" id="red-forward" class="select" required>
+            <option disabled selected>Red Forward</option>
+            <!-- {{ range.users }} -->
+            <option value="{{ .ID }}">{{ .Username }}</option>
+            <!-- {{ end }} -->
+          </select>
+        </div>
       </div>
     </div>
   </fieldset>
 
-  <div class="uk-margin">
-    <button class="uk-button uk-button-primary" type="submit">Start Game</button>
-  </div>
+  <button class="button is-primary mt" type="submit">Start Game</button>
 </form>
 
 {{ end }}

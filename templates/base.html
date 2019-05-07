@@ -5,29 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ block "title" .}}Foostrack{{ end }}</title>
 
-    <!-- UIkit CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.4/css/uikit.min.css" />
+    <!-- Bulma CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"
+      integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4="
+      crossorigin="anonymous"
+    />
+    <style>
+      .ml {
+        margin-left: 0.5rem;
+      }
+
+      .mt {
+        margin-top: 0.5rem;
+      }
+
+      .mb {
+        margin-bottom: 0.5rem !important;
+      }
+
+      .mauto {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
   </head>
   <body>
-    <nav class="uk-navbar-container" uk-navbar>
-      <div class="uk-navbar-left">
-        <ul class="uk-navbar-nav">
-          <li><a href="/startgame">Start Game</a></li>
-          {{ if eq (index .general "isloggedin") "true" }}
-            <li><a>{{ .general.username }}</a></li>
-            <li><a href="/logout">Logout</a></li>
-          {{ else }}
-            <li><a href="/login">Login</a></li>
-          {{ end }}
-        </ul>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-menu">
+        <div class="navbar-start">
+          <a href="/startgame" class="navbar-item">
+            Start Game
+          </a>
+
+          <a href="/index" class="navbar-item">
+            Home
+          </a>
+
+          <a href="/games" class="navbar-item">Games</a>
+        </div>
+
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <!-- {{ if eq (index .general "isloggedin") "true" }} -->
+            <figure class="image is-24x24"><img src="{{ index .general "picture_url" }}" alt="User Avatar" class="is-rounded"></figure>
+            <h4 class="ml">{{ index .general "username" }}</h4>
+            <a href="/logout" class="button is-light ml">Logout</a>
+            <!-- {{ else }} -->
+            <a href="/login" class="button is-primary">
+              Log in
+            </a>
+            <!-- {{ end }} -->
+          </div>
+        </div>
       </div>
     </nav>
 
     <!-- page content -->
-    <div class="uk-container">{{ block "content" .}}Default Body.{{ end }}</div>
-
-    <!-- UIkit JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.4/js/uikit.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.1.4/js/uikit-icons.min.js"></script>
+    <div class="container">{{ block "content" .}}Default Body.{{ end }}</div>
   </body>
 </html>

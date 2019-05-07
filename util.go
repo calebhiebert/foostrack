@@ -4,10 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 type TeamGoals struct {
-	Goals int
+	RedGoals  int `gorm:"column:redgoals"`
+	BlueGoals int `gorm:"column:bluegoals"`
+}
+
+type GameInfo struct {
+	gorm.Model
+	TeamGoals
 }
 
 func SendHTML(statusCode int, c *gin.Context, page string, data gin.H) {
@@ -29,4 +36,15 @@ func SendError(code int, c *gin.Context, err error) {
 
 func SendNotFound(c *gin.Context) {
 	SendHTML(http.StatusNotFound, c, "notfound", nil)
+}
+
+func EnsureLoggedIn(c *gin.Context) bool {
+	general := c.GetStringMapString("general")
+
+	if general["isloggedin"] != "true" {
+		SendHTML(http.StatusForbidden, c, "blocked", nil)
+		return false
+	}
+
+	return true
 }

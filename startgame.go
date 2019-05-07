@@ -8,6 +8,10 @@ import (
 )
 
 func GetStartGame(c *gin.Context) {
+	if !EnsureLoggedIn(c) {
+		return
+	}
+
 	var users []User
 
 	if err := dbase.Find(&users).Error; err != nil {
@@ -21,6 +25,10 @@ func GetStartGame(c *gin.Context) {
 }
 
 func PostStartGame(c *gin.Context) {
+	if !EnsureLoggedIn(c) {
+		return
+	}
+
 	game := Game{}
 
 	if err := dbase.Create(&game).Error; err != nil {
@@ -36,7 +44,7 @@ func PostStartGame(c *gin.Context) {
 	blueGoalieEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    blueGoalieID,
+		UserID:    &blueGoalieID,
 		Team:      GameTeamBlue,
 		Position:  GamePositionGoalie,
 	}
@@ -44,7 +52,7 @@ func PostStartGame(c *gin.Context) {
 	blueForwardEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    blueForwardID,
+		UserID:    &blueForwardID,
 		Team:      GameTeamBlue,
 		Position:  GamePositionForward,
 	}
@@ -52,7 +60,7 @@ func PostStartGame(c *gin.Context) {
 	redGoalieEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    redGoalieID,
+		UserID:    &redGoalieID,
 		Team:      GameTeamRed,
 		Position:  GamePositionGoalie,
 	}
@@ -60,7 +68,7 @@ func PostStartGame(c *gin.Context) {
 	redForwardEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    redForwardID,
+		UserID:    &redForwardID,
 		Team:      GameTeamRed,
 		Position:  GamePositionForward,
 	}

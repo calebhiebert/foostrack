@@ -1,7 +1,3 @@
 {{ define "content"}}
 This is the index.
-
-{{ if eq (index .general "isloggedin") "true" }}
-Username: {{ index .general "username" }} <img src="{{ index .general "picture_url" }}">
-{{ end }}
 {{ end }}

@@ -40,7 +40,7 @@ type GameEvent struct {
 	gorm.Model
 	GameID    uint `gorm:"not null"`
 	Game      Game `gorm:"association_foreignkey:GameID;"`
-	UserID    string
+	UserID    *string
 	User      User `gorm:"association_foreignkey:UserID"`
 	EventType string
 	Team      string
@@ -80,39 +80,6 @@ func GetGame(c *gin.Context) {
 
 	var gameState CurrentGameState
 
-	// Select user positions
-	var rows []User
-
-	if err := dbase.Raw(`SELECT users.*, position, team
-														FROM game_events
-															JOIN users ON game_events.user_id = users.id
-														WHERE game_events.id IN (SELECT MAX(id)
-																						          FROM game_events
-																			                WHERE game_id = ? AND event_type = 'ptp'
-																                      GROUP BY team, position)
-														ORDER BY team, position ASC;`, id).Scan(&rows).Error; err != nil {
-		panic(err)
-	}
-
-	gameState.BlueForward = rows[0]
-	gameState.BlueGoalie = rows[1]
-	gameState.RedForward = rows[2]
-	gameState.RedGoalie = rows[3]
-
-	// Select goals
-	var goals []TeamGoals
-
-	if err := dbase.Raw(`SELECT COUNT(id) AS goals
-												FROM game_events
-												WHERE game_id = ? AND event_type = 'goal'
-												GROUP BY team
-												ORDER BY team;`, game.ID).Scan(&goals).Error; err != nil {
-		panic(err)
-	}
-
-	gameState.BlueGoals = goals[0].Goals
-	gameState.RedGoals = goals[1].Goals
-
 	// Select game start/stop status
 	var startEvent GameEvent
 
@@ -140,6 +107,48 @@ func GetGame(c *gin.Context) {
 	} else {
 		gameState.EndedAt = &endEvent.CreatedAt
 		gameState.Ended = true
+	}
+
+	// Select user positions
+	var rows []User
+
+	if err := dbase.Raw(`SELECT users.*, position, team
+														FROM game_events
+															JOIN users ON game_events.user_id = users.id
+														WHERE game_events.id IN (SELECT MAX(id)
+																						          FROM game_events
+																			                WHERE game_id = ? AND event_type = 'ptp'
+																                      GROUP BY team, position)
+														ORDER BY team, position ASC;`, id).Scan(&rows).Error; err != nil {
+		panic(err)
+	}
+
+	gameState.BlueForward = rows[0]
+	gameState.BlueGoalie = rows[1]
+	gameState.RedForward = rows[2]
+	gameState.RedGoalie = rows[3]
+
+	// Select goals
+	if gameState.Started {
+		var goals TeamGoals
+
+		if err := dbase.Raw(`SELECT (SELECT COUNT(id)
+																	FROM game_events
+																	WHERE game_id = ? 
+																		AND event_type = 'goal' 
+																		AND team = 'blue') as bluegoals,
+															  (SELECT COUNT(id)
+																	FROM game_events
+																	WHERE game_id = ? 
+																		AND event_type = 'goal' 
+																		AND team = 'red') as redgoals;`, game.ID, game.ID).Scan(&goals).Error; err != nil {
+			panic(err)
+		}
+
+		fmt.Println(goals)
+
+		gameState.BlueGoals = goals.BlueGoals
+		gameState.RedGoals = goals.RedGoals
 	}
 
 	SendHTML(http.StatusOK, c, "game", gin.H{
@@ -172,7 +181,7 @@ func MarkGoal(c *gin.Context) {
 												FROM game_events
 													JOIN users ON game_events.user_id = users.id
 												WHERE game_id = 2
-												AND game_events.id = (SELECT MAX(id) FROM game_events WHERE position = 'forward' AND team = 'blue')`).
+												AND game_events.id = (SELECT MAX(id) FROM game_events WHERE position = ? AND team = ?)`, position, team).
 		Scan(&scoreUser).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 	}
@@ -180,7 +189,7 @@ func MarkGoal(c *gin.Context) {
 	event := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventGoal,
-		UserID:    scoreUser.ID,
+		UserID:    &scoreUser.ID,
 		Team:      team,
 		Position:  position,
 	}
@@ -244,4 +253,30 @@ func MarkEnded(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
+}
+
+func ListGames(c *gin.Context) {
+
+	var games []GameInfo
+
+	if err := dbase.Raw(`
+		SELECT g.*, (SELECT COUNT(id) 
+									FROM game_events 
+										WHERE game_id = g.id 
+											AND event_type = 'goal' 
+											AND team = 'blue') AS bluegoals, 
+							(SELECT COUNT(id) 
+									FROM game_events 
+									WHERE game_id = g.id 
+											AND event_type = 'goal' 
+											AND team = 'red') AS redgoals
+		FROM games AS g
+	`).Scan(&games).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	SendHTML(http.StatusOK, c, "games", gin.H{
+		"games": games,
+	})
 }

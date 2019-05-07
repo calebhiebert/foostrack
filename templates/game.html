@@ -1,58 +1,47 @@
 {{ define "content" }}
-<h1>Game {{ .id }}</h1>
+<h1 class="title is-1">Game {{ .id }}</h1>
 
 <!-- If the game has started -->
 {{ if .gameState.Started }}
-<div class="uk-child-width-1-2 uk-text-center" uk-grid>
-  <div>
-    <div class="uk-card uk-card-default uk-card-body">
-      <h4 class="uk-margin-remove-bottom">Blue</h4>
-      <h1 class="uk-margin-small-top">{{ .gameState.BlueGoals }}</h1>
+<nav class="level">
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Blue</p>
+      <p class="title">{{ .gameState.BlueGoals }}</p>
     </div>
   </div>
-  <div>
-    <div class="uk-card uk-card-default uk-card-body uk-card-danger">
-      <h4 class="uk-margin-remove-bottom">Red</h4>
-      <h1 class="uk-margin-small-top">{{ .gameState.RedGoals }}</h1>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Red</p>
+      <p class="title">{{ .gameState.RedGoals }}</p>
     </div>
   </div>
-</div>
+</nav>
 
 {{ if not .gameState.Ended }}
-<h4>Mark Goal</h4>
+<h4 class="title is-4">Mark Goal</h4>
 
 <!-- Blue Team -->
-<div class="uk-margin-small">
-  <div class="uk-button-group">
-    <!-- Forward -->
-    <a href="/game/{{ .id }}/goal?team=blue&position=forward" class="uk-button uk-button-default uk-button-primary uk-button-large">
-      <span uk-icon="icon: bolt"></span>
-      {{ .gameState.BlueForward.Username }}
-    </a>
+<div class="buttons has-addons">
+  <!-- Forward -->
+  <a href="/game/{{ .id }}/goal?team=blue&position=forward" class="button is-info">{{ .gameState.BlueForward.Username }}</a>
 
-    <!-- Goalie -->
-    <a href="/game/{{ .id }}/goal?team=blue&position=goalie" class="uk-button uk-button-default uk-button-primary uk-button-large">
-      <span uk-icon="icon: lifesaver"></span>
-      {{ .gameState.BlueGoalie.Username }}
-    </a>
-  </div>
+  <!-- Goalie -->
+  <a href="/game/{{ .id }}/goal?team=blue&position=goalie" class="button is-info is-outlined">{{ .gameState.BlueGoalie.Username }}</a>
 </div>
 
 <!-- Red Team -->
-<div class="uk-button-group">
-  <a href="/game/{{ .id }}/goal?team=red&position=forward" class="uk-button uk-button-default uk-button-danger uk-button-large">
-    <span uk-icon="icon: bolt"></span>
-    {{ .gameState.RedForward.Username }}
-  </a>
-  <a href="/game/{{ .id }}/goal?team=red&position=goalie" class="uk-button uk-button-default uk-button-danger uk-button-large">
-    <span uk-icon="icon: lifesaver"></span>
-    {{ .gameState.RedGoalie.Username }}
-  </a>
+<div class="buttons has-addons">
+  <!-- Forward -->
+  <a href="/game/{{ .id }}/goal?team=red&position=forward" class="button is-danger">{{ .gameState.RedForward.Username }}</a>
+
+  <!-- Goalie -->
+  <a href="/game/{{ .id }}/goal?team=red&position=goalie" class="button is-danger is-outlined">{{ .gameState.RedGoalie.Username }}</a>
 </div>
 
 <!-- End Game -->
-<h4>End Game</h4>
-<a href="/game/{{ .id }}/end" class="uk-button uk-button-danger uk-width-1-1 uk-button-large">
+<h4 class="title is-4">End Game</h4>
+<a href="/game/{{ .id }}/end" class="button is-danger is-large is-fullwidth">
   End Game
 </a>
 {{ end }}
@@ -60,8 +49,8 @@
 <!-- If the game has not started -->
 {{ else }}
 
-<h3 class="uk-text-center">The game has not started yet!</h3>
-<a href="/game/{{ .id }}/start" class="uk-button uk-button-primary uk-width-1-1 uk-button-large">
+<h3 class="title is-3">The game has not started yet!</h3>
+<a href="/game/{{ .id }}/start" class="button is-danger is-large is-fullwidth">
   Start
 </a>
 
