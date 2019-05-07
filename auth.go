@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"os"
 
@@ -28,17 +29,14 @@ func Login(c *gin.Context) {
 	session.Set("state", state)
 	err := session.Save()
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "error", gin.H{
-			"error":   err,
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusBadRequest, c, err)
 		return
 	}
 
 	audience := oauth2.SetAuthURLParam("audience", aud)
 	url := conf.AuthCodeURL(state, audience)
 
-	c.Redirect(302, url)
+	c.Redirect(http.StatusFound, url)
 }
 
 func Logout(c *gin.Context) {
@@ -47,14 +45,11 @@ func Logout(c *gin.Context) {
 	session.Clear()
 	err := session.Save()
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "error", gin.H{
-			"error":   err,
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusBadRequest, c, err)
 		return
 	}
 
-	c.Redirect(302, "/index")
+	c.Redirect(http.StatusFound, "/index")
 }
 
 func Callback(c *gin.Context) {
@@ -66,18 +61,12 @@ func Callback(c *gin.Context) {
 	sessionState := session.Get("state")
 
 	if sessionState == nil {
-		c.HTML(http.StatusBadRequest, "error", gin.H{
-			"error":   "Missing state",
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusBadRequest, c, errors.New("Missing state"))
 		return
 	}
 
 	if queryState != sessionState.(string) {
-		c.HTML(http.StatusBadRequest, "error", gin.H{
-			"error":   "Invalid state parameter",
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusBadRequest, c, errors.New("Invalid state parameter"))
 		return
 	}
 
@@ -85,20 +74,14 @@ func Callback(c *gin.Context) {
 
 	token, err := conf.Exchange(context.Background(), code)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error":   err,
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
 
 	client := conf.Client(context.Background(), token)
 	resp, err := client.Get("https://" + os.Getenv("DOMAIN") + "/userinfo")
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error":   err,
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
 
@@ -106,10 +89,7 @@ func Callback(c *gin.Context) {
 
 	var profile map[string]interface{}
 	if err = json.NewDecoder(resp.Body).Decode(&profile); err != nil {
-		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error":   err,
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
 
@@ -127,30 +107,21 @@ func Callback(c *gin.Context) {
 			}
 
 			if err = dbase.Create(&user).Error; err != nil {
-				c.HTML(http.StatusInternalServerError, "error", gin.H{
-					"error":   err,
-					"general": c.GetStringMapString("general"),
-				})
+				SendError(http.StatusInternalServerError, c, err)
 				return
 			}
 		} else {
-			c.HTML(http.StatusInternalServerError, "error", gin.H{
-				"error":   err,
-				"general": c.GetStringMapString("general"),
-			})
+			SendError(http.StatusInternalServerError, c, err)
 			return
 		}
 	}
 
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error", gin.H{
-			"error":   err,
-			"general": c.GetStringMapString("general"),
-		})
+		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
 
-	c.Redirect(302, "/index")
+	c.Redirect(http.StatusFound, "/index")
 }
 
 func getOauth2Config() *oauth2.Config {

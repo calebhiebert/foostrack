@@ -1,13 +1,70 @@
 {{ define "content" }}
 <h1>Game {{ .id }}</h1>
 
+<!-- If the game has started -->
+{{ if .gameState.Started }}
+<div class="uk-child-width-1-2 uk-text-center" uk-grid>
+  <div>
+    <div class="uk-card uk-card-default uk-card-body">
+      <h4 class="uk-margin-remove-bottom">Blue</h4>
+      <h1 class="uk-margin-small-top">{{ .gameState.BlueGoals }}</h1>
+    </div>
+  </div>
+  <div>
+    <div class="uk-card uk-card-default uk-card-body uk-card-danger">
+      <h4 class="uk-margin-remove-bottom">Red</h4>
+      <h1 class="uk-margin-small-top">{{ .gameState.RedGoals }}</h1>
+    </div>
+  </div>
+</div>
+
+{{ if not .gameState.Ended }}
 <h4>Mark Goal</h4>
 
 <!-- Blue Team -->
-<button class="uk-button uk-button-default uk-button-primary uk-button-large">Forward</button>
-<button class="uk-button uk-button-default uk-button-primary uk-button-large">Goalie</button>
+<div class="uk-margin-small">
+  <div class="uk-button-group">
+    <!-- Forward -->
+    <a href="/game/{{ .id }}/goal?team=blue&position=forward" class="uk-button uk-button-default uk-button-primary uk-button-large">
+      <span uk-icon="icon: bolt"></span>
+      {{ .gameState.BlueForward.Username }}
+    </a>
+
+    <!-- Goalie -->
+    <a href="/game/{{ .id }}/goal?team=blue&position=goalie" class="uk-button uk-button-default uk-button-primary uk-button-large">
+      <span uk-icon="icon: lifesaver"></span>
+      {{ .gameState.BlueGoalie.Username }}
+    </a>
+  </div>
+</div>
 
 <!-- Red Team -->
-<button class="uk-button uk-button-default uk-button-danger uk-button-large">Forward</button>
-<button class="uk-button uk-button-default uk-button-danger uk-button-large">Goalie</button>
+<div class="uk-button-group">
+  <a href="/game/{{ .id }}/goal?team=red&position=forward" class="uk-button uk-button-default uk-button-danger uk-button-large">
+    <span uk-icon="icon: bolt"></span>
+    {{ .gameState.RedForward.Username }}
+  </a>
+  <a href="/game/{{ .id }}/goal?team=red&position=goalie" class="uk-button uk-button-default uk-button-danger uk-button-large">
+    <span uk-icon="icon: lifesaver"></span>
+    {{ .gameState.RedGoalie.Username }}
+  </a>
+</div>
+
+<!-- End Game -->
+<h4>End Game</h4>
+<a href="/game/{{ .id }}/end" class="uk-button uk-button-danger uk-width-1-1 uk-button-large">
+  End Game
+</a>
+{{ end }}
+
+<!-- If the game has not started -->
+{{ else }}
+
+<h3 class="uk-text-center">The game has not started yet!</h3>
+<a href="/game/{{ .id }}/start" class="uk-button uk-button-primary uk-width-1-1 uk-button-large">
+  Start
+</a>
+
+{{ end }}
+
 {{ end }}

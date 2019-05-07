@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/multitemplate"
@@ -39,10 +38,7 @@ func main() {
 			var user User
 
 			if err := dbase.First(&user, "id = ?", id).Error; err != nil {
-				c.HTML(http.StatusInternalServerError, "error", gin.H{
-					"error":   err,
-					"general": c.GetStringMapString("general"),
-				})
+				SendError(http.StatusInternalServerError, c, err)
 				return
 			}
 
@@ -61,16 +57,7 @@ func main() {
 	})
 
 	r.GET("/index", func(c *gin.Context) {
-		session := sessions.Default(c)
-
-		fmt.Println(session)
-
-		c.HTML(http.StatusOK, "index", gin.H{
-			"title":       "this is a title",
-			"username":    session.Get("username"),
-			"picture_url": session.Get("picture_url"),
-			"general":     c.GetStringMapString("general"),
-		})
+		SendHTML(http.StatusOK, c, "index", nil)
 	})
 
 	r.GET("/startgame", GetStartGame)
@@ -81,6 +68,13 @@ func main() {
 	r.GET("/callback", Callback)
 
 	r.GET("/game/:id", GetGame)
+	r.GET("/game/:id/goal", MarkGoal)
+	r.GET("/game/:id/start", MarkStarted)
+
+	// Catch all other routes and redirect to index
+	r.Use(func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/index")
+	})
 
 	r.Run(":8080")
 }
