@@ -16,10 +16,14 @@ type TeamGoals struct {
 type GameInfo struct {
 	gorm.Model
 	TeamGoals
-	StartTime *time.Time `gorm:"column:start_time"`
-	Started   bool
-	EndTime   *time.Time `gorm:"column:end_time"`
-	Ended     bool
+	StartTime   *time.Time `gorm:"column:start_time"`
+	Started     bool
+	EndTime     *time.Time `gorm:"column:end_time"`
+	Ended       bool
+	BlueGoalie  User
+	BlueForward User
+	RedGoalie   User
+	RedForward  User
 }
 
 func SendHTML(statusCode int, c *gin.Context, page string, data gin.H) {

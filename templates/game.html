@@ -53,9 +53,9 @@
 
 <!-- End Game -->
 <h4 class="title is-4 mt">End Game</h4>
-<a href="/game/{{ .id }}/end" class="button is-danger is-fullwidth">
-  End Game
-</a>
+<form method="POST" action="/game/{{ .id }}/end">
+  <button type="submit" class="button is-danger is-fullwidth">End Game</button>
+</form>
 
 <!-- end If game not ended -->
 {{ end }}

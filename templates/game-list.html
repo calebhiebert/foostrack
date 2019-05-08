@@ -3,38 +3,50 @@
 <h2 class="title is-2">Games</h2>
 
 {{ range.games }}
-<a href="/game/{{ .ID }}" class="box">
-  <div class="columns">
-    <div class="column">
-      {{ if .Ended }}
-      <h4 class="title is-4 mb is-three-quarters">Finished {{ call $.formatTime .CreatedAt }}</h4>
-      {{ else if .Started }}
-      <h4 class="title is-4 mb is-three-quarters">Started {{ call $.formatTime .CreatedAt }}</h4>
-      {{ else }}
-      <h4 class="title is-4 mb is-three-quarters">Created {{ call $.formatTime .CreatedAt }}</h4>
-      {{ end }}
-      <span
-        ><span class="has-text-link">Caleb Hiebert, Caleb Hiebert</span>,
-        <span class="has-text-danger">Caleb Hiebert, Caleb Hiebert</span></span
-      >
-    </div>
-    <div class="column is-one-quarter">
-      <nav class="level is-mobile">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Blue</p>
-            <p class="title">{{ .BlueGoals }}</p>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Red</p>
-            <p class="title">{{ .RedGoals }}</p>
-          </div>
-        </div>
-      </nav>
-    </div>
+<div class="card mb">
+  <div class="card-header">
+    {{ if .Ended }}
+    <p class="card-header-title">Finished {{ call $.formatTime .CreatedAt }}</p>
+    {{ else if .Started }}
+    <p class="card-header-title">Started {{ call $.formatTime .CreatedAt }}</p>
+    {{ else }}
+    <p class="card-header-title">Created {{ call $.formatTime .CreatedAt }}</p>
+    {{ end }}
   </div>
-</a>
+
+  <div class="card-content">
+    <!-- Players -->
+    <div>
+      <!-- Blue Team -->
+      <a href="/user/{{ .BlueForward.ID }}" class="has-text-link">{{ .BlueForward.Username }}</a>
+      <a href="/user/{{ .BlueGoalie.ID }}" class="has-text-link">{{ .BlueGoalie.Username }}</a>
+
+      <!-- Red Team -->
+      <a href="/user/{{ .RedForward.ID }}" class="has-text-danger">{{ .RedForward.Username }}</a>
+      <a href="/user/{{ .RedGoalie.ID }}" class="has-text-danger">{{ .RedGoalie.Username }}</a>
+    </div>
+
+    <!-- Score -->
+    <nav class="level is-mobile">
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Blue</p>
+          <p class="title">{{ .BlueGoals }}</p>
+        </div>
+      </div>
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">Red</p>
+          <p class="title">{{ .RedGoals }}</p>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Actions -->
+  <div class="card-footer">
+    <a href="/game/{{ .ID }}" class="card-footer-item">View Game</a>
+  </div>
+</div>
 {{ end }}
 {{ end }}

@@ -92,7 +92,9 @@ func main() {
 	r.GET("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/start", MarkStarted)
-	r.GET("/game/:id/end", MarkEnded)
+	r.POST("/game/:id/end", MarkEnded)
+
+	r.GET("/user/:id", GetUser)
 
 	// Catch all other routes and redirect to index
 	r.Use(func(c *gin.Context) {
@@ -120,6 +122,7 @@ func createRenderer() multitemplate.Renderer {
 	addTemplate(r, "games", "base.html", "game-list.html")
 	addTemplate(r, "notfound", "base.html", "not-found.html")
 	addTemplate(r, "blocked", "base.html", "blocked.html")
+	addTemplate(r, "user", "base.html", "user.html")
 	return r
 }
 
