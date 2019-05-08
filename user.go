@@ -38,5 +38,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	SendHTML(http.StatusOK, c, "user", gin.H{})
+	SendHTML(http.StatusOK, c, "user", gin.H{
+		"user": user,
+	})
 }

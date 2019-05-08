@@ -34,3 +34,18 @@ CREATE OR REPLACE VIEW current_positions AS
   SELECT * FROM positions 
     WHERE rn = 1
       AND event_type = 'ptp';
+
+CREATE OR REPLACE VIEW user_stats AS
+SELECT u.id, u.username,
+                          (SELECT COUNT(*)
+                            FROM (SELECT COUNT(id)
+                            FROM current_positions c
+                            WHERE c.user_id = u.id
+                            GROUP BY c.game_id) a) AS games_played,
+
+                          (SELECT AVG(count)
+                             FROM (SELECT COUNT(id) AS count
+                                     FROM game_events g
+                                     WHERE g.user_id = u.id
+                                     GROUP BY g.game_id) a) AS avg_goals_per_game
+  FROM users u;
