@@ -28,12 +28,20 @@ func main() {
 	initDB()
 
 	r := gin.Default()
+
 	r.HTMLRender = createRenderer()
 
 	// Sessions
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("session", store))
-	r.StaticFS("/assets", assets)
+
+	assetRoute := r.Group("/assets")
+	assetRoute.Use(func(c *gin.Context) {
+		c.Header("Cache-Control", "max-age=86400")
+
+		c.Next()
+	})
+	assetRoute.StaticFS("/", assets)
 
 	r.Use(func(c *gin.Context) {
 		session := sessions.Default(c)
@@ -82,7 +90,8 @@ func main() {
 	r.GET("/games", ListGames)
 	r.GET("/game/:id", GetGame)
 	r.GET("/game/:id/goal", MarkGoal)
-	r.GET("/game/:id/start", MarkStarted)
+	r.POST("/game/:id/goal", MarkGoal)
+	r.POST("/game/:id/start", MarkStarted)
 	r.GET("/game/:id/end", MarkEnded)
 
 	// Catch all other routes and redirect to index

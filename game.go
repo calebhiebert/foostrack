@@ -163,6 +163,11 @@ func MarkGoal(c *gin.Context) {
 	team := c.Query("team")
 	position := c.Query("position")
 
+	if c.Request.Method == "POST" {
+		team = c.PostForm("team")
+		position = c.PostForm("position")
+	}
+
 	var game Game
 
 	if err := dbase.Preload("Events").First(&game, "id = ?", gameID).Error; err != nil {

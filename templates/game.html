@@ -1,9 +1,9 @@
 {{ define "content" }}
-<h1 class="title is-1">Game {{ .id }}</h1>
+<h1 class="title is-1 text-center">Game {{ .id }}</h1>
 
 <!-- If the game has started -->
 {{ if .gameState.Started }}
-<nav class="level">
+<nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">Blue</p>
@@ -22,25 +22,37 @@
 <h4 class="title is-4">Mark Goal</h4>
 
 <!-- Blue Team -->
-<div class="buttons has-addons">
-  <!-- Forward -->
-  <a href="/game/{{ .id }}/goal?team=blue&position=forward" class="button is-info">{{ .gameState.BlueForward.Username }}</a>
+<!-- Forward -->
+<form action="/game/{{ .id }}/goal" method="POST">
+  <input type="hidden" name="team" value="blue">
+  <input type="hidden" name="position" value="forward">
+  <button type="submit" class="button is-info is-fullwidth">{{ .gameState.BlueForward.Username }}</button>
+</form>
 
-  <!-- Goalie -->
-  <a href="/game/{{ .id }}/goal?team=blue&position=goalie" class="button is-info is-outlined">{{ .gameState.BlueGoalie.Username }}</a>
-</div>
+<!-- Goalie -->
+<form class="mt" action="/game/{{ .id }}/goal" method="POST">
+  <input type="hidden" name="team" value="blue">
+  <input type="hidden" name="position" value="goalie">
+  <button type="submit" class="button is-info is-outlined is-fullwidth">{{ .gameState.BlueGoalie.Username }}</button>
+</form>
 
 <!-- Red Team -->
-<div class="buttons has-addons">
-  <!-- Forward -->
-  <a href="/game/{{ .id }}/goal?team=red&position=forward" class="button is-danger">{{ .gameState.RedForward.Username }}</a>
+<!-- Forward -->
+<form class="mt" action="/game/{{ .id }}/goal" method="POST">
+  <input type="hidden" name="team" value="red">
+  <input type="hidden" name="position" value="forward">
+  <button type="submit" class="button is-danger is-fullwidth">{{ .gameState.RedForward.Username }}</button>
+</form>
 
-  <!-- Goalie -->
-  <a href="/game/{{ .id }}/goal?team=red&position=goalie" class="button is-danger is-outlined">{{ .gameState.RedGoalie.Username }}</a>
-</div>
+<!-- Goalie -->
+<form class="mt" action="/game/{{ .id }}/goal" method="POST">
+  <input type="hidden" name="team" value="red">
+  <input type="hidden" name="position" value="goalie">
+  <button type="submit" class="button is-danger is-outlined is-fullwidth">{{ .gameState.BlueForward.Username }}</button>
+</form>
 
 <!-- End Game -->
-<h4 class="title is-4">End Game</h4>
+<h4 class="title is-4 mt">End Game</h4>
 <a href="/game/{{ .id }}/end" class="button is-danger is-fullwidth">
   End Game
 </a>
@@ -49,7 +61,7 @@
 {{ end }}
 
 <!-- Timeline -->
-<h4 class="title is-4 mt" style="text-align: center">History</h4>
+<h4 class="title is-4 mt text-center">History</h4>
 <div class="timeline is-centered">
   <header class="timeline-header">
     <span class="tag is-medium is-primary">Start</span>
@@ -122,14 +134,17 @@
   <!-- End range events -->
   {{ end }}
 </div>
+<div class="phatt-padding"></div>
 
 <!-- else if not game started -->
 {{ else }}
 
 <h3 class="title is-3">The game has not started yet!</h3>
-<a href="/game/{{ .id }}/start" class="button is-danger is-large is-fullwidth">
-  Start
-</a>
+<form action="/game/{{ .id }}/start" method="POST">
+  <button class="button is-danger is-large is-fullwidth">
+    Start
+  </button>
+</form>
 <!-- end if game started -->
 {{ end }}
 
