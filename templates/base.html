@@ -12,9 +12,20 @@
       integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4="
       crossorigin="anonymous"
     />
+    <!-- Bulma Timeline Extension -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma-timeline@3.0.3/dist/css/bulma-timeline.min.css"
+      integrity="sha256-/o4dD6UK2n3NAJVO0GI6Win4rACMXpKHUoj6ReI0gMs="
+      crossorigin="anonymous"
+    />
     <style>
       .ml {
         margin-left: 0.5rem;
+      }
+
+      .mr {
+        margin-right: 0.5rem;
       }
 
       .mt {
@@ -28,6 +39,40 @@
       .mauto {
         margin-left: auto;
         margin-right: auto;
+      }
+
+      .align-items-center {
+        align-items: center;
+      }
+
+      .navbar,
+      .navbar-menu,
+      .navbar-start,
+      .navbar-end {
+        align-items: stretch;
+        display: flex;
+        padding: 0;
+      }
+
+      .navbar-menu {
+        flex-grow: 1;
+        flex-shrink: 0;
+      }
+      .navbar-start {
+        justify-content: flex-start;
+        margin-right: auto;
+      }
+      .navbar-end {
+        justify-content: flex-end;
+        margin-left: auto;
+      }
+
+      .navbar .container {
+        display: flex;
+      }
+      .navbar-item {
+        display: flex;
+        align-items: center;
       }
     </style>
   </head>

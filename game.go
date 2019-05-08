@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	prettyTime "github.com/andanhm/go-prettytime"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
@@ -41,7 +42,7 @@ type GameEvent struct {
 	GameID    uint `gorm:"not null"`
 	Game      Game `gorm:"association_foreignkey:GameID;"`
 	UserID    *string
-	User      User `gorm:"association_foreignkey:UserID"`
+	User      User `gorm:"association_foreignkey:UserID;foreignkey:ID"`
 	EventType string
 	Team      string
 	Position  string
@@ -73,89 +74,86 @@ func GetGame(c *gin.Context) {
 		if gorm.IsRecordNotFoundError(err) {
 			SendNotFound(c)
 			return
-		} else {
-			SendError(http.StatusBadRequest, c, err)
-			return
 		}
+
+		SendError(http.StatusBadRequest, c, err)
+		return
 	}
 
 	var gameState CurrentGameState
 
-	// Select game start/stop status
-	var startEvent GameEvent
+	// Select Event List
+	var events []GameEvent
 
-	if err := dbase.First(&startEvent, GameEvent{GameID: game.ID, EventType: "start"}).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			gameState.StartedAt = nil
-		} else {
-			SendError(http.StatusInternalServerError, c, err)
-			return
-		}
-	} else {
-		gameState.StartedAt = &startEvent.CreatedAt
-		gameState.Started = true
-	}
-
-	var endEvent GameEvent
-
-	if err := dbase.First(&endEvent, GameEvent{GameID: game.ID, EventType: "end"}).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			gameState.StartedAt = nil
-		} else {
-			SendError(http.StatusInternalServerError, c, err)
-			return
-		}
-	} else {
-		gameState.EndedAt = &endEvent.CreatedAt
-		gameState.Ended = true
-	}
-
-	// Select user positions
-	var rows []User
-
-	if err := dbase.Raw(`SELECT users.*, position, team
-														FROM game_events
-															JOIN users ON game_events.user_id = users.id
-														WHERE game_events.id IN (SELECT MAX(id)
-																						          FROM game_events
-																			                WHERE game_id = ? AND event_type = 'ptp'
-																                      GROUP BY team, position)
-														ORDER BY team, position ASC;`, id).Scan(&rows).Error; err != nil {
+	if err := dbase.Preload("User").Find(&events, "game_id = ?", game.ID).Error; err != nil {
 		panic(err)
 	}
 
-	gameState.BlueForward = rows[0]
-	gameState.BlueGoalie = rows[1]
-	gameState.RedForward = rows[2]
-	gameState.RedGoalie = rows[3]
+	// Calculate current game state from events
+	for _, evt := range events {
+		switch evt.EventType {
 
-	// Select goals
-	if gameState.Started {
-		var goals TeamGoals
+		// Count goals
+		case GameEventGoal:
+			switch evt.Team {
 
-		if err := dbase.Raw(`SELECT (SELECT COUNT(id)
-																	FROM game_events
-																	WHERE game_id = ? 
-																		AND event_type = 'goal' 
-																		AND team = 'blue') as bluegoals,
-															  (SELECT COUNT(id)
-																	FROM game_events
-																	WHERE game_id = ? 
-																		AND event_type = 'goal' 
-																		AND team = 'red') as redgoals;`, game.ID, game.ID).Scan(&goals).Error; err != nil {
-			panic(err)
+			// Blue Team
+			case GameTeamBlue:
+				gameState.BlueGoals++
+
+				// Red Team
+			case GameTeamRed:
+				gameState.RedGoals++
+			}
+
+			// Assign players to the correct positions on the team
+		case GameEventPlayerTakePosition:
+			switch evt.Team {
+
+			// Assign blue team players
+			case GameTeamBlue:
+				switch evt.Position {
+
+				// Forward
+				case GamePositionForward:
+					gameState.BlueForward = evt.User
+
+					// Goalie
+				case GamePositionGoalie:
+					gameState.BlueGoalie = evt.User
+				}
+
+				// Assign red team players
+			case GameTeamRed:
+				switch evt.Position {
+
+				// Forward
+				case GamePositionForward:
+					gameState.RedForward = evt.User
+
+					// Goalie
+				case GamePositionGoalie:
+					gameState.RedGoalie = evt.User
+				}
+			}
+
+			// Assign game started event
+		case GameEventStart:
+			gameState.StartedAt = &evt.CreatedAt
+			gameState.Started = true
+
+			// Assign game ended event
+		case GameEventEnd:
+			gameState.EndedAt = &evt.CreatedAt
+			gameState.Ended = true
 		}
-
-		fmt.Println(goals)
-
-		gameState.BlueGoals = goals.BlueGoals
-		gameState.RedGoals = goals.RedGoals
 	}
 
 	SendHTML(http.StatusOK, c, "game", gin.H{
 		"id":        id,
 		"game":      game,
 		"gameState": gameState,
+		"events":    events,
 	})
 }
 
@@ -167,14 +165,14 @@ func MarkGoal(c *gin.Context) {
 
 	var game Game
 
-	if err := dbase.First(&game, "id = ?", gameID).Error; err != nil {
+	if err := dbase.Preload("Events").First(&game, "id = ?", gameID).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			SendNotFound(c)
 			return
-		} else {
-			SendError(http.StatusInternalServerError, c, err)
-			return
 		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
 	}
 
 	var scoreUser User
@@ -186,6 +184,7 @@ func MarkGoal(c *gin.Context) {
 						AND game_events.id = (SELECT MAX(id) FROM game_events WHERE position = ? AND team = ?)`, game.ID, position, team).
 		Scan(&scoreUser).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
+		return
 	}
 
 	event := GameEvent{
@@ -213,10 +212,10 @@ func MarkStarted(c *gin.Context) {
 		if gorm.IsRecordNotFoundError(err) {
 			SendNotFound(c)
 			return
-		} else {
-			SendError(http.StatusInternalServerError, c, err)
-			return
 		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
 	}
 
 	event := GameEvent{
@@ -262,7 +261,7 @@ func MarkEnded(c *gin.Context) {
 // ListGames lists out a page with all games
 func ListGames(c *gin.Context) {
 
-	var games []GameInfo
+	var games []*GameInfo
 
 	if err := dbase.Raw(`
 		SELECT g.*, (SELECT COUNT(id) 
@@ -274,14 +273,22 @@ func ListGames(c *gin.Context) {
 									FROM game_events 
 									WHERE game_id = g.id 
 											AND event_type = 'goal' 
-											AND team = 'red') AS redgoals
+											AND team = 'red') AS redgoals,
+							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
+							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time
 		FROM games AS g
 	`).Scan(&games).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
 
+	for _, gi := range games {
+		gi.Started = gi.StartTime != nil
+		gi.Ended = gi.EndTime != nil
+	}
+
 	SendHTML(http.StatusOK, c, "games", gin.H{
-		"games": games,
+		"games":      games,
+		"formatTime": prettyTime.Format,
 	})
 }

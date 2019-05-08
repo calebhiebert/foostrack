@@ -41,19 +41,97 @@
 
 <!-- End Game -->
 <h4 class="title is-4">End Game</h4>
-<a href="/game/{{ .id }}/end" class="button is-danger is-large is-fullwidth">
+<a href="/game/{{ .id }}/end" class="button is-danger is-fullwidth">
   End Game
 </a>
+
+<!-- end If game not ended -->
 {{ end }}
 
-<!-- If the game has not started -->
+<!-- Timeline -->
+<h4 class="title is-4 mt" style="text-align: center">History</h4>
+<div class="timeline is-centered">
+  <header class="timeline-header">
+    <span class="tag is-medium is-primary">Start</span>
+  </header>
+  {{ range.events }}
+
+  <!-- Game Start -->
+  {{ if eq .EventType "start" }}
+  <header class="timeline-header">
+    <span class="tag is-info">Game Start</span>
+  </header>
+
+  <!-- Game End -->
+  {{ else if eq .EventType "end" }}
+  <header class="timeline-header">
+    <span class="tag is-primary">Game End</span>
+  </header>
+
+  <!-- Else if event type start -->
+  {{ else }}
+  <div class="timeline-item {{ if eq .Team "blue" }}is-info{{ else if eq .Team "red" }}is-danger{{ end }}" style="padding-bottom: 0.5rem">
+    {{ if eq .EventType "goal" }}
+    <div class="timeline-marker is-image is-32x32">
+      {{ if eq .Team "blue" }}
+      <img src="/assets/soccer_ball_blue.svg" alt="Blue Team Scored">
+      {{ else if eq .Team "red" }}
+      <img src="/assets/soccer_ball_red.svg" alt="Red Team Scored">
+      {{ end }}
+    </div>
+    {{ else if eq .EventType "ptp" }}
+    <div class="timeline-marker is-image is-32x32">
+      <img src="/assets/enter.svg" alt="Joined">
+    </div>
+    {{ else }}
+    <div class="timeline-marker is-primary"></div>
+    {{ end }}
+    <div class="timeline-content">
+      <!-- Player Take Position -->
+      {{ if eq .EventType "ptp" }}
+      <p class="heading">
+        {{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} {{ if eq .Position "forward" }}Forward{{ else }}Goalie{{ end }} Joined
+      </p>
+      <div class="is-flex align-items-center">
+        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" /></figure>
+        <span>{{ .User.Username }}</span>
+      </div>
+
+      <!-- Goal -->
+      {{ else if eq .EventType "goal" }}
+      <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored</p>
+      <div class="is-flex align-items-center">
+        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" /></figure>
+        <span>{{ .User.Username }}</span>
+      </div>
+
+      <!-- Start -->
+      {{ else if eq .EventType "start" }}
+      <p class="heading">Game Started</p>
+
+      <!-- End -->
+      {{ else if eq .EventType "end" }}
+      <p class="heading">Game Finished</p>
+      {{ end }}
+    </div>
+  </div>
+
+  <!-- End if event type start -->
+  {{ end }}
+
+  <!-- End range events -->
+  {{ end }}
+</div>
+
+<!-- else if not game started -->
 {{ else }}
 
 <h3 class="title is-3">The game has not started yet!</h3>
 <a href="/game/{{ .id }}/start" class="button is-danger is-large is-fullwidth">
   Start
 </a>
-
+<!-- end if game started -->
 {{ end }}
 
+<!-- end define content -->
 {{ end }}

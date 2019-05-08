@@ -2,10 +2,17 @@
 
 <h2 class="title is-2">Games</h2>
 
-<div class="box">
+{{ range.games }}
+<a href="/game/{{ .ID }}" class="box">
   <div class="columns">
     <div class="column">
-      <h4 class="title is-4 mb is-three-quarters">May 4</h4>
+      {{ if .Ended }}
+      <h4 class="title is-4 mb is-three-quarters">Finished {{ call $.formatTime .CreatedAt }}</h4>
+      {{ else if .Started }}
+      <h4 class="title is-4 mb is-three-quarters">Started {{ call $.formatTime .CreatedAt }}</h4>
+      {{ else }}
+      <h4 class="title is-4 mb is-three-quarters">Created {{ call $.formatTime .CreatedAt }}</h4>
+      {{ end }}
       <span
         ><span class="has-text-link">Caleb Hiebert, Caleb Hiebert</span>,
         <span class="has-text-danger">Caleb Hiebert, Caleb Hiebert</span></span
@@ -16,17 +23,18 @@
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Blue</p>
-            <p class="title">3</p>
+            <p class="title">{{ .BlueGoals }}</p>
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
             <p class="heading">Red</p>
-            <p class="title">10</p>
+            <p class="title">{{ .RedGoals }}</p>
           </div>
         </div>
       </nav>
     </div>
   </div>
-</div>
+</a>
+{{ end }}
 {{ end }}

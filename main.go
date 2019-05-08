@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/sessions"
@@ -80,13 +83,23 @@ func main() {
 	r.GET("/game/:id", GetGame)
 	r.GET("/game/:id/goal", MarkGoal)
 	r.GET("/game/:id/start", MarkStarted)
+	r.GET("/game/:id/end", MarkEnded)
 
 	// Catch all other routes and redirect to index
 	r.Use(func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/index")
 	})
 
-	r.Run(":8080")
+	port := 8080
+
+	if os.Getenv("PORT") != "" {
+		parsedPort, err := strconv.Atoi(os.Getenv("PORT"))
+		if err == nil {
+			port = parsedPort
+		}
+	}
+
+	r.Run(fmt.Sprintf(":%d", port))
 }
 
 func createRenderer() multitemplate.Renderer {
@@ -120,7 +133,7 @@ func addTemplate(r multitemplate.Renderer, name string, filename ...string) {
 }
 
 func initDB() {
-	db, err := gorm.Open("postgres", "host=localhost port=5432 user=foostrack dbname=foostrack password=foostrack sslmode=disable")
+	db, err := gorm.Open("postgres", os.Getenv("CONNECTION_STRING"))
 	if err != nil {
 		panic(err)
 	}
@@ -135,4 +148,6 @@ func initDB() {
 	if err := dbase.Exec(sql).Error; err != nil {
 		panic(err)
 	}
+
+	db.LogMode(true)
 }

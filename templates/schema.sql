@@ -25,3 +25,12 @@ CREATE TABLE IF NOT EXISTS game_events (
   updated_at    TIMESTAMPTZ,
   deleted_at    TIMESTAMPTZ
 );
+
+CREATE OR REPLACE VIEW current_positions AS
+  WITH positions AS (
+    SELECT g.*, ROW_NUMBER() OVER (PARTITION BY game_id, team, position, event_type ORDER BY id DESC) AS rn 
+    FROM game_events AS g
+  )
+  SELECT * FROM positions 
+    WHERE rn = 1
+      AND event_type = 'ptp';

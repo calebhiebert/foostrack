@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -15,6 +16,10 @@ type TeamGoals struct {
 type GameInfo struct {
 	gorm.Model
 	TeamGoals
+	StartTime *time.Time `gorm:"column:start_time"`
+	Started   bool
+	EndTime   *time.Time `gorm:"column:end_time"`
+	Ended     bool
 }
 
 func SendHTML(statusCode int, c *gin.Context, page string, data gin.H) {
