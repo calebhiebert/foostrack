@@ -282,6 +282,7 @@ func ListGames(c *gin.Context) {
 							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
 							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time
 		FROM games AS g
+		ORDER BY created_at DESC
 	`).Scan(&games).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
