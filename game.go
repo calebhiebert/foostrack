@@ -14,6 +14,8 @@ const (
 	GameEventEnd                = "end"
 	GameEventPlayerTakePosition = "ptp"
 	GameEventGoal               = "goal"
+	GameEventDeadBall           = "dead"
+	GameEventOutOfBounds        = "oob"
 )
 
 // Game team constants
@@ -247,6 +249,62 @@ func MarkEnded(c *gin.Context) {
 	event := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventEnd,
+	}
+
+	if err := dbase.Create(&event).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
+}
+
+// MarkDeadBall records a dead ball event
+func MarkDeadBall(c *gin.Context) {
+	gameID := c.Param("id")
+
+	var game Game
+
+	if err := dbase.Preload("Events").First(&game, "id = ?", gameID).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	event := GameEvent{
+		GameID:    game.ID,
+		EventType: GameEventDeadBall,
+	}
+
+	if err := dbase.Create(&event).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
+}
+
+// MarkOutOfBounds records an out of bounds event
+func MarkOutOfBounds(c *gin.Context) {
+	gameID := c.Param("id")
+
+	var game Game
+
+	if err := dbase.Preload("Events").First(&game, "id = ?", gameID).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	event := GameEvent{
+		GameID:    game.ID,
+		EventType: GameEventOutOfBounds,
 	}
 
 	if err := dbase.Create(&event).Error; err != nil {

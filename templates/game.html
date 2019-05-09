@@ -63,6 +63,16 @@
     <input type="hidden" name="position" value="goalie">
     <button type="submit" class="button is-danger is-outlined is-fullwidth">{{ .gameState.RedGoalie.Username }}</button>
   </form>
+
+  <!-- Dead Ball -->
+  <form action="/game/{{ .id }}/deadball" class="column is-half-tablet" method="POST">
+    <button type="submit" class="button is-primary is-fullwidth">Dead Ball</button>
+  </form>
+
+  <!-- Out of Bounds -->
+  <form action="/game/{{ .id }}/oob" class="column is-half-tablet" method="POST">
+    <button type="submit" class="button is-primary is-fullwidth">Out of Bounds</button>
+  </form>
 </div>
 
 <!-- end if goal limit not reached -->
@@ -97,6 +107,25 @@
   <header class="timeline-header">
     <span class="tag is-primary">Game End</span>
   </header>
+
+  <!-- Out of Bounds -->
+  {{ else if eq .EventType "oob" }}
+  <div class="timeline-item">
+    <div class="timeline-marker is-primary">
+    </div>
+    <div class="timeline-content">
+      <p class="heading">Out of Bounds</p>
+    </div>
+  </div>
+
+  <!-- Dead Ball -->
+  {{ else if eq .EventType "dead" }}
+  <div class="timeline-item">
+    <div class="timeline-marker is-primary"></div>
+    <div class="timeline-content">
+      <p class="heading">Dead Ball</p>
+    </div>
+  </div>
 
   <!-- Else if event type start -->
   {{ else }}

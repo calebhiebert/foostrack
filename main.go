@@ -93,6 +93,8 @@ func main() {
 	r.POST("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/start", MarkStarted)
 	r.POST("/game/:id/end", MarkEnded)
+	r.POST("/game/:id/deadball", MarkDeadBall)
+	r.POST("/game/:id/oob", MarkOutOfBounds)
 
 	r.GET("/user/:id", GetUser)
 
