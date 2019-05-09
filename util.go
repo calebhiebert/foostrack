@@ -44,6 +44,15 @@ type CurrentGameState struct {
 	WinningTeam      string
 }
 
+type UserWithStats struct {
+	User
+	GamesPlayed         int     `gorm:"column:games_played"`
+	GamesWon            int     `gorm:"column:games_won"`
+	AverageGoalsPerGame float64 `gorm:"column:avg_goals_per_game"`
+	GamesPlayedRed      int     `gorm:"column:games_played_red"`
+	GamesPlayedBlue     int     `gorm:"column:games_played_blue"`
+}
+
 type Count struct {
 	Count int `gorm:"column:count"`
 }

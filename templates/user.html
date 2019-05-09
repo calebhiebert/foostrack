@@ -4,5 +4,49 @@
   {{ .user.Username }}
 </h3>
 
+<!-- Big Stats -->
+<nav class="level">
+
+  <!-- Win Percentage -->
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Win Rate</p>
+      <p class="title">{{ .winpercent }}%</p>
+    </div>
+  </div>
+
+  <!-- Games Played -->
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Games Played</p>
+      <p class="title">{{ .games_played }}</p>
+    </div>
+  </div>
+
+  <!-- Blue Side Games -->
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Blue Side</p>
+      <p class="title">{{ .blue_games_percent }}%</p>
+    </div>
+  </div>
+
+  <!-- Red Side Games -->
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Red Side</p>
+      <p class="title">{{ .red_games_percent }}%</p>
+    </div>
+  </div>
+
+  <!-- Goals per Game -->
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Goals Per Game</p>
+      <p class="title">{{ .avg_goals_per_game }}</p>
+    </div>
+  </div>
+</nav>
+
 <!-- end define content -->
 {{ end }}

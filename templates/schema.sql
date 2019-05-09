@@ -47,21 +47,6 @@ CREATE OR REPLACE VIEW current_positions AS
     WHERE rn = 1
       AND event_type = 'ptp';
 
-CREATE OR REPLACE VIEW user_stats AS
-SELECT u.id, u.username,
-                          (SELECT COUNT(*)
-                            FROM (SELECT COUNT(id)
-                            FROM current_positions c
-                            WHERE c.user_id = u.id
-                            GROUP BY c.game_id) a) AS games_played,
-
-                          (SELECT AVG(count)
-                             FROM (SELECT COUNT(id) AS count
-                                     FROM game_events g
-                                     WHERE g.user_id = u.id
-                                     GROUP BY g.game_id) a) AS avg_goals_per_game
-  FROM users u;
-
 CREATE OR REPLACE VIEW game_extended AS
   SELECT *, 
       (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'goal' AND team = 'blue') AS blue_goals,
@@ -71,3 +56,39 @@ CREATE OR REPLACE VIEW game_extended AS
       (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
       (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time
     FROM games g;
+
+DROP VIEW IF EXISTS user_stats;
+
+CREATE OR REPLACE VIEW user_stats AS
+SELECT u.*,
+                          (SELECT COUNT(*)
+                            FROM (SELECT COUNT(id)
+                            FROM current_positions c
+                            WHERE c.user_id = u.id
+                            GROUP BY c.game_id) a) AS games_played,
+
+                          (SELECT COUNT(*)
+                            FROM (SELECT COUNT(id)
+                            FROM current_positions c
+                            WHERE c.user_id = u.id AND c.team = 'red'
+                            GROUP BY c.game_id) a) AS games_played_red,
+
+                          (SELECT COUNT(*)
+                            FROM (SELECT COUNT(id)
+                            FROM current_positions c
+                            WHERE c.user_id = u.id AND c.team = 'blue'
+                            GROUP BY c.game_id) a) AS games_played_blue,
+
+                          (SELECT AVG(count)
+                             FROM (SELECT COUNT(id) AS count
+                                     FROM game_events g
+                                     WHERE g.user_id = u.id
+                                     GROUP BY g.game_id) a) AS avg_goals_per_game,
+
+                          (SELECT COUNT(g.id)
+                             FROM game_extended g
+                               JOIN current_positions cp ON g.id = cp.game_id
+                             WHERE cp.user_id = u.id
+                               AND ((cp.team = 'blue' AND g.win_goals = g.blue_goals)
+                               OR (cp.team = 'red' AND g.win_goals = g.red_goals))) AS games_won
+  FROM users u;
