@@ -3,6 +3,15 @@
 
 <!-- If the game has started -->
 {{ if .gameState.Started }}
+
+{{ if .gameState.IsMatchPoint }}
+<article class="message is-info">
+  <div class="message-body">
+    <span class="title is-5">Match Point!</span>
+  </div>
+</article>
+{{ end }}
+
 <nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
@@ -19,43 +28,52 @@
 </nav>
 
 {{ if not .gameState.Ended }}
+{{ if not .gameState.GoalLimitReached }}
 <h4 class="title is-4">Mark Goal</h4>
 
-<!-- Blue Team -->
-<!-- Forward -->
-<form action="/game/{{ .id }}/goal" method="POST">
-  <input type="hidden" name="team" value="blue">
-  <input type="hidden" name="position" value="forward">
-  <button type="submit" class="button is-info is-fullwidth">{{ .gameState.BlueForward.Username }}</button>
-</form>
+<!-- Goal Buttons -->
+<div class="columns is-multiline">
 
-<!-- Goalie -->
-<form class="mt" action="/game/{{ .id }}/goal" method="POST">
-  <input type="hidden" name="team" value="blue">
-  <input type="hidden" name="position" value="goalie">
-  <button type="submit" class="button is-info is-outlined is-fullwidth">{{ .gameState.BlueGoalie.Username }}</button>
-</form>
+  <!-- Blue Team -->
+  <!-- Forward -->
+  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
+    <input type="hidden" name="team" value="blue">
+    <input type="hidden" name="position" value="forward">
+    <button type="submit" class="button is-info is-fullwidth">{{ .gameState.BlueForward.Username }}</button>
+  </form>
 
-<!-- Red Team -->
-<!-- Forward -->
-<form class="mt" action="/game/{{ .id }}/goal" method="POST">
-  <input type="hidden" name="team" value="red">
-  <input type="hidden" name="position" value="forward">
-  <button type="submit" class="button is-danger is-fullwidth">{{ .gameState.RedForward.Username }}</button>
-</form>
+  <!-- Goalie -->
+  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
+    <input type="hidden" name="team" value="blue">
+    <input type="hidden" name="position" value="goalie">
+    <button type="submit" class="button is-info is-outlined is-fullwidth">{{ .gameState.BlueGoalie.Username }}</button>
+  </form>
 
-<!-- Goalie -->
-<form class="mt" action="/game/{{ .id }}/goal" method="POST">
-  <input type="hidden" name="team" value="red">
-  <input type="hidden" name="position" value="goalie">
-  <button type="submit" class="button is-danger is-outlined is-fullwidth">{{ .gameState.BlueForward.Username }}</button>
-</form>
+  <!-- Red Team -->
+  <!-- Forward -->
+  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
+    <input type="hidden" name="team" value="red">
+    <input type="hidden" name="position" value="forward">
+    <button type="submit" class="button is-danger is-fullwidth">{{ .gameState.RedForward.Username }}</button>
+  </form>
+
+  <!-- Goalie -->
+  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
+    <input type="hidden" name="team" value="red">
+    <input type="hidden" name="position" value="goalie">
+    <button type="submit" class="button is-danger is-outlined is-fullwidth">{{ .gameState.RedGoalie.Username }}</button>
+  </form>
+</div>
+
+<!-- end if goal limit not reached -->
+{{ end }}
 
 <!-- End Game -->
 <h4 class="title is-4 mt">End Game</h4>
 <form method="POST" action="/game/{{ .id }}/end">
   <button type="submit" class="button is-danger is-fullwidth">End Game</button>
 </form>
+
 
 <!-- end If game not ended -->
 {{ end }}
@@ -82,7 +100,8 @@
 
   <!-- Else if event type start -->
   {{ else }}
-  <div class="timeline-item {{ if eq .Team "blue" }}is-info{{ else if eq .Team "red" }}is-danger{{ end }}" style="padding-bottom: 0.5rem">
+  <div class="timeline-item {{ if eq .Team "blue" }}is-info{{ else if eq .Team "red" }}is-danger{{ end }}"
+    style="padding-bottom: 0.5rem">
     {{ if eq .EventType "goal" }}
     <div class="timeline-marker is-image is-32x32">
       {{ if eq .Team "blue" }}
@@ -102,10 +121,12 @@
       <!-- Player Take Position -->
       {{ if eq .EventType "ptp" }}
       <p class="heading">
-        {{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} {{ if eq .Position "forward" }}Forward{{ else }}Goalie{{ end }} Joined
+        {{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }}
+        {{ if eq .Position "forward" }}Forward{{ else }}Goalie{{ end }} Joined
       </p>
       <div class="is-flex align-items-center">
-        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" /></figure>
+        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
+        </figure>
         <span>{{ .User.Username }}</span>
       </div>
 
@@ -113,7 +134,8 @@
       {{ else if eq .EventType "goal" }}
       <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored</p>
       <div class="is-flex align-items-center">
-        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" /></figure>
+        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
+        </figure>
         <span>{{ .User.Username }}</span>
       </div>
 

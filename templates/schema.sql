@@ -8,10 +8,22 @@ CREATE TABLE IF NOT EXISTS users (
 -- Create games table
 CREATE TABLE IF NOT EXISTS games (
   id            SERIAL        PRIMARY KEY,
+  win_goals     INTEGER       NOT NULL      DEFAULT 10,
   created_at    TIMESTAMPTZ,
   updated_at    TIMESTAMPTZ,
   deleted_at    TIMESTAMPTZ
 );
+
+-- Add Win Goals column
+DO $$ 
+    BEGIN
+        BEGIN
+            ALTER TABLE games ADD COLUMN win_goals INTEGER NOT NULL DEFAULT 10;
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column win_goals already exists in games.';
+        END;
+    END;
+$$;
 
 -- Create game events table
 CREATE TABLE IF NOT EXISTS game_events (

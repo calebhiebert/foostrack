@@ -33,7 +33,8 @@ const (
 // Game represents the game table
 type Game struct {
 	gorm.Model
-	Events []GameEvent `gorm:"foreignkey:GameID"`
+	Events   []GameEvent `gorm:"foreignkey:GameID"`
+	WinGoals int         `gorm:"column:win_goals"`
 }
 
 // GameEvent represents the game events table
@@ -50,17 +51,19 @@ type GameEvent struct {
 
 // CurrentGameState represents the current state of a single game
 type CurrentGameState struct {
-	Game        Game
-	BlueGoalie  User
-	BlueForward User
-	RedGoalie   User
-	RedForward  User
-	Started     bool
-	StartedAt   *time.Time
-	EndedAt     *time.Time
-	Ended       bool
-	BlueGoals   int
-	RedGoals    int
+	Game             Game
+	BlueGoalie       User
+	BlueForward      User
+	RedGoalie        User
+	RedForward       User
+	Started          bool
+	StartedAt        *time.Time
+	EndedAt          *time.Time
+	Ended            bool
+	BlueGoals        int
+	RedGoals         int
+	IsMatchPoint     bool
+	GoalLimitReached bool
 }
 
 // GetGame renders the game view page
@@ -148,6 +151,9 @@ func GetGame(c *gin.Context) {
 			gameState.Ended = true
 		}
 	}
+
+	gameState.IsMatchPoint = gameState.BlueGoals == game.WinGoals-1 || gameState.RedGoals == game.WinGoals-1
+	gameState.GoalLimitReached = gameState.BlueGoals == game.WinGoals || gameState.RedGoals == game.WinGoals
 
 	SendHTML(http.StatusOK, c, "game", gin.H{
 		"id":        id,

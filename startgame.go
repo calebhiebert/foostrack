@@ -31,7 +31,9 @@ func PostStartGame(c *gin.Context) {
 		return
 	}
 
-	game := Game{}
+	game := Game{
+		WinGoals: 10,
+	}
 
 	if err := dbase.Create(&game).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
