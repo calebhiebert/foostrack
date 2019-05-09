@@ -61,3 +61,13 @@ SELECT u.id, u.username,
                                      WHERE g.user_id = u.id
                                      GROUP BY g.game_id) a) AS avg_goals_per_game
   FROM users u;
+
+CREATE OR REPLACE VIEW game_extended AS
+  SELECT *, 
+      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'goal' AND team = 'blue') AS blue_goals,
+      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'goal' AND team = 'red') AS red_goals,
+      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'oob') AS oob,
+      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'dead') AS dead_balls,
+      (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
+      (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time
+    FROM games g;
