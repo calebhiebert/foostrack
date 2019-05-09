@@ -1,3 +1,95 @@
 {{ define "content"}}
-This is the index.
+
+<!-- Active Games -->
+{{ if .hasActiveGames }}
+<h3 class="title is-3">Active Games</h3>
+<div class="columns is-multiline">
+  {{ range.games }}
+  <div class="column is-half">
+    <div class="card mb">
+      <div class="card-header">
+        {{ if .Ended }}
+        <p class="card-header-title">Finished {{ call $.formatTime .CreatedAt }}</p>
+        {{ else if .Started }}
+        <p class="card-header-title">Started {{ call $.formatTime .CreatedAt }}</p>
+        {{ else }}
+        <p class="card-header-title">Created {{ call $.formatTime .CreatedAt }}</p>
+        {{ end }}
+      </div>
+
+      <div class="card-content">
+        <!-- Players -->
+        <div class="field is-grouped is-grouped-multiline">
+          <!-- Blue Forward -->
+          <div class="control">
+            <a href="/user/{{ .BlueForward.ID }}" class="tags has-addons">
+              <span class="tag is-medium is-dark">F</span>
+              <span class="tag is-medium is-info">{{ .BlueForward.Username }}</span>
+            </a>
+          </div>
+
+          <!-- Blue Goalie -->
+          <div class="control">
+            <a href="/user/{{ .BlueGoalie.ID }}" class="tags has-addons">
+              <span class="tag is-medium is-dark">G</span>
+              <span class="tag is-medium is-info">{{ .BlueGoalie.Username }}</span>
+            </a>
+          </div>
+
+          <!-- Red Forward -->
+          <div class="control">
+            <a href="/user/{{ .RedForward.ID }}" class="tags has-addons">
+              <span class="tag is-medium is-dark">F</span>
+              <span class="tag is-medium is-danger">{{ .RedForward.Username }}</span>
+            </a>
+          </div>
+
+          <!-- Red Goalie -->
+          <div class="control">
+            <a href="/user/{{ .RedGoalie.ID }}" class="tags has-addons">
+              <span class="tag is-medium is-dark">G</span>
+              <span class="tag is-medium is-danger">{{ .RedGoalie.Username }}</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Score -->
+        <nav class="level is-mobile">
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Blue</p>
+              <p class="title">{{ .BlueGoals }}</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Red</p>
+              <p class="title">{{ .RedGoals }}</p>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Actions -->
+      <div class="card-footer">
+        <a href="/game/{{ .ID }}" class="card-footer-item">View Game</a>
+      </div>
+    </div>
+  </div>
+
+  {{ end }}
+</div>
+
+<!-- if no active games -->
+{{ else }}
+
+<div class="text-center">
+  <h3 class="title is-3">Nobody is playing right now</h3>
+  <a href="/startgame" class="button mb is-large">Start Game</a>
+</div>
+<img src="/assets/goal.svg" style="opacity: 0.5">
+<!-- end active games -->
+{{ end }}
+
+<!-- end define content -->
 {{ end }}

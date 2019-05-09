@@ -4,14 +4,6 @@
 <!-- If the game has started -->
 {{ if .gameState.Started }}
 
-{{ if .gameState.IsMatchPoint }}
-<article class="message is-info">
-  <div class="message-body">
-    <span class="title is-5">Match Point!</span>
-  </div>
-</article>
-{{ end }}
-
 <nav class="level is-mobile">
   <div class="level-item has-text-centered">
     <div>
@@ -76,6 +68,14 @@
 </div>
 
 <!-- end if goal limit not reached -->
+{{ end }}
+
+{{ if .gameState.IsMatchPoint }}
+<article class="message is-info">
+  <div class="message-body">
+    <span class="title is-5">Match Point!</span>
+  </div>
+</article>
 {{ end }}
 
 <!-- End Game -->
@@ -190,7 +190,7 @@
 <!-- else if not game started -->
 {{ else }}
 
-<h3 class="title is-3">The game has not started yet!</h3>
+<h3 class="title is-3 text-center">The game has not started yet!</h3>
 <form action="/game/{{ .id }}/start" method="POST">
   <button class="button is-danger is-large is-fullwidth">
     Start
@@ -199,7 +199,11 @@
 <!-- end if game started -->
 {{ end }}
 
-<script>var gameId = {{ .id }}</script>
+<script>
+  var gameId = {{ .id }};
+  var eventCount = {{ .eventCount }};
+  var gameEnded = {{ .gameState.Ended }};
+</script>
 <script src="/assets/game.js"></script>
 
 <!-- end define content -->

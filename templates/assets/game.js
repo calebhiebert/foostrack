@@ -1,21 +1,34 @@
+// Some variables in this file are declared in ../game.html
+
 var gameFetchInterval;
 
+function saveScroll() {
+  localStorage.setItem('scroll', document.scrollingElement.scrollTop);
+}
+
+function restoreScroll() {
+  if (localStorage.getItem('scroll') !== null) {
+    document.scrollingElement.scrollTo(0, localStorage.getItem('scroll'));
+    localStorage.removeItem('scroll');
+  }
+}
+
 function getGame() {
-  fetch('/api/games/' + gameId)
+  fetch('/api/games/' + gameId + '/eventcount')
     .then(function(response) {
       return response.json();
     })
-    .then((game) => {
-      if (game.gameState.ended === true) {
-        clearInterval(gameFetchInterval);
+    .then((ec) => {
+      if (eventCount !== ec.eventCount) {
+        saveScroll();
+        location.reload();
       }
-
-      blueGoals = game.gameState.blueGoals;
-      redGoals = game.gameState.redGoals;
-
-      document.getElementById('blue-goals').innerText = blueGoals;
-      document.getElementById('red-goals').innerText = redGoals;
     });
 }
 
-gameFetchInterval = setInterval(getGame, 2500);
+restoreScroll();
+
+if (!gameEnded) {
+  gameFetchInterval = setInterval(getGame, 2000);
+  getGame();
+}

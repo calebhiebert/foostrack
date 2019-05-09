@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS "users" CASCADE;
+CREATE TABLE "public"."users" (
+    "id" character varying(40) NOT NULL,
+    "username" character varying(120) NOT NULL,
+    "picture_url" text NOT NULL,
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+) WITH (oids = false);
+
 INSERT INTO "users" ("id", "username", "picture_url") VALUES
 ('google-oauth2|115793422235026993679',	'Caleb Hiebert',	'https://lh3.googleusercontent.com/-8LMvCNJmD_8/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rf48Jc-NX8r2zU1H3YwTVarKSMwFQ/mo/photo.jpg'),
 ('google-oauth2|106965438089681476584',	'Gustavo Andrade',	'https://lh6.googleusercontent.com/-0gJ-63Z_W7s/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rd9SIF7vZ6S2eKCKIYXP-MW4ABJvg/mo/photo.jpg'),
@@ -6,12 +14,44 @@ INSERT INTO "users" ("id", "username", "picture_url") VALUES
 ('google-oauth2|113852563919427945809',	'Daniel Burch',	'https://lh4.googleusercontent.com/-v66EH661Xn4/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3reOflfzqSYoK6MuMS-D88lq2LMEIw/mo/photo.jpg'),
 ('google-oauth2|110102241294111780887',	'Shannon Maksymowicz',	'https://lh6.googleusercontent.com/-JQ83GcVRqlM/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcVCfYW4xnA4zpRijJ0o6w9AlSsTA/mo/photo.jpg');
 
-INSERT INTO "games" ("id", "created_at", "updated_at", "deleted_at", "win_goals") VALUES
-(1,	'2019-05-08 16:45:35.729355+00',	'2019-05-08 16:45:35.729355+00',	NULL,	10),
-(2,	'2019-05-08 16:52:20.019841+00',	'2019-05-08 16:52:20.019841+00',	NULL,	10),
-(3,	'2019-05-08 17:02:47.782566+00',	'2019-05-08 17:02:47.782566+00',	NULL,	10),
-(4,	'2019-05-09 14:23:03.051251+00',	'2019-05-09 14:23:03.051251+00',	NULL,	10),
-(5,	'2019-05-09 14:29:21.4715+00',	'2019-05-09 14:29:21.4715+00',	NULL,	10);
+DROP TABLE IF EXISTS "games" CASCADE;
+DROP SEQUENCE IF EXISTS games_id_seq;
+CREATE SEQUENCE games_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 6 CACHE 1;
+
+CREATE TABLE "public"."games" (
+    "id" integer DEFAULT nextval('games_id_seq') NOT NULL,
+    "win_goals" integer DEFAULT '10' NOT NULL,
+    "created_at" timestamptz,
+    "updated_at" timestamptz,
+    "deleted_at" timestamptz,
+    CONSTRAINT "games_pkey" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+INSERT INTO "games" ("id", "win_goals", "created_at", "updated_at", "deleted_at") VALUES
+(1,	10,	'2019-05-08 16:45:35.729355+00',	'2019-05-08 16:45:35.729355+00',	NULL),
+(2,	10,	'2019-05-08 16:52:20.019841+00',	'2019-05-08 16:52:20.019841+00',	NULL),
+(3,	10,	'2019-05-08 17:02:47.782566+00',	'2019-05-08 17:02:47.782566+00',	NULL),
+(4,	10,	'2019-05-09 14:23:03.051251+00',	'2019-05-09 14:23:03.051251+00',	NULL),
+(5,	10,	'2019-05-09 14:29:21.4715+00',	'2019-05-09 14:29:21.4715+00',	NULL);
+
+DROP TABLE IF EXISTS "game_events" CASCADE;
+DROP SEQUENCE IF EXISTS game_events_id_seq;
+CREATE SEQUENCE game_events_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 107 CACHE 1;
+
+CREATE TABLE "public"."game_events" (
+    "id" integer DEFAULT nextval('game_events_id_seq') NOT NULL,
+    "game_id" integer NOT NULL,
+    "user_id" character varying(40),
+    "event_type" character varying(10) NOT NULL,
+    "team" character varying(10),
+    "position" character varying(10),
+    "created_at" timestamptz,
+    "updated_at" timestamptz,
+    "deleted_at" timestamptz,
+    CONSTRAINT "game_events_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "game_events_game_id_fkey" FOREIGN KEY (game_id) REFERENCES games(id) NOT DEFERRABLE,
+    CONSTRAINT "game_events_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id) NOT DEFERRABLE
+) WITH (oids = false);
 
 INSERT INTO "game_events" ("id", "game_id", "user_id", "event_type", "team", "position", "created_at", "updated_at", "deleted_at") VALUES
 (1,	1,	'google-oauth2|104779678197555140626',	'ptp',	'blue',	'goalie',	'2019-05-08 16:45:35.833782+00',	'2019-05-08 16:45:35.833782+00',	NULL),
@@ -121,5 +161,3 @@ INSERT INTO "game_events" ("id", "game_id", "user_id", "event_type", "team", "po
 (105,	5,	'google-oauth2|104779678197555140626',	'goal',	'red',	'goalie',	'2019-05-09 14:37:52.409936+00',	'2019-05-09 14:37:52.409936+00',	NULL),
 (106,	5,	'google-oauth2|104779678197555140626',	'goal',	'red',	'goalie',	'2019-05-09 14:38:08.258271+00',	'2019-05-09 14:38:08.258271+00',	NULL),
 (107,	5,	NULL,	'end',	'',	'',	'2019-05-09 14:38:13.045933+00',	'2019-05-09 14:38:13.045933+00',	NULL);
-
--- 2019-05-09 15:44:23.609685+00

@@ -77,9 +77,7 @@ func main() {
 		c.Next()
 	})
 
-	r.GET("/index", func(c *gin.Context) {
-		SendHTML(http.StatusOK, c, "index", nil)
-	})
+	r.GET("/index", GetIndex)
 
 	r.GET("/startgame", GetStartGame)
 	r.POST("/startgame", PostStartGame)
@@ -90,7 +88,7 @@ func main() {
 
 	r.GET("/games", ListGames)
 	r.GET("/game/:id", GetGame)
-	api.GET("/games/:id", GetGameJson)
+	api.GET("/games/:id/eventcount", GetGameEventCount)
 	r.GET("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/start", MarkStarted)
