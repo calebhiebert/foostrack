@@ -329,3 +329,70 @@ func MarkOutOfBounds(c *gin.Context) {
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
 }
+
+func MarkSwap(c *gin.Context) {
+	gameID := c.Param("id")
+	team := c.PostForm("team")
+
+	var currentPositions []GameEvent
+
+	if err := dbase.Raw(`SELECT * FROM current_positions WHERE game_id = ? AND team = ? ORDER BY position ASC`, gameID, team).
+		Scan(&currentPositions).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	swapEvents := make([]GameEvent, 0)
+
+	switch team {
+	case GameTeamBlue:
+		swapEvents = append(swapEvents, GameEvent{
+			GameID:    currentPositions[0].GameID,
+			EventType: GameEventPlayerTakePosition,
+			Team:      GameTeamBlue,
+			Position:  GamePositionForward,
+			UserID:    currentPositions[1].UserID,
+		})
+
+		swapEvents = append(swapEvents, GameEvent{
+			GameID:    currentPositions[0].GameID,
+			EventType: GameEventPlayerTakePosition,
+			Team:      GameTeamBlue,
+			Position:  GamePositionGoalie,
+			UserID:    currentPositions[0].UserID,
+		})
+	case GameTeamRed:
+		swapEvents = append(swapEvents, GameEvent{
+			GameID:    currentPositions[0].GameID,
+			EventType: GameEventPlayerTakePosition,
+			Team:      GameTeamRed,
+			Position:  GamePositionForward,
+			UserID:    currentPositions[1].UserID,
+		})
+
+		swapEvents = append(swapEvents, GameEvent{
+			GameID:    currentPositions[0].GameID,
+			EventType: GameEventPlayerTakePosition,
+			Team:      GameTeamRed,
+			Position:  GamePositionGoalie,
+			UserID:    currentPositions[0].UserID,
+		})
+	}
+
+	tx := dbase.Begin()
+
+	for _, evt := range swapEvents {
+		if err := tx.Create(&evt).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", currentPositions[0].GameID))
+}

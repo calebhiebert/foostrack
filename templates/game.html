@@ -65,6 +65,18 @@
   <form action="/game/{{ .id }}/oob" class="column is-half-tablet" method="POST">
     <button type="submit" class="button is-primary is-fullwidth">Out of Bounds</button>
   </form>
+
+  <!-- Swap Blue Team Positions -->
+  <form action="/game/{{ .id }}/swap" class="column is-half-tablet" method="POST">
+    <input type="hidden" name="team" value="blue">
+    <button type="submit" class="button is-outlined is-info is-fullwidth">Swap Blue Players</button>
+  </form>
+
+  <!-- Swap Red Team Positions -->
+  <form action="/game/{{ .id }}/swap" class="column is-half-tablet" method="POST">
+    <input type="hidden" name="team" value="red">
+    <button type="submit" class="button is-danger is-outlined is-fullwidth">Swap Red Players</button>
+  </form>
 </div>
 
 <!-- end if goal limit not reached -->
