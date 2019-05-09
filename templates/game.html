@@ -16,13 +16,13 @@
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">Blue</p>
-      <p class="title">{{ .gameState.BlueGoals }}</p>
+      <p class="title" id="blue-goals">{{ .gameState.BlueGoals }}</p>
     </div>
   </div>
   <div class="level-item has-text-centered">
     <div>
       <p class="heading">Red</p>
-      <p class="title">{{ .gameState.RedGoals }}</p>
+      <p class="title" id="red-goals">{{ .gameState.RedGoals }}</p>
     </div>
   </div>
 </nav>
@@ -198,6 +198,9 @@
 </form>
 <!-- end if game started -->
 {{ end }}
+
+<script>var gameId = {{ .id }}</script>
+<script src="/assets/game.js"></script>
 
 <!-- end define content -->
 {{ end }}

@@ -28,20 +28,19 @@ type GameInfo struct {
 
 // CurrentGameState represents the current state of a single game
 type CurrentGameState struct {
-	Game             Game
-	BlueGoalie       User
-	BlueForward      User
-	RedGoalie        User
-	RedForward       User
-	Started          bool
-	StartedAt        *time.Time
-	EndedAt          *time.Time
-	Ended            bool
-	BlueGoals        int
-	RedGoals         int
-	IsMatchPoint     bool
-	GoalLimitReached bool
-	WinningTeam      string
+	BlueGoalie       User       `json:"blueGoalie"`
+	BlueForward      User       `json:"redForward"`
+	RedGoalie        User       `json:"redGoalie"`
+	RedForward       User       `json:"redForward"`
+	Started          bool       `json:"started"`
+	StartedAt        *time.Time `json:"startedAt"`
+	EndedAt          *time.Time `json:"endedAt"`
+	Ended            bool       `json:"ended"`
+	BlueGoals        int        `json:"blueGoals"`
+	RedGoals         int        `json:"redGoals"`
+	IsMatchPoint     bool       `json:"isMatchPoint"`
+	GoalLimitReached bool       `json:"goalLimitReached"`
+	WinningTeam      string     `json:"winningTeam"`
 }
 
 type UserWithStats struct {

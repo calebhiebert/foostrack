@@ -28,6 +28,8 @@ func main() {
 	initDB()
 
 	r := gin.Default()
+	assetRoute := r.Group("/assets")
+	api := r.Group("/api")
 
 	r.HTMLRender = createRenderer()
 
@@ -35,7 +37,6 @@ func main() {
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("session", store))
 
-	assetRoute := r.Group("/assets")
 	assetRoute.Use(func(c *gin.Context) {
 		c.Header("Cache-Control", "max-age=86400")
 
@@ -89,6 +90,7 @@ func main() {
 
 	r.GET("/games", ListGames)
 	r.GET("/game/:id", GetGame)
+	api.GET("/games/:id", GetGameJson)
 	r.GET("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/start", MarkStarted)
@@ -162,6 +164,4 @@ func initDB() {
 	if err := dbase.Exec(sql).Error; err != nil {
 		panic(err)
 	}
-
-	db.LogMode(true)
 }

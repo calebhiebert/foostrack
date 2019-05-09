@@ -152,6 +152,108 @@ func GetGame(c *gin.Context) {
 	})
 }
 
+// GetGameJson returns game information as json
+func GetGameJson(c *gin.Context) {
+
+	id := c.Param("id")
+
+	var game Game
+
+	if err := dbase.Find(&game, "id = ?", id).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusBadRequest, c, err)
+		return
+	}
+
+	var gameState CurrentGameState
+
+	// Select Event List
+	var events []GameEvent
+
+	if err := dbase.Preload("User").Find(&events, "game_id = ?", game.ID).Error; err != nil {
+		panic(err)
+	}
+
+	// Calculate current game state from events
+	for _, evt := range events {
+		switch evt.EventType {
+
+		// Count goals
+		case GameEventGoal:
+			switch evt.Team {
+
+			// Blue Team
+			case GameTeamBlue:
+				gameState.BlueGoals++
+
+				// Red Team
+			case GameTeamRed:
+				gameState.RedGoals++
+			}
+
+			// Assign players to the correct positions on the team
+		case GameEventPlayerTakePosition:
+			switch evt.Team {
+
+			// Assign blue team players
+			case GameTeamBlue:
+				switch evt.Position {
+
+				// Forward
+				case GamePositionForward:
+					gameState.BlueForward = evt.User
+
+					// Goalie
+				case GamePositionGoalie:
+					gameState.BlueGoalie = evt.User
+				}
+
+				// Assign red team players
+			case GameTeamRed:
+				switch evt.Position {
+
+				// Forward
+				case GamePositionForward:
+					gameState.RedForward = evt.User
+
+					// Goalie
+				case GamePositionGoalie:
+					gameState.RedGoalie = evt.User
+				}
+			}
+
+			// Assign game started event
+		case GameEventStart:
+			gameState.StartedAt = &evt.CreatedAt
+			gameState.Started = true
+
+			// Assign game ended event
+		case GameEventEnd:
+			gameState.EndedAt = &evt.CreatedAt
+			gameState.Ended = true
+		}
+	}
+
+	gameState.IsMatchPoint = gameState.BlueGoals == game.WinGoals-1 || gameState.RedGoals == game.WinGoals-1
+	gameState.GoalLimitReached = gameState.BlueGoals == game.WinGoals || gameState.RedGoals == game.WinGoals
+
+	if gameState.BlueGoals == game.WinGoals {
+		gameState.WinningTeam = GameTeamBlue
+	} else if gameState.RedGoals == game.WinGoals {
+		gameState.WinningTeam = GameTeamRed
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"id":        id,
+		"game":      game,
+		"gameState": gameState,
+	})
+}
+
 // MarkGoal records a single goal for a given team
 func MarkGoal(c *gin.Context) {
 	gameID := c.Param("id")

@@ -39,8 +39,6 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(user)
-
 	winrate := (float64(user.GamesWon) / float64(user.GamesPlayed)) * 100
 	redPercent := (float64(user.GamesPlayedRed) / float64(user.GamesPlayed)) * 100
 	bluePercent := (float64(user.GamesPlayedBlue) / float64(user.GamesPlayed)) * 100
