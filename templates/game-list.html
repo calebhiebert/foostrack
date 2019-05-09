@@ -78,4 +78,16 @@
 
   {{ end }}
 </div>
+
+<!-- Pagination -->
+<nav class="pagination" role="navigation" aria-label="pagination">
+  <ul class="pagination-list">
+    <!-- {{ range .totalPages }} -->
+    <li>
+      <a href="?page={{ . }}" class="pagination-link{{ if eq . $.page }} is-current{{ end }}">{{ . }}</a>
+    </li>
+    <!-- {{ end }} -->
+  </ul>
+</nav>
+
 {{ end }}

@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
-	prettyTime "github.com/andanhm/go-prettytime"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
@@ -47,23 +45,6 @@ type GameEvent struct {
 	EventType string
 	Team      string
 	Position  string
-}
-
-// CurrentGameState represents the current state of a single game
-type CurrentGameState struct {
-	Game             Game
-	BlueGoalie       User
-	BlueForward      User
-	RedGoalie        User
-	RedForward       User
-	Started          bool
-	StartedAt        *time.Time
-	EndedAt          *time.Time
-	Ended            bool
-	BlueGoals        int
-	RedGoals         int
-	IsMatchPoint     bool
-	GoalLimitReached bool
 }
 
 // GetGame renders the game view page
@@ -154,6 +135,12 @@ func GetGame(c *gin.Context) {
 
 	gameState.IsMatchPoint = gameState.BlueGoals == game.WinGoals-1 || gameState.RedGoals == game.WinGoals-1
 	gameState.GoalLimitReached = gameState.BlueGoals == game.WinGoals || gameState.RedGoals == game.WinGoals
+
+	if gameState.BlueGoals == game.WinGoals {
+		gameState.WinningTeam = GameTeamBlue
+	} else if gameState.RedGoals == game.WinGoals {
+		gameState.WinningTeam = GameTeamRed
+	}
 
 	SendHTML(http.StatusOK, c, "game", gin.H{
 		"id":        id,
@@ -267,105 +254,4 @@ func MarkEnded(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
-}
-
-// ListGames lists out a page with all games
-func ListGames(c *gin.Context) {
-
-	var games []*GameInfo
-
-	if err := dbase.Raw(`
-		SELECT g.*, (SELECT COUNT(id) 
-									FROM game_events 
-										WHERE game_id = g.id 
-											AND event_type = 'goal' 
-											AND team = 'blue') AS bluegoals, 
-							(SELECT COUNT(id) 
-									FROM game_events 
-									WHERE game_id = g.id 
-											AND event_type = 'goal' 
-											AND team = 'red') AS redgoals,
-							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
-							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time
-		FROM games AS g
-		ORDER BY created_at DESC
-	`).Scan(&games).Error; err != nil {
-		SendError(http.StatusInternalServerError, c, err)
-		return
-	}
-
-	gameIds := make([]uint, 0)
-
-	for _, game := range games {
-		gameIds = append(gameIds, game.ID)
-	}
-
-	var currentPositions []GameEvent
-
-	if err := dbase.Raw(`SELECT *
-  										   FROM current_positions
-												 WHERE game_id IN (?);`, gameIds).
-		Scan(&currentPositions).Error; err != nil {
-		SendError(http.StatusInternalServerError, c, err)
-		return
-	}
-
-	userIds := make([]string, 0)
-
-	for _, pos := range currentPositions {
-		userIds = append(userIds, *pos.UserID)
-	}
-
-	var users []User
-
-	if err := dbase.Raw(`SELECT * FROM users WHERE id IN (?)`, userIds).
-		Scan(&users).Error; err != nil {
-		SendError(http.StatusInternalServerError, c, err)
-		return
-	}
-
-	userMap := make(map[string]User)
-
-	for _, usr := range users {
-		userMap[usr.ID] = usr
-	}
-
-	for _, gi := range games {
-		gi.Started = gi.StartTime != nil
-		gi.Ended = gi.EndTime != nil
-
-		for _, pos := range currentPositions {
-			if pos.GameID == gi.ID {
-				switch pos.Team {
-
-				// Blue Team
-				case GameTeamBlue:
-					switch pos.Position {
-					// Forward
-					case GamePositionForward:
-						gi.BlueForward = userMap[*pos.UserID]
-
-						// Goalie
-					case GamePositionGoalie:
-						gi.BlueGoalie = userMap[*pos.UserID]
-					}
-				case GameTeamRed:
-					switch pos.Position {
-					// Forward
-					case GamePositionForward:
-						gi.RedForward = userMap[*pos.UserID]
-
-						// Goalie
-					case GamePositionGoalie:
-						gi.RedGoalie = userMap[*pos.UserID]
-					}
-				}
-			}
-		}
-	}
-
-	SendHTML(http.StatusOK, c, "games", gin.H{
-		"games":      games,
-		"formatTime": prettyTime.Format,
-	})
 }

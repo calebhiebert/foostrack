@@ -26,6 +26,28 @@ type GameInfo struct {
 	RedForward  User
 }
 
+// CurrentGameState represents the current state of a single game
+type CurrentGameState struct {
+	Game             Game
+	BlueGoalie       User
+	BlueForward      User
+	RedGoalie        User
+	RedForward       User
+	Started          bool
+	StartedAt        *time.Time
+	EndedAt          *time.Time
+	Ended            bool
+	BlueGoals        int
+	RedGoals         int
+	IsMatchPoint     bool
+	GoalLimitReached bool
+	WinningTeam      string
+}
+
+type Count struct {
+	Count int `gorm:"column:count"`
+}
+
 func SendHTML(statusCode int, c *gin.Context, page string, data gin.H) {
 
 	if data == nil {
