@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS "users" CASCADE;
+DROP TABLE IF EXISTS "users";
 CREATE TABLE "public"."users" (
     "id" character varying(40) NOT NULL,
     "username" character varying(120) NOT NULL,
@@ -12,31 +12,34 @@ INSERT INTO "users" ("id", "username", "picture_url") VALUES
 ('google-oauth2|102599553624957550860',	'Blair Petrachek',	'https://lh3.googleusercontent.com/-BLOtQxYfkdY/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rff_783KuorhgHGtTjgj0Fws5nvKg/mo/photo.jpg'),
 ('google-oauth2|104779678197555140626',	'Taylor Ferens',	'https://lh6.googleusercontent.com/-gA6a4YhNV2M/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rfGW7P6K6aRFLm-t8u8ndDEP9gJaA/mo/photo.jpg'),
 ('google-oauth2|113852563919427945809',	'Daniel Burch',	'https://lh4.googleusercontent.com/-v66EH661Xn4/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3reOflfzqSYoK6MuMS-D88lq2LMEIw/mo/photo.jpg'),
-('google-oauth2|110102241294111780887',	'Shannon Maksymowicz',	'https://lh6.googleusercontent.com/-JQ83GcVRqlM/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcVCfYW4xnA4zpRijJ0o6w9AlSsTA/mo/photo.jpg');
+('google-oauth2|110102241294111780887',	'Shannon Maksymowicz',	'https://lh6.googleusercontent.com/-JQ83GcVRqlM/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rcVCfYW4xnA4zpRijJ0o6w9AlSsTA/mo/photo.jpg'),
+('google-oauth2|103670148944902436839',	'Daniel Burch',	'https://lh4.googleusercontent.com/-2dil_pTSrmY/AAAAAAAAAAI/AAAAAAAAAAA/ACHi3rdHkxUaKAwlKUfMX6-eogDvHIrX_A/mo/photo.jpg'),
+('google-oauth2|113183594797538665888',	'Troy Astrope',	'https://lh3.googleusercontent.com/-KE_s1YBM_OA/AAAAAAAAAAI/AAAAAAAAAX4/DoV6CxfyAbo/photo.jpg');
 
-DROP TABLE IF EXISTS "games" CASCADE;
+DROP TABLE IF EXISTS "games";
 DROP SEQUENCE IF EXISTS games_id_seq;
 CREATE SEQUENCE games_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 6 CACHE 1;
 
 CREATE TABLE "public"."games" (
     "id" integer DEFAULT nextval('games_id_seq') NOT NULL,
-    "win_goals" integer DEFAULT '10' NOT NULL,
     "created_at" timestamptz,
     "updated_at" timestamptz,
     "deleted_at" timestamptz,
+    "win_goals" integer DEFAULT '10' NOT NULL,
     CONSTRAINT "games_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-INSERT INTO "games" ("id", "win_goals", "created_at", "updated_at", "deleted_at") VALUES
-(1,	10,	'2019-05-08 16:45:35.729355+00',	'2019-05-08 16:45:35.729355+00',	NULL),
-(2,	10,	'2019-05-08 16:52:20.019841+00',	'2019-05-08 16:52:20.019841+00',	NULL),
-(3,	10,	'2019-05-08 17:02:47.782566+00',	'2019-05-08 17:02:47.782566+00',	NULL),
-(4,	10,	'2019-05-09 14:23:03.051251+00',	'2019-05-09 14:23:03.051251+00',	NULL),
-(5,	10,	'2019-05-09 14:29:21.4715+00',	'2019-05-09 14:29:21.4715+00',	NULL);
+INSERT INTO "games" ("id", "created_at", "updated_at", "deleted_at", "win_goals") VALUES
+(1,	'2019-05-08 16:45:35.729355+00',	'2019-05-08 16:45:35.729355+00',	NULL,	10),
+(2,	'2019-05-08 16:52:20.019841+00',	'2019-05-08 16:52:20.019841+00',	NULL,	10),
+(3,	'2019-05-08 17:02:47.782566+00',	'2019-05-08 17:02:47.782566+00',	NULL,	10),
+(4,	'2019-05-09 14:23:03.051251+00',	'2019-05-09 14:23:03.051251+00',	NULL,	10),
+(5,	'2019-05-09 14:29:21.4715+00',	'2019-05-09 14:29:21.4715+00',	NULL,	10),
+(6,	'2019-05-09 19:59:07.006217+00',	'2019-05-09 19:59:07.006217+00',	NULL,	10);
 
-DROP TABLE IF EXISTS "game_events" CASCADE;
+DROP TABLE IF EXISTS "game_events";
 DROP SEQUENCE IF EXISTS game_events_id_seq;
-CREATE SEQUENCE game_events_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 107 CACHE 1;
+CREATE SEQUENCE game_events_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 START 134 CACHE 1;
 
 CREATE TABLE "public"."game_events" (
     "id" integer DEFAULT nextval('game_events_id_seq') NOT NULL,
@@ -127,6 +130,7 @@ INSERT INTO "game_events" ("id", "game_id", "user_id", "event_type", "team", "po
 (71,	4,	'google-oauth2|104779678197555140626',	'goal',	'blue',	'forward',	'2019-05-09 14:24:17.117365+00',	'2019-05-09 14:24:17.117365+00',	NULL),
 (72,	4,	'google-oauth2|104779678197555140626',	'goal',	'blue',	'forward',	'2019-05-09 14:24:28.892702+00',	'2019-05-09 14:24:28.892702+00',	NULL),
 (73,	4,	'google-oauth2|104779678197555140626',	'goal',	'blue',	'forward',	'2019-05-09 14:24:36.072538+00',	'2019-05-09 14:24:36.072538+00',	NULL),
+(134,	6,	NULL,	'end',	'',	'',	'2019-05-10 12:53:41.058435+00',	'2019-05-10 12:53:41.058435+00',	NULL),
 (74,	4,	'google-oauth2|113852563919427945809',	'goal',	'red',	'forward',	'2019-05-09 14:25:01.733647+00',	'2019-05-09 14:25:01.733647+00',	NULL),
 (75,	4,	'google-oauth2|106965438089681476584',	'goal',	'blue',	'goalie',	'2019-05-09 14:25:25.831558+00',	'2019-05-09 14:25:25.831558+00',	NULL),
 (76,	4,	'google-oauth2|104779678197555140626',	'goal',	'blue',	'forward',	'2019-05-09 14:25:43.182013+00',	'2019-05-09 14:25:43.182013+00',	NULL),
@@ -160,4 +164,30 @@ INSERT INTO "game_events" ("id", "game_id", "user_id", "event_type", "team", "po
 (104,	5,	'google-oauth2|113852563919427945809',	'goal',	'blue',	'goalie',	'2019-05-09 14:37:26.036501+00',	'2019-05-09 14:37:26.036501+00',	NULL),
 (105,	5,	'google-oauth2|104779678197555140626',	'goal',	'red',	'goalie',	'2019-05-09 14:37:52.409936+00',	'2019-05-09 14:37:52.409936+00',	NULL),
 (106,	5,	'google-oauth2|104779678197555140626',	'goal',	'red',	'goalie',	'2019-05-09 14:38:08.258271+00',	'2019-05-09 14:38:08.258271+00',	NULL),
-(107,	5,	NULL,	'end',	'',	'',	'2019-05-09 14:38:13.045933+00',	'2019-05-09 14:38:13.045933+00',	NULL);
+(107,	5,	NULL,	'end',	'',	'',	'2019-05-09 14:38:13.045933+00',	'2019-05-09 14:38:13.045933+00',	NULL),
+(108,	6,	'google-oauth2|113852563919427945809',	'ptp',	'blue',	'goalie',	'2019-05-09 19:59:07.025898+00',	'2019-05-09 19:59:07.025898+00',	NULL),
+(109,	6,	'google-oauth2|110102241294111780887',	'ptp',	'blue',	'forward',	'2019-05-09 19:59:07.034489+00',	'2019-05-09 19:59:07.034489+00',	NULL),
+(110,	6,	'google-oauth2|113183594797538665888',	'ptp',	'red',	'goalie',	'2019-05-09 19:59:07.036431+00',	'2019-05-09 19:59:07.036431+00',	NULL),
+(111,	6,	'google-oauth2|113852563919427945809',	'ptp',	'red',	'forward',	'2019-05-09 19:59:07.038073+00',	'2019-05-09 19:59:07.038073+00',	NULL),
+(112,	6,	NULL,	'start',	'',	'',	'2019-05-09 19:59:08.57201+00',	'2019-05-09 19:59:08.57201+00',	NULL),
+(113,	6,	NULL,	'dead',	'',	'',	'2019-05-09 19:59:23.468054+00',	'2019-05-09 19:59:23.468054+00',	NULL),
+(114,	6,	NULL,	'oob',	'',	'',	'2019-05-09 19:59:25.077419+00',	'2019-05-09 19:59:25.077419+00',	NULL),
+(115,	6,	NULL,	'dead',	'',	'',	'2019-05-09 19:59:26.179802+00',	'2019-05-09 19:59:26.179802+00',	NULL),
+(116,	6,	NULL,	'dead',	'',	'',	'2019-05-09 19:59:26.72519+00',	'2019-05-09 19:59:26.72519+00',	NULL),
+(117,	6,	'google-oauth2|113852563919427945809',	'goal',	'red',	'forward',	'2019-05-09 19:59:29.560574+00',	'2019-05-09 19:59:29.560574+00',	NULL),
+(118,	6,	'google-oauth2|113852563919427945809',	'goal',	'blue',	'goalie',	'2019-05-09 19:59:30.979304+00',	'2019-05-09 19:59:30.979304+00',	NULL),
+(119,	6,	'google-oauth2|110102241294111780887',	'goal',	'blue',	'forward',	'2019-05-09 19:59:33.924588+00',	'2019-05-09 19:59:33.924588+00',	NULL),
+(120,	6,	'google-oauth2|113852563919427945809',	'goal',	'blue',	'goalie',	'2019-05-09 19:59:34.853441+00',	'2019-05-09 19:59:34.853441+00',	NULL),
+(121,	6,	'google-oauth2|113183594797538665888',	'goal',	'red',	'goalie',	'2019-05-09 19:59:35.722593+00',	'2019-05-09 19:59:35.722593+00',	NULL),
+(122,	6,	'google-oauth2|113183594797538665888',	'goal',	'red',	'goalie',	'2019-05-09 19:59:36.312462+00',	'2019-05-09 19:59:36.312462+00',	NULL),
+(123,	6,	'google-oauth2|110102241294111780887',	'goal',	'blue',	'forward',	'2019-05-09 19:59:36.930468+00',	'2019-05-09 19:59:36.930468+00',	NULL),
+(124,	6,	'google-oauth2|113852563919427945809',	'goal',	'blue',	'goalie',	'2019-05-09 19:59:37.521028+00',	'2019-05-09 19:59:37.521028+00',	NULL),
+(125,	6,	'google-oauth2|113852563919427945809',	'goal',	'red',	'forward',	'2019-05-09 19:59:38.434502+00',	'2019-05-09 19:59:38.434502+00',	NULL),
+(126,	6,	'google-oauth2|110102241294111780887',	'goal',	'blue',	'forward',	'2019-05-09 19:59:39.09391+00',	'2019-05-09 19:59:39.09391+00',	NULL),
+(127,	6,	'google-oauth2|113852563919427945809',	'goal',	'blue',	'goalie',	'2019-05-09 19:59:39.788127+00',	'2019-05-09 19:59:39.788127+00',	NULL),
+(128,	6,	'google-oauth2|113852563919427945809',	'goal',	'red',	'forward',	'2019-05-09 19:59:40.364164+00',	'2019-05-09 19:59:40.364164+00',	NULL),
+(129,	6,	'google-oauth2|113852563919427945809',	'goal',	'red',	'forward',	'2019-05-09 19:59:40.918802+00',	'2019-05-09 19:59:40.918802+00',	NULL),
+(130,	6,	'google-oauth2|110102241294111780887',	'goal',	'blue',	'forward',	'2019-05-09 19:59:41.90734+00',	'2019-05-09 19:59:41.90734+00',	NULL),
+(131,	6,	'google-oauth2|110102241294111780887',	'goal',	'blue',	'forward',	'2019-05-09 19:59:42.455078+00',	'2019-05-09 19:59:42.455078+00',	NULL),
+(132,	6,	'google-oauth2|113183594797538665888',	'goal',	'red',	'goalie',	'2019-05-09 19:59:42.976766+00',	'2019-05-09 19:59:42.976766+00',	NULL),
+(133,	6,	'google-oauth2|113852563919427945809',	'goal',	'blue',	'goalie',	'2019-05-09 19:59:44.459685+00',	'2019-05-09 19:59:44.459685+00',	NULL);

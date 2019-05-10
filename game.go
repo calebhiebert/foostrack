@@ -72,7 +72,7 @@ func GetGame(c *gin.Context) {
 	// Select Event List
 	var events []GameEvent
 
-	if err := dbase.Preload("User").Find(&events, "game_id = ?", game.ID).Order("created_at ASC").Error; err != nil {
+	if err := dbase.Preload("User").Order("created_at").Find(&events, "game_id = ?", game.ID).Error; err != nil {
 		panic(err)
 	}
 
