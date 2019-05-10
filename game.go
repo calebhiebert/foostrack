@@ -1,5 +1,10 @@
 package main
 
+/*
+	This page contains gin handlers for single-game related things
+	For specific game event handlers, see game-events.go
+*/
+
 import (
 	"net/http"
 	"time"
@@ -7,49 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 )
-
-// GameEvent constants
-const (
-	GameEventStart              = "start"
-	GameEventEnd                = "end"
-	GameEventPlayerTakePosition = "ptp"
-	GameEventGoal               = "goal"
-	GameEventAntiGoal           = "antigoal"
-	GameEventDeadBall           = "dead"
-	GameEventOutOfBounds        = "oob"
-)
-
-// Game team constants
-const (
-	GameTeamRed  = "red"
-	GameTeamBlue = "blue"
-)
-
-// Game positions
-const (
-	GamePositionForward = "forward"
-	GamePositionGoalie  = "goalie"
-)
-
-// Game represents the game table
-type Game struct {
-	gorm.Model
-	Events   []GameEvent `gorm:"foreignkey:GameID"`
-	WinGoals int         `gorm:"column:win_goals"`
-}
-
-// GameEvent represents the game events table
-type GameEvent struct {
-	gorm.Model
-	GameID    uint `gorm:"not null"`
-	Game      Game `gorm:"association_foreignkey:GameID;"`
-	UserID    *string
-	User      User `gorm:"association_foreignkey:UserID;foreignkey:ID"`
-	EventType string
-	Team      string
-	Position  string
-	Elapsed   time.Duration `gorm:"-"`
-}
 
 // GetGame renders the game view page
 func GetGame(c *gin.Context) {
@@ -176,6 +138,7 @@ func GetGame(c *gin.Context) {
 	})
 }
 
+// GetGameEventCount returns a json object containing the number of events in a given game
 func GetGameEventCount(c *gin.Context) {
 	id := c.Param("id")
 

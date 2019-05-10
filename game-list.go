@@ -1,5 +1,9 @@
 package main
 
+/*
+	This file contains the gin handler for rendering the games list page
+*/
+
 import (
 	"math"
 	"net/http"
@@ -26,7 +30,7 @@ func ListGames(c *gin.Context) {
 
 	currentPage := offset / limit
 
-	var games []*GameInfo
+	var games []*GameExtended
 
 	if err := dbase.Raw(`
 		SELECT *

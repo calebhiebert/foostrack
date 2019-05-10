@@ -17,8 +17,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Database object, use this to make queries
 var dbase *gorm.DB
+
+// Files box, this contains templates/sql files
 var files *packr.Box
+
+// Assets box, this contains images, css, js to be served statically
 var assets *packr.Box
 
 func main() {

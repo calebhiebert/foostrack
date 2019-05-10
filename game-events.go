@@ -1,5 +1,16 @@
 package main
 
+/*
+	This file contains the gin handlers for events that occur during a game
+	- Goal
+	- AntiGoal
+	- Game Started
+	- Game Ended
+	- Dead Ball
+	- Out of Bounds
+	- Position Swap
+*/
+
 import (
 	"fmt"
 	"net/http"
@@ -220,6 +231,7 @@ func MarkOutOfBounds(c *gin.Context) {
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
 }
 
+// MarkSwap swaps the positions of two players on a single team
 func MarkSwap(c *gin.Context) {
 	gameID := c.Param("id")
 	team := c.PostForm("team")

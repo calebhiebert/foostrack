@@ -7,7 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetStartGame returns the form that should be filled out to start a game
+/*
+	This file contains gin handlers related to creating a new game
+	TODO add some error handling when creating a new game
+*/
+
+// GetStartGame renders the form that should be filled out to start a game
 func GetStartGame(c *gin.Context) {
 	if !EnsureLoggedIn(c) {
 		return

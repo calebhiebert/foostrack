@@ -1,5 +1,11 @@
 package main
 
+/*
+	This file contains the gin handlers for the index page
+	There is a lot of duplicated code between this and game-list.go
+	TODO re-use game list fetching code
+*/
+
 import (
 	"net/http"
 
@@ -9,7 +15,7 @@ import (
 
 // GetIndex renders the index page
 func GetIndex(c *gin.Context) {
-	var games []*GameInfo
+	var games []*GameExtended
 
 	if err := dbase.Raw(`
 		SELECT *
@@ -32,8 +38,8 @@ func GetIndex(c *gin.Context) {
 	var currentPositions []GameEvent
 
 	if err := dbase.Raw(`SELECT *
-  										   FROM current_positions
-												 WHERE game_id IN (?);`, gameIds).
+							FROM current_positions
+							WHERE game_id IN (?);`, gameIds).
 		Scan(&currentPositions).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
