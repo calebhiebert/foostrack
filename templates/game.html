@@ -1,4 +1,5 @@
 {{ define "content" }}
+
 <h1 class="title is-1 text-center">Game {{ .id }}</h1>
 
 <!-- If the game has started -->
@@ -28,33 +29,97 @@
 
   <!-- Blue Team -->
   <!-- Forward -->
-  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
-    <input type="hidden" name="team" value="blue">
-    <input type="hidden" name="position" value="forward">
-    <button type="submit" class="button is-info is-fullwidth">{{ .gameState.BlueForward.Username }}</button>
-  </form>
+  <div class="column is-half-tablet">
+    <div class="columns is-mobile is-gapless">
+
+      <!-- Standard Goal -->
+      <form class="column" action="/game/{{ .id }}/goal" method="POST">
+        <input type="hidden" name="team" value="blue">
+        <input type="hidden" name="position" value="forward">
+        <button type="submit" class="button is-info is-fullwidth">{{ .gameState.BlueForward.Username }}</button>
+      </form>
+
+      <form action="/game/{{ .id }}/antigoal" method="POST" class="column is-narrow"
+        style="padding-left: 0.5rem !important">
+        <input type="hidden" name="team" value="blue">
+        <input type="hidden" name="position" value="forward">
+        <button type="submit" class="button">
+          <span class="delete"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
 
   <!-- Goalie -->
-  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
-    <input type="hidden" name="team" value="blue">
-    <input type="hidden" name="position" value="goalie">
-    <button type="submit" class="button is-info is-outlined is-fullwidth">{{ .gameState.BlueGoalie.Username }}</button>
-  </form>
+  <div class="column is-half-tablet">
+    <div class="columns is-mobile is-gapless">
+
+      <!-- Standard Goal -->
+      <form class="column" action="/game/{{ .id }}/goal" method="POST">
+        <input type="hidden" name="team" value="blue">
+        <input type="hidden" name="position" value="goalie">
+        <button type="submit"
+          class="button is-info is-outlined is-fullwidth">{{ .gameState.BlueGoalie.Username }}</button>
+      </form>
+
+      <form action="/game/{{ .id }}/antigoal" method="POST" class="column is-narrow"
+        style="padding-left: 0.5rem !important">
+        <input type="hidden" name="team" value="blue">
+        <input type="hidden" name="position" value="goalie">
+        <button type="submit" class="button">
+          <span class="delete"></span>
+        </button>
+      </form>
+    </div>
+  </div>
 
   <!-- Red Team -->
   <!-- Forward -->
-  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
-    <input type="hidden" name="team" value="red">
-    <input type="hidden" name="position" value="forward">
-    <button type="submit" class="button is-danger is-fullwidth">{{ .gameState.RedForward.Username }}</button>
-  </form>
+  <div class="column is-half-tablet">
+    <div class="columns is-mobile is-gapless">
+
+      <!-- Standard Goal -->
+      <form class="column" action="/game/{{ .id }}/goal" method="POST">
+        <input type="hidden" name="team" value="red">
+        <input type="hidden" name="position" value="forward">
+        <button type="submit" class="button is-danger is-fullwidth">{{ .gameState.RedForward.Username }}</button>
+      </form>
+
+      <form action="/game/{{ .id }}/antigoal" method="POST" class="column is-narrow"
+        style="padding-left: 0.5rem !important">
+        <input type="hidden" name="team" value="red">
+        <input type="hidden" name="position" value="forward">
+        <button type="submit" class="button">
+          <span class="delete"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
 
   <!-- Goalie -->
-  <form class="column is-half-tablet" action="/game/{{ .id }}/goal" method="POST">
-    <input type="hidden" name="team" value="red">
-    <input type="hidden" name="position" value="goalie">
-    <button type="submit" class="button is-danger is-outlined is-fullwidth">{{ .gameState.RedGoalie.Username }}</button>
-  </form>
+  <div class="column is-half-tablet">
+    <div class="columns is-mobile is-gapless">
+
+      <!-- Standard Goal -->
+      <form class="column" action="/game/{{ .id }}/goal" method="POST">
+        <input type="hidden" name="team" value="red">
+        <input type="hidden" name="position" value="goalie">
+        <button type="submit"
+          class="button is-danger is-outlined is-fullwidth">{{ .gameState.RedGoalie.Username }}</button>
+      </form>
+
+      <form action="/game/{{ .id }}/antigoal" method="POST" class="column is-narrow"
+        style="padding-left: 0.5rem !important">
+        <input type="hidden" name="team" value="red">
+        <input type="hidden" name="position" value="goalie">
+        <button type="submit" class="button">
+          <span class="delete"></span>
+        </button>
+      </form>
+    </div>
+  </div>
 
   <!-- Dead Ball -->
   <form action="/game/{{ .id }}/deadball" class="column is-half-tablet" method="POST">
@@ -151,6 +216,16 @@
       <img src="/assets/soccer_ball_red.svg" alt="Red Team Scored">
       {{ end }}
     </div>
+
+    {{ else if eq .EventType "antigoal" }}
+    <div class="timeline-marker is-image is-32x32">
+      {{ if eq .Team "red" }}
+      <img src="/assets/soccer_ball_blue.svg" alt="Blue Team Scored">
+      {{ else if eq .Team "blue" }}
+      <img src="/assets/soccer_ball_red.svg" alt="Red Team Scored">
+      {{ end }}
+    </div>
+
     {{ else if eq .EventType "ptp" }}
     <div class="timeline-marker is-image is-32x32">
       <img src="/assets/enter.svg" alt="Joined">
@@ -174,6 +249,15 @@
       <!-- Goal -->
       {{ else if eq .EventType "goal" }}
       <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored</p>
+      <div class="is-flex align-items-center">
+        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
+        </figure>
+        <span>{{ .User.Username }}</span>
+      </div>
+
+      <!-- Anti-Goal -->
+      {{ else if eq .EventType "antigoal" }}
+      <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored On Themselves</p>
       <div class="is-flex align-items-center">
         <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
         </figure>

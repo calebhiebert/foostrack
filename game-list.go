@@ -29,19 +29,8 @@ func ListGames(c *gin.Context) {
 	var games []*GameInfo
 
 	if err := dbase.Raw(`
-		SELECT g.*, (SELECT COUNT(id) 
-									FROM game_events 
-										WHERE game_id = g.id 
-											AND event_type = 'goal' 
-											AND team = 'blue') AS bluegoals, 
-							(SELECT COUNT(id) 
-									FROM game_events 
-									WHERE game_id = g.id 
-											AND event_type = 'goal' 
-											AND team = 'red') AS redgoals,
-							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
-							(SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time
-		FROM games AS g
+		SELECT *
+		FROM game_extended AS g
 		ORDER BY created_at DESC
 		LIMIT ? OFFSET ?
 	`, limit, offset).Scan(&games).Error; err != nil {

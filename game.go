@@ -14,6 +14,7 @@ const (
 	GameEventEnd                = "end"
 	GameEventPlayerTakePosition = "ptp"
 	GameEventGoal               = "goal"
+	GameEventAntiGoal           = "antigoal"
 	GameEventDeadBall           = "dead"
 	GameEventOutOfBounds        = "oob"
 )
@@ -90,6 +91,17 @@ func GetGame(c *gin.Context) {
 				// Red Team
 			case GameTeamRed:
 				gameState.RedGoals++
+			}
+
+		case GameEventAntiGoal:
+			switch evt.Team {
+			// Blue Team
+			case GameTeamBlue:
+				gameState.RedGoals++
+
+				// Red Team
+			case GameTeamRed:
+				gameState.BlueGoals++
 			}
 
 			// Assign players to the correct positions on the team
@@ -205,7 +217,57 @@ func MarkGoal(c *gin.Context) {
 
 	event := GameEvent{
 		GameID:    game.ID,
-		EventType: GameEventGoal,
+		EventType: GameEventAntiGoal,
+		UserID:    &scoreUser.ID,
+		Team:      team,
+		Position:  position,
+	}
+
+	if err := dbase.Create(&event).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
+}
+
+// MarkAntiGoal records a single anti goal for a given team
+func MarkAntiGoal(c *gin.Context) {
+	gameID := c.Param("id")
+	team := c.Query("team")
+	position := c.Query("position")
+
+	if c.Request.Method == "POST" {
+		team = c.PostForm("team")
+		position = c.PostForm("position")
+	}
+
+	var game Game
+
+	if err := dbase.Preload("Events").First(&game, "id = ?", gameID).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	var scoreUser User
+
+	if err := dbase.Raw(`SELECT users.*
+						FROM game_events
+							JOIN users ON game_events.user_id = users.id
+						WHERE game_id = ?
+						AND game_events.id = (SELECT MAX(id) FROM game_events WHERE position = ? AND team = ?)`, game.ID, position, team).
+		Scan(&scoreUser).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	event := GameEvent{
+		GameID:    game.ID,
+		EventType: GameEventAntiGoal,
 		UserID:    &scoreUser.ID,
 		Team:      team,
 		Position:  position,

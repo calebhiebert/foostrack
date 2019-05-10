@@ -49,8 +49,14 @@ CREATE OR REPLACE VIEW current_positions AS
 
 CREATE OR REPLACE VIEW game_extended AS
   SELECT *, 
-      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'goal' AND team = 'blue') AS blue_goals,
-      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'goal' AND team = 'red') AS red_goals,
+      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id 
+        AND (
+          (event_type = 'goal' AND team = 'blue') OR (event_type = 'antigoal' AND team = 'red')
+          )) AS blue_goals,
+      (SELECT COUNT(id) FROM game_events WHERE game_id = g.id 
+        AND (
+          (event_type = 'goal' AND team = 'red') OR (event_type = 'antigoal' AND team = 'blue')
+        )) AS red_goals,
       (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'oob') AS oob,
       (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'dead') AS dead_balls,
       (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,

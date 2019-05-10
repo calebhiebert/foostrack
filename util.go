@@ -9,8 +9,8 @@ import (
 )
 
 type TeamGoals struct {
-	RedGoals  int `gorm:"column:redgoals"`
-	BlueGoals int `gorm:"column:bluegoals"`
+	RedGoals  int `gorm:"column:red_goals"`
+	BlueGoals int `gorm:"column:blue_goals"`
 }
 
 type GameInfo struct {

@@ -91,6 +91,7 @@ func main() {
 	api.GET("/games/:id/eventcount", GetGameEventCount)
 	r.GET("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/goal", MarkGoal)
+	r.POST("/game/:id/antigoal", MarkAntiGoal)
 	r.POST("/game/:id/start", MarkStarted)
 	r.POST("/game/:id/end", MarkEnded)
 	r.POST("/game/:id/deadball", MarkDeadBall)
