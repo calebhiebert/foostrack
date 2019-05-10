@@ -50,6 +50,7 @@ type UserWithStats struct {
 	AverageGoalsPerGame float64 `gorm:"column:avg_goals_per_game"`
 	GamesPlayedRed      int     `gorm:"column:games_played_red"`
 	GamesPlayedBlue     int     `gorm:"column:games_played_blue"`
+	AntiGoals           int     `gorm:"column:antigoals"`
 }
 
 type Count struct {

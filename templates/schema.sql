@@ -91,6 +91,11 @@ SELECT u.*,
                                      WHERE g.user_id = u.id
                                      GROUP BY g.game_id) a) AS avg_goals_per_game,
 
+                          (SELECT COUNT(id)
+                                     FROM game_events g
+                                     WHERE g.user_id = u.id
+                                       AND g.event_type = 'antigoal') AS antigoals,
+
                           (SELECT COUNT(g.id)
                              FROM game_extended g
                                JOIN current_positions cp ON g.id = cp.game_id
