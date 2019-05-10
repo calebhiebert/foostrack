@@ -22,12 +22,24 @@ var files *packr.Box
 var assets *packr.Box
 
 func main() {
+
+	// Load environment variables from a .env file
+	// https://github.com/joho/godotenv
 	godotenv.Load()
+
+	// Create file boxes. This makes sure static assets are included in the compiled binary
+	// https://github.com/gobuffalo/packr (this program uses v2 of this library)
 	files = packr.New("Box", "./templates")
 	assets = packr.New("Assets", "./templates/assets")
+
+	// Initialize the database. Using https://gorm.io/
 	initDB()
 
+	// Create the default gin router
+	// https://github.com/gin-gonic/gin
 	r := gin.Default()
+
+	// Create additional routes
 	assetRoute := r.Group("/assets")
 	api := r.Group("/api")
 
@@ -35,47 +47,24 @@ func main() {
 
 	// Sessions
 	store := cookie.NewStore([]byte("secret"))
+
+	// Add the session middleware
 	r.Use(sessions.Sessions("session", store))
 
+	// Add a Cache-Control header to all static assets
 	assetRoute.Use(func(c *gin.Context) {
 		c.Header("Cache-Control", "max-age=86400")
-
 		c.Next()
 	})
+
+	// Serve static assets from the templates/assets folder
 	assetRoute.StaticFS("/", assets)
 
-	r.Use(func(c *gin.Context) {
-		session := sessions.Default(c)
+	r.Use(AuthMiddleware)
 
-		general := make(map[string]string)
-
-		id := session.Get("id")
-
-		if id != nil && id.(string) != "" {
-			var user User
-
-			if err := dbase.First(&user, "id = ?", id).Error; err != nil {
-				if gorm.IsRecordNotFoundError(err) {
-					general["isloggedin"] = "false"
-				} else {
-					SendError(http.StatusInternalServerError, c, err)
-					return
-				}
-			} else {
-				general["isloggedin"] = "true"
-				general["username"] = user.Username
-				general["picture_url"] = user.PictureURL
-				general["user_id"] = user.ID
-			}
-		} else {
-			general["isloggedin"] = "false"
-		}
-
-		c.Set("general", general)
-		session.Save()
-
-		c.Next()
-	})
+	// *****************************
+	// * Define Application Routes *
+	// *****************************
 
 	r.GET("/index", GetIndex)
 
@@ -100,13 +89,15 @@ func main() {
 
 	r.GET("/user/:id", GetUser)
 
-	// Catch all other routes and redirect to index
+	// Fallback route, if the request does not match any of the above routes
+	// the user will be redirected to the index page
 	r.Use(func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/index")
 	})
 
 	port := 8080
 
+	// Check the PORT environment variable and use it if present
 	if os.Getenv("PORT") != "" {
 		parsedPort, err := strconv.Atoi(os.Getenv("PORT"))
 		if err == nil {
@@ -114,9 +105,12 @@ func main() {
 		}
 	}
 
+	// Start the gin server
 	r.Run(fmt.Sprintf(":%d", port))
 }
 
+// Defines all possible template pages, and the files that make them up
+// https://github.com/gin-contrib/multitemplate
 func createRenderer() multitemplate.Renderer {
 	r := multitemplate.NewRenderer()
 	addTemplate(r, "index", "base.html", "index.html")
@@ -130,6 +124,8 @@ func createRenderer() multitemplate.Renderer {
 	return r
 }
 
+// Compiles multiple files into a single template
+// https://github.com/gin-contrib/multitemplate
 func addTemplate(r multitemplate.Renderer, name string, filename ...string) {
 	tmpl := template.New(name)
 
@@ -148,6 +144,9 @@ func addTemplate(r multitemplate.Renderer, name string, filename ...string) {
 	r.Add(name, tmpl)
 }
 
+// Starts a connection to the database and executes the schema.sql file
+// Any migrations, etc... should go in that file
+// TODO: move migrations into their own sql script
 func initDB() {
 	db, err := gorm.Open("postgres", os.Getenv("CONNECTION_STRING"))
 	if err != nil {

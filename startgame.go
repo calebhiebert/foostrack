@@ -35,7 +35,11 @@ func PostStartGame(c *gin.Context) {
 		WinGoals: 10,
 	}
 
-	if err := dbase.Create(&game).Error; err != nil {
+	// Create database events
+	tx := dbase.Begin()
+
+	if err := tx.Create(&game).Error; err != nil {
+		tx.Rollback()
 		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
@@ -76,9 +80,6 @@ func PostStartGame(c *gin.Context) {
 		Team:      GameTeamRed,
 		Position:  GamePositionForward,
 	}
-
-	// Create database events
-	tx := dbase.Begin()
 
 	if err := tx.Create(&blueGoalieEvent).Error; err != nil {
 		tx.Rollback()
