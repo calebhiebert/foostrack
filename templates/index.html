@@ -2,7 +2,7 @@
 
 <!-- Active Games -->
 {{ if .hasActiveGames }}
-<h3 class="title is-3">Active Games</h3>
+<h3 class="title is-3 is-unselectable">Active Games</h3>
 <div class="columns is-multiline">
   {{ range.games }}
   <div class="column is-half">
@@ -83,11 +83,11 @@
 <!-- if no active games -->
 {{ else }}
 
-<div class="text-center">
+<div class="text-center is-unselectable">
   <h3 class="title is-3">Nobody is playing right now</h3>
   <a href="/startgame" class="button mb is-large">Start Game</a>
 </div>
-<img src="/assets/goal.svg" style="opacity: 0.5">
+<img src="/assets/goal.svg" draggable="false" style="opacity: 0.5">
 <!-- end active games -->
 {{ end }}
 
