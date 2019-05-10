@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -51,6 +53,7 @@ type UserWithStats struct {
 	GamesPlayedRed      int     `gorm:"column:games_played_red"`
 	GamesPlayedBlue     int     `gorm:"column:games_played_blue"`
 	AntiGoals           int     `gorm:"column:antigoals"`
+	Goals               int     `gorm:"column:goals"`
 }
 
 type Count struct {
@@ -87,4 +90,27 @@ func EnsureLoggedIn(c *gin.Context) bool {
 	}
 
 	return true
+}
+
+func PrettyDuration(duration time.Duration) string {
+	seconds := duration.Seconds()
+
+	remainingSeconds := int64(seconds) % 60
+	remainingMinutes := (int64(seconds) - remainingSeconds) / 60
+
+	if remainingMinutes > 0 {
+		return fmt.Sprintf("%d min %d sec", remainingMinutes, remainingSeconds)
+	} else {
+		return fmt.Sprintf("%d sec", remainingSeconds)
+	}
+}
+
+func ExtractFirstName(name string) string {
+	nameParts := strings.Split(name, " ")
+
+	if len(nameParts) > 0 {
+		return nameParts[0]
+	}
+
+	return ""
 }

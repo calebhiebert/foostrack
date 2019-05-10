@@ -51,5 +51,6 @@ func GetUser(c *gin.Context) {
 		"blue_games_percent": fmt.Sprintf("%.0f", bluePercent),
 		"avg_goals_per_game": fmt.Sprintf("%.1f", user.AverageGoalsPerGame),
 		"antigoals":          user.AntiGoals,
+		"goals":              user.Goals,
 	})
 }

@@ -101,5 +101,10 @@ SELECT u.*,
                                JOIN current_positions cp ON g.id = cp.game_id
                              WHERE cp.user_id = u.id
                                AND ((cp.team = 'blue' AND g.win_goals = g.blue_goals)
-                               OR (cp.team = 'red' AND g.win_goals = g.red_goals))) AS games_won
+                               OR (cp.team = 'red' AND g.win_goals = g.red_goals))) AS games_won,
+
+                          (SELECT COUNT(id)
+                                     FROM game_events g
+                                     WHERE g.user_id = u.id
+                                       AND g.event_type = 'goal') AS goals
   FROM users u;

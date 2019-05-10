@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -48,6 +49,7 @@ type GameEvent struct {
 	EventType string
 	Team      string
 	Position  string
+	Elapsed   time.Duration `gorm:"-"`
 }
 
 // GetGame renders the game view page
@@ -70,14 +72,22 @@ func GetGame(c *gin.Context) {
 	var gameState CurrentGameState
 
 	// Select Event List
-	var events []GameEvent
+	var events []*GameEvent
 
 	if err := dbase.Preload("User").Order("created_at").Find(&events, "game_id = ?", game.ID).Error; err != nil {
 		panic(err)
 	}
 
 	// Calculate current game state from events
-	for _, evt := range events {
+	for idx, evt := range events {
+
+		// Calculate duration since last event
+		if idx == 0 {
+			evt.Elapsed = time.Duration(0)
+		} else {
+			evt.Elapsed = evt.CreatedAt.Sub(events[idx-1].CreatedAt)
+		}
+
 		switch evt.EventType {
 
 		// Count goals
@@ -162,6 +172,8 @@ func GetGame(c *gin.Context) {
 		"gameState":  gameState,
 		"events":     events,
 		"eventCount": len(events),
+		"fmtdur":     PrettyDuration,
+		"exfname":    ExtractFirstName,
 	})
 }
 
