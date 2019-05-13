@@ -1,5 +1,13 @@
 {{ define "content" }}
 
+{{ range .errors }}
+<article class="message is-danger">
+    <div class="message-body">
+        {{ . }}
+    </div>
+</article>
+{{ end }}
+
 <form action="/team/create" method="POST">
     <nav class="level">
         <div class="level-left">
