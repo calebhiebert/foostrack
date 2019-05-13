@@ -41,7 +41,8 @@ type User struct {
 // Team represents the teams table
 type Team struct {
 	gorm.Model
-	Name string
+	Name      string
+	TeamUsers []TeamUser `gorm:"foreignkey:TeamID"`
 }
 
 // TeamUser represents the team_user table
