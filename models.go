@@ -37,3 +37,20 @@ type User struct {
 	PictureURL string
 	Events     []GameEvent `gorm:"foreignkey:UserID"`
 }
+
+// Team represents the teams table
+type Team struct {
+	gorm.Model
+	Name string
+}
+
+// TeamUser represents the team_user table
+type TeamUser struct {
+	TeamID    uint   `gorm:"primary_key"`
+	Team      Team   `gorm:"association_foreignkey:TeamID"`
+	UserID    string `gorm:"primary_key"`
+	User      User   `gorm:"association_foreignkey:UserID;foreignkey:ID"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time `sql:"index"`
+}

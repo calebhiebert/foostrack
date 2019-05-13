@@ -92,6 +92,10 @@ func main() {
 	r.POST("/game/:id/oob", MarkOutOfBounds)
 	r.POST("/game/:id/swap", MarkSwap)
 
+	r.GET("/teams", GetTeamList)
+	r.GET("/team/create", GetTeamForm)
+	r.POST("/team/create", PostCreateTeam)
+
 	r.GET("/user/:id", GetUser)
 
 	// Fallback route, if the request does not match any of the above routes
@@ -126,6 +130,8 @@ func createRenderer() multitemplate.Renderer {
 	addTemplate(r, "notfound", "base.html", "not-found.html")
 	addTemplate(r, "blocked", "base.html", "blocked.html")
 	addTemplate(r, "user", "base.html", "user.html")
+	addTemplate(r, "teamform", "base.html", "team-form.html")
+	addTemplate(r, "teamlist", "base.html", "team-list.html")
 	return r
 }
 
