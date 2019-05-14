@@ -168,131 +168,146 @@
 <!-- end If game not ended -->
 {{ end }}
 
-<!-- Timeline -->
-<h4 class="title is-4 mt text-center">History</h4>
-<div class="timeline is-centered">
-  <header class="timeline-header">
-    <span class="tag is-medium is-primary">Start</span>
-  </header>
-  {{ range.events }}
+<div class="columns is-multiline">
 
-  <!-- Game Start -->
-  {{ if eq .EventType "start" }}
-  <header class="timeline-header">
-    <span class="tag is-info">Game Start</span>
-  </header>
+  <!-- Timeline -->
+  <div class="column is-one-third">
+    <h4 class="title is-4 mt text-center">History</h4>
+    <div class="timeline">
+      <header class="timeline-header">
+        <span class="tag is-medium is-primary">Start</span>
+      </header>
+      {{ range.events }}
 
-  <!-- Game End -->
-  {{ else if eq .EventType "end" }}
-  <header class="timeline-header">
-    <span class="tag is-primary">Game End</span>
-  </header>
+      <!-- Game Start -->
+      {{ if eq .EventType "start" }}
+      <header class="timeline-header">
+        <span class="tag is-info">Game Start</span>
+      </header>
 
-  <!-- Out of Bounds -->
-  {{ else if eq .EventType "oob" }}
-  <div class="timeline-item">
-    <div class="timeline-marker is-primary">
-    </div>
-    <div class="timeline-content">
-      <p class="heading">Out of Bounds</p>
-      <p>+{{ call $.fmtdur .Elapsed }}</p>
-    </div>
-  </div>
-
-  <!-- Dead Ball -->
-  {{ else if eq .EventType "dead" }}
-  <div class="timeline-item">
-    <div class="timeline-marker is-primary"></div>
-    <div class="timeline-content">
-      <p class="heading">Dead Ball</p>
-      <p>+{{ call $.fmtdur .Elapsed }}</p>
-    </div>
-  </div>
-
-  <!-- Else if event type start -->
-  {{ else }}
-  <div class="timeline-item {{ if eq .Team "blue" }}is-info{{ else if eq .Team "red" }}is-danger{{ end }}"
-    style="padding-bottom: 0.5rem">
-
-    <!-- Define Timeline Markers -->
-
-    {{ if eq .EventType "goal" }}
-    <div class="timeline-marker is-image is-32x32">
-      {{ if eq .Team "blue" }}
-      <img src="/assets/soccer_ball_blue.svg" alt="Blue Team Scored">
-      {{ else if eq .Team "red" }}
-      <img src="/assets/soccer_ball_red.svg" alt="Red Team Scored">
-      {{ end }}
-    </div>
-
-    {{ else if eq .EventType "antigoal" }}
-    <div class="timeline-marker is-image is-32x32">
-      {{ if eq .Team "red" }}
-      <img src="/assets/soccer_ball_blue.svg" alt="Blue Team Scored">
-      {{ else if eq .Team "blue" }}
-      <img src="/assets/soccer_ball_red.svg" alt="Red Team Scored">
-      {{ end }}
-    </div>
-
-    {{ else if eq .EventType "ptp" }}
-    <div class="timeline-marker is-image is-32x32">
-      <img src="/assets/enter.svg" alt="Joined">
-    </div>
-    {{ else }}
-    <div class="timeline-marker is-primary"></div>
-    {{ end }}
-
-    <!-- Define Timeline Content -->
-    <div class="timeline-content">
-      <!-- Player Take Position -->
-      {{ if eq .EventType "ptp" }}
-      <p class="heading">
-        {{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }}
-        {{ if eq .Position "forward" }}Forward{{ else }}Goalie{{ end }} Joined
-      </p>
-      <div class="is-flex align-items-center">
-        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
-        </figure>
-        <span>{{ call $.exfname .User.Username }}</span>
-      </div>
-
-      <!-- Goal -->
-      {{ else if eq .EventType "goal" }}
-      <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored</p>
-      <div class="is-flex align-items-center">
-        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
-        </figure>
-        <span>{{ call $.exfname .User.Username }}</span>
-      </div>
-      <p>+{{ call $.fmtdur .Elapsed }}</p>
-
-      <!-- Anti-Goal -->
-      {{ else if eq .EventType "antigoal" }}
-      <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored On Themselves</p>
-      <div class="is-flex align-items-center">
-        <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
-        </figure>
-        <span>{{ call $.exfname .User.Username }}</span>
-      </div>
-      <p>+{{ call $.fmtdur .Elapsed }}</p>
-
-      <!-- Start -->
-      {{ else if eq .EventType "start" }}
-      <p class="heading">Game Started</p>
-
-      <!-- End -->
+      <!-- Game End -->
       {{ else if eq .EventType "end" }}
-      <p class="heading">Game Finished</p>
+      <header class="timeline-header">
+        <span class="tag is-primary">Game End</span>
+      </header>
+
+      <!-- Out of Bounds -->
+      {{ else if eq .EventType "oob" }}
+      <div class="timeline-item">
+        <div class="timeline-marker is-primary">
+        </div>
+        <div class="timeline-content">
+          <p class="heading">Out of Bounds</p>
+          <p>+{{ call $.fmtdur .Elapsed }}</p>
+        </div>
+      </div>
+
+      <!-- Dead Ball -->
+      {{ else if eq .EventType "dead" }}
+      <div class="timeline-item">
+        <div class="timeline-marker is-primary"></div>
+        <div class="timeline-content">
+          <p class="heading">Dead Ball</p>
+          <p>+{{ call $.fmtdur .Elapsed }}</p>
+        </div>
+      </div>
+
+      <!-- Else if event type start -->
+      {{ else }}
+      <div class="timeline-item {{ if eq .Team "blue" }}is-info{{ else if eq .Team "red" }}is-danger{{ end }}"
+        style="padding-bottom: 0.5rem">
+
+        <!-- Define Timeline Markers -->
+
+        {{ if eq .EventType "goal" }}
+        <div class="timeline-marker is-image is-32x32">
+          {{ if eq .Team "blue" }}
+          <img src="/assets/soccer_ball_blue.svg" alt="Blue Team Scored">
+          {{ else if eq .Team "red" }}
+          <img src="/assets/soccer_ball_red.svg" alt="Red Team Scored">
+          {{ end }}
+        </div>
+
+        {{ else if eq .EventType "antigoal" }}
+        <div class="timeline-marker is-image is-32x32">
+          {{ if eq .Team "red" }}
+          <img src="/assets/soccer_ball_blue.svg" alt="Blue Team Scored">
+          {{ else if eq .Team "blue" }}
+          <img src="/assets/soccer_ball_red.svg" alt="Red Team Scored">
+          {{ end }}
+        </div>
+
+        {{ else if eq .EventType "ptp" }}
+        <div class="timeline-marker is-image is-32x32">
+          <img src="/assets/enter.svg" alt="Joined">
+        </div>
+        {{ else }}
+        <div class="timeline-marker is-primary"></div>
+        {{ end }}
+
+        <!-- Define Timeline Content -->
+        <div class="timeline-content">
+          <!-- Player Take Position -->
+          {{ if eq .EventType "ptp" }}
+          <p class="heading">
+            {{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }}
+            {{ if eq .Position "forward" }}Forward{{ else }}Goalie{{ end }} Joined
+          </p>
+          <div class="is-flex align-items-center">
+            <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
+            </figure>
+            <span>{{ call $.exfname .User.Username }}</span>
+          </div>
+
+          <!-- Goal -->
+          {{ else if eq .EventType "goal" }}
+          <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored</p>
+          <div class="is-flex align-items-center">
+            <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
+            </figure>
+            <span>{{ call $.exfname .User.Username }}</span>
+          </div>
+          <p>+{{ call $.fmtdur .Elapsed }}</p>
+
+          <!-- Anti-Goal -->
+          {{ else if eq .EventType "antigoal" }}
+          <p class="heading">{{ if eq .Team "blue" }}Blue{{ else }}Red{{ end }} Team Scored On Themselves</p>
+          <div class="is-flex align-items-center">
+            <figure class="mr image is-16x16"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
+            </figure>
+            <span>{{ call $.exfname .User.Username }}</span>
+          </div>
+          <p>+{{ call $.fmtdur .Elapsed }}</p>
+
+          <!-- Start -->
+          {{ else if eq .EventType "start" }}
+          <p class="heading">Game Started</p>
+
+          <!-- End -->
+          {{ else if eq .EventType "end" }}
+          <p class="heading">Game Finished</p>
+          {{ end }}
+        </div>
+      </div>
+
+      <!-- End if event type start -->
+      {{ end }}
+
+      <!-- End range events -->
       {{ end }}
     </div>
   </div>
 
-  <!-- End if event type start -->
-  {{ end }}
-
-  <!-- End range events -->
-  {{ end }}
+  <!-- Charts -->
+  <div class="column is-one-third">
+    <!-- Chart Test -->
+    <canvas id="goals-chart" width="400" height="400"></canvas>
+  </div>
+  <div class="column is-one-third">
+    <canvas id="timing-chart" width="400" height="400"></canvas>
+  </div>
 </div>
+
 <div class="phatt-padding"></div>
 
 <!-- else if not game started -->
@@ -307,10 +322,16 @@
 <!-- end if game started -->
 {{ end }}
 
+<!-- Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.bundle.min.js"
+  integrity="sha256-xKeoJ50pzbUGkpQxDYHD7o7hxe0LaOGeguUidbq6vis=" crossorigin="anonymous"></script>
+
 <script>
   var gameId = {{ .id }};
   var eventCount = {{ .eventCount }};
   var gameEnded = {{ .gameState.Ended }};
+  var userGoals = {{ call $.marshal .userGoals -}};
+  var events = {{ call $.marshal .events -}};
 </script>
 <script src="/assets/game.js"></script>
 

@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/lucasb-eyer/go-colorful"
 )
 
 // GetGame renders the game view page
@@ -35,9 +36,11 @@ func GetGame(c *gin.Context) {
 	// Select Event List
 	var events []*GameEvent
 
-	if err := dbase.Preload("User").Order("created_at").Find(&events, "game_id = ?", game.ID).Error; err != nil {
+	if err := dbase.Preload("User").Order("id").Find(&events, "game_id = ?", game.ID).Error; err != nil {
 		panic(err)
 	}
+
+	userGoals := make(map[string]UserGoals)
 
 	// Calculate current game state from events
 	for idx, evt := range events {
@@ -53,6 +56,13 @@ func GetGame(c *gin.Context) {
 
 		// Count goals
 		case GameEventGoal:
+			if val, ok := userGoals[*evt.UserID]; ok {
+				userGoals[*evt.UserID] = UserGoals{
+					User:      evt.User,
+					Goals:     val.Goals + 1,
+					AntiGoals: val.AntiGoals,
+				}
+			}
 			switch evt.Team {
 
 			// Blue Team
@@ -65,6 +75,13 @@ func GetGame(c *gin.Context) {
 			}
 
 		case GameEventAntiGoal:
+			if val, ok := userGoals[*evt.UserID]; ok {
+				userGoals[*evt.UserID] = UserGoals{
+					User:      evt.User,
+					AntiGoals: val.AntiGoals + 1,
+					Goals:     val.Goals,
+				}
+			}
 			switch evt.Team {
 			// Blue Team
 			case GameTeamBlue:
@@ -77,6 +94,11 @@ func GetGame(c *gin.Context) {
 
 			// Assign players to the correct positions on the team
 		case GameEventPlayerTakePosition:
+			if _, ok := userGoals[*evt.UserID]; !ok {
+				userGoals[*evt.UserID] = UserGoals{
+					User: evt.User,
+				}
+			}
 			switch evt.Team {
 
 			// Assign blue team players
@@ -127,6 +149,17 @@ func GetGame(c *gin.Context) {
 		gameState.WinningTeam = GameTeamRed
 	}
 
+	userGoalsArr := make([]UserGoals, 0)
+
+	for _, ug := range userGoals {
+		userGoalsArr = append(userGoalsArr, UserGoals{
+			User:      ug.User,
+			Color:     colorful.FastHappyColor().Hex(),
+			Goals:     ug.Goals,
+			AntiGoals: ug.AntiGoals,
+		})
+	}
+
 	SendHTML(http.StatusOK, c, "game", gin.H{
 		"id":         id,
 		"game":       game,
@@ -135,6 +168,7 @@ func GetGame(c *gin.Context) {
 		"eventCount": len(events),
 		"fmtdur":     PrettyDuration,
 		"exfname":    ExtractFirstName,
+		"userGoals":  userGoalsArr,
 	})
 }
 

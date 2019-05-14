@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strings"
 	"time"
@@ -19,6 +21,10 @@ func SendHTML(statusCode int, c *gin.Context, page string, data gin.H) {
 	}
 
 	data["general"] = c.GetStringMapString("general")
+	data["marshal"] = func(v interface{}) template.JS {
+		a, _ := json.Marshal(v)
+		return template.JS(a)
+	}
 
 	c.HTML(statusCode, page, data)
 }

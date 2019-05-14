@@ -68,3 +68,13 @@ type UserWithStats struct {
 type Count struct {
 	Count int `gorm:"column:count"`
 }
+
+// UserGoals is a helper struct to keep track of the number of goals a user has
+type UserGoals struct {
+	User      User `json:"user"`
+	Goals     int  `json:"goals"`
+	AntiGoals int  `json:"antigoals"`
+
+	// A random color
+	Color string `json:"color"`
+}
