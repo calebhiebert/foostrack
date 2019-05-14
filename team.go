@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strings"
 
@@ -17,6 +18,17 @@ func renderTeamForm(c *gin.Context, data gin.H) {
 	}
 
 	data["users"] = users
+	data["isMember"] = func(u User) bool {
+		members := data["members"].([]TeamUser)
+
+		for _, m := range members {
+			if u.ID == m.UserID {
+				return true
+			}
+		}
+
+		return false
+	}
 
 	SendHTML(http.StatusOK, c, "teamform", data)
 }
@@ -24,6 +36,34 @@ func renderTeamForm(c *gin.Context, data gin.H) {
 // GetTeamForm returns the form required to create a team
 func GetTeamForm(c *gin.Context) {
 	renderTeamForm(c, gin.H{})
+}
+
+// GetTeamEditForm returns a form to edit a team
+func GetTeamEditForm(c *gin.Context) {
+	var team Team
+
+	if err := dbase.First(&team, "id = ?", c.Param("id")).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		} else {
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+	}
+
+	var members []TeamUser
+
+	if err := dbase.Find(&members, "team_id = ?", team.ID).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	renderTeamForm(c, gin.H{
+		"editing": true,
+		"team":    team,
+		"members": members,
+	})
 }
 
 // PostCreateTeam will accept input from the create team form and

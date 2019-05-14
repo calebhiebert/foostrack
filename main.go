@@ -93,6 +93,7 @@ func main() {
 	r.POST("/game/:id/oob", MarkOutOfBounds)
 	r.POST("/game/:id/swap", MarkSwap)
 
+	r.GET("/teams/:id/edit", GetTeamEditForm)
 	r.GET("/teams", GetTeamList)
 	r.GET("/team/create", GetTeamForm)
 	r.POST("/team/create", PostCreateTeam)

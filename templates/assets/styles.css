@@ -62,6 +62,10 @@
   background-image: url('/assets/blocked.svg');
 }
 
+.big-img-error::after {
+  background-image: url('/assets/error.svg');
+}
+
 .shadow {
   text-shadow: 0px 0px 4px rgba(150, 150, 150, 0.75);
 }

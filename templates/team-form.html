@@ -6,10 +6,20 @@
 </div>
 {{ end }}
 
-<form action="/team/create" method="POST">
+<form
+        {{ if .editing -}}
+            action="/teams/{{ .team.ID }}/edit"
+        {{- else -}}
+            action="/team/create"
+        {{- end -}}
+        method="POST">
     <nav class="level">
         <div class="level-left">
-            <h2 class="title is-2">Create Team</h2>
+            {{ if .editing }}
+                <h2 class="title is-2">Edit Team</h2>
+            {{ else }}
+                <h2 class="title is-2">Create Team</h2>
+            {{ end }}
         </div>
         <div class="level-right">
             <div class="buttons">
@@ -23,7 +33,17 @@
     <div class="field">
         <label for="name" class="label">Team Name</label>
         <div class="control">
-            <input id="name" required placeholder="Team Name" type="text" class="input" name="name">
+            <input
+                    id="name"
+                    required
+                    placeholder="Team Name"
+                    type="text"
+                    class="input"
+                    name="name"
+                    {{ if .editing }}
+                    value="{{ .team.Name }}"
+                    {{ end }}
+            >
         </div>
     </div>
 
@@ -33,7 +53,12 @@
         <div class="select is-multiple is-fullwidth">
             <select name="members" id="members" multiple>
                 {{ range .users }}
-                <option value="{{ .ID }}">{{ .Username }}</option>
+                <option
+                        value="{{ .ID }}"
+                        {{ if and $.editing (call $.isMember .) }}
+                            selected="true"
+                        {{ end }}
+                >{{ .Username }}</option>
                 {{ end }}
             </select>
         </div>
