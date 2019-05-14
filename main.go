@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -26,6 +25,8 @@ var files *packr.Box
 // Assets box, this contains images, css, js to be served statically
 var assets *packr.Box
 
+var templates map[string]*template.Template
+
 func main() {
 
 	// Load environment variables from a .env file
@@ -36,6 +37,9 @@ func main() {
 	// https://github.com/gobuffalo/packr (this program uses v2 of this library)
 	files = packr.New("Box", "./templates")
 	assets = packr.New("Assets", "./templates/assets")
+
+	templates = make(map[string]*template.Template)
+	initTemplates()
 
 	// Initialize the database. Using https://gorm.io/
 	initDB()
@@ -48,8 +52,6 @@ func main() {
 	assetRoute := r.Group("/assets")
 	api := r.Group("/api")
 
-	r.HTMLRender = createRenderer()
-
 	// Sessions
 	store := cookie.NewStore([]byte("secret"))
 
@@ -58,7 +60,7 @@ func main() {
 
 	// Add a Cache-Control header to all static assets
 	assetRoute.Use(func(c *gin.Context) {
-		c.Header("Cache-Control", "max-age=86400")
+		c.Header("Cache-Control", "public, max-age=31536000")
 		c.Next()
 	})
 
@@ -118,25 +120,22 @@ func main() {
 }
 
 // Defines all possible template pages, and the files that make them up
-// https://github.com/gin-contrib/multitemplate
-func createRenderer() multitemplate.Renderer {
-	r := multitemplate.NewRenderer()
-	addTemplate(r, "index", "base.html", "index.html")
-	addTemplate(r, "startgame", "base.html", "start-game.html")
-	addTemplate(r, "error", "base.html", "error.html")
-	addTemplate(r, "game", "base.html", "game.html")
-	addTemplate(r, "games", "base.html", "game-list.html")
-	addTemplate(r, "notfound", "base.html", "not-found.html")
-	addTemplate(r, "blocked", "base.html", "blocked.html")
-	addTemplate(r, "user", "base.html", "user.html")
-	addTemplate(r, "teamform", "base.html", "team-form.html")
-	addTemplate(r, "teamlist", "base.html", "team-list.html")
-	return r
+func initTemplates() {
+	addTemplate("index", "base.html", "index.html")
+	addTemplate("startgame", "base.html", "start-game.html")
+	addTemplate("error", "base.html", "error.html")
+	addTemplate("game", "base.html", "game.html")
+	addTemplate("games", "base.html", "game-list.html")
+	addTemplate("notfound", "base.html", "not-found.html")
+	addTemplate("blocked", "base.html", "blocked.html")
+	addTemplate("user", "base.html", "user.html")
+	addTemplate("teamform", "base.html", "team-form.html")
+	addTemplate("teamlist", "base.html", "team-list.html")
 }
 
 // Compiles multiple files into a single template
 // https://github.com/gin-contrib/multitemplate
-func addTemplate(r multitemplate.Renderer, name string, filename ...string) {
+func addTemplate(name string, filename ...string) {
 	tmpl := template.New(name)
 
 	for _, file := range filename {
@@ -151,7 +150,7 @@ func addTemplate(r multitemplate.Renderer, name string, filename ...string) {
 		}
 	}
 
-	r.Add(name, tmpl)
+	templates[name] = tmpl
 }
 
 // Starts a connection to the database and executes the schema.sql file

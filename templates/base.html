@@ -1,135 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ block "title" .}}Foostrack{{ end }}</title>
 
-    <!-- Bulma CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"
-      integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4="
-      crossorigin="anonymous"
-    />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ block "title" .}}Foostrack{{ end }}</title>
 
-    <!-- Bulma Timeline Extension -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma-timeline@3.0.3/dist/css/bulma-timeline.min.css"
-      integrity="sha256-/o4dD6UK2n3NAJVO0GI6Win4rACMXpKHUoj6ReI0gMs="
-      crossorigin="anonymous"
-    />
-    <style>
-      .ml {
-        margin-left: 0.5rem;
-      }
+  <!-- Bulma CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"
+    integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4=" crossorigin="anonymous" />
 
-      .mr {
-        margin-right: 0.5rem;
-      }
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
 
-      .mt {
-        margin-top: 0.5rem;
-      }
+<body>
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/index">
+        <img src="/assets/foostrack-logo.png" width="112" height="28" />
+      </a>
 
-      .mb {
-        margin-bottom: 0.5rem !important;
-      }
-
-      .text-center {
-        text-align: center;
-      }
-
-      .phatt-padding {
-        padding-bottom: 3rem;
-      }
-
-      .mauto {
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      .align-items-center {
-        align-items: center;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/index">
-          <img src="/assets/foostrack-logo.png" width="112" height="28" />
-        </a>
-
-        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-
-      <div class="navbar-menu" id="navbarBasic">
-        <div class="navbar-start">
-          <a href="/startgame" class="navbar-item">
-            Start Game
-          </a>
-          <a href="/games" class="navbar-item">Games</a>
-          <a href="/teams" class="navbar-item">Teams</a>
-        </div>
-
-        <div class="navbar-end">
-          <div class="navbar-item">
-            <!-- {{ if eq (index .general "isloggedin") "true" }} -->
-            <div class="is-flex">
-              <figure class="image is-24x24"><img src="{{ index .general "picture_url" }}" alt="User Avatar" class="is-rounded"></figure>
-              <h4 class="ml">{{ index .general "username" }}</h4>
-            </div>
-            <!-- {{ else }} -->
-            <a href="/login" class="button is-primary">
-              Log in
-            </a>
-            <!-- {{ end }} -->
-          </div>
-          {{ if eq (index .general "isloggedin") "true" }}
-          <div class="navbar-item">
-            <a href="/logout" class="button is-light ml">Logout</a>
-          </div>
-          {{ end }}
-        </div>
-      </div>
-    </nav>
-
-    <!-- Navbar Stuff -->
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        // Get all "navbar-burger" elements
-        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-
-        // Check if there are any navbar burgers
-        if ($navbarBurgers.length > 0) {
-          // Add a click event on each of them
-          $navbarBurgers.forEach((el) => {
-            el.addEventListener('click', () => {
-              // Get the target from the "data-target" attribute
-              const target = el.dataset.target;
-              const $target = document.getElementById(target);
-
-              // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-              el.classList.toggle('is-active');
-              $target.classList.toggle('is-active');
-            });
-          });
-        }
-      });
-    </script>
-
-    <!-- Vue JS -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" integrity="sha256-ufGElb3TnOtzl5E4c/qQnZFGP+FYEZj5kbSEdJNrw0A=" crossorigin="anonymous"></script> -->
-
-    <!-- page content -->
-    <div class="section" style="padding-top: 1rem">
-      <div class="container">{{ block "content" .}}Default Body.{{ end }}</div>
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
     </div>
-  </body>
+
+    <div class="navbar-menu" id="navbarBasic">
+      <div class="navbar-start">
+        <a href="/startgame" class="navbar-item">
+          Start Game
+        </a>
+        <a href="/games" class="navbar-item">Games</a>
+        <a href="/teams" class="navbar-item">Teams</a>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <!-- {{ if eq (index .general "isloggedin") "true" }} -->
+          <div class="is-flex">
+            <figure class="image is-24x24"><img src="{{ index .general "picture_url" }}" alt="User Avatar"
+                class="is-rounded"></figure>
+            <h4 class="ml">{{ index .general "username" }}</h4>
+          </div>
+          <!-- {{ else }} -->
+          <a href="/login" class="button is-primary">
+            Log in
+          </a>
+          <!-- {{ end }} -->
+        </div>
+        {{ if eq (index .general "isloggedin") "true" }}
+        <div class="navbar-item">
+          <a href="/logout" class="button is-light ml">Logout</a>
+        </div>
+        {{ end }}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bulma Timeline Extension -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-timeline@3.0.3/dist/css/bulma-timeline.min.css"
+    integrity="sha256-/o4dD6UK2n3NAJVO0GI6Win4rACMXpKHUoj6ReI0gMs=" crossorigin="anonymous" />
+
+  <!-- Navbar Stuff -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Get all "navbar-burger" elements
+      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+      // Check if there are any navbar burgers
+      if ($navbarBurgers.length > 0) {
+        // Add a click event on each of them
+        $navbarBurgers.forEach((el) => {
+          el.addEventListener('click', () => {
+            // Get the target from the "data-target" attribute
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+
+            // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+            el.classList.toggle('is-active');
+            $target.classList.toggle('is-active');
+          });
+        });
+      }
+    });
+  </script>
+
+  <!-- page content -->
+  <div class="section" style="padding-top: 1rem">
+    <div class="container">{{ block "content" .}}Default Body.{{ end }}</div>
+  </div>
+</body>
+
 </html>

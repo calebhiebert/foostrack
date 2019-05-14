@@ -1,15 +1,28 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tdewolff/minify/v2"
+	"github.com/tdewolff/minify/v2/html"
 )
+
+type MinifyResponseWriter struct {
+	gin.ResponseWriter
+	io.WriteCloser
+}
+
+func (m MinifyResponseWriter) Write(b []byte) (int, error) {
+	return m.WriteCloser.Write(b)
+}
 
 // SendHTML is a wrapper around gin context HTML function, it includes the "general"
 // object to be sent to the template. This object contains info such as whether or not
@@ -20,13 +33,41 @@ func SendHTML(statusCode int, c *gin.Context, page string, data gin.H) {
 		data = gin.H{}
 	}
 
+	// Add extra stuff to the data map
 	data["general"] = c.GetStringMapString("general")
 	data["marshal"] = func(v interface{}) template.JS {
 		a, _ := json.Marshal(v)
 		return template.JS(a)
 	}
 
-	c.HTML(statusCode, page, data)
+	// Retrieve the template to be rendered
+	tmpl, ok := templates[page]
+	if !ok {
+		panic("missing template " + page)
+	}
+
+	// Create a new minifier to minify the HTML
+	m := minify.New()
+	m.AddFunc("text/html", html.Minify)
+
+	// Render the template into a buffer
+	buf := bytes.Buffer{}
+	err := tmpl.Execute(&buf, data)
+	if err != nil {
+		panic(err)
+	}
+
+	// Minify the html
+	minified, err := m.Bytes("text/html", buf.Bytes())
+	if err != nil {
+
+		// In case of a minification error, log to the console and send the un-minified version
+		fmt.Println("ERROR DURING MINIFY", err)
+		c.Data(http.StatusOK, "text/html", buf.Bytes())
+		return
+	}
+
+	c.Data(http.StatusOK, "text/html", minified)
 }
 
 // SendError is a wrapper around SendHTML that sends the error.html template
@@ -77,4 +118,17 @@ func ExtractFirstName(name string) string {
 	}
 
 	return ""
+}
+
+func MinifyMiddleware(c *gin.Context) {
+
+	m := minify.New()
+	m.AddFunc("text/html", html.Minify)
+	// add minfiers
+
+	mw := m.Writer("text/html", c.Writer)
+
+	c.Writer = MinifyResponseWriter{c.Writer, mw}
+
+	c.Next()
 }

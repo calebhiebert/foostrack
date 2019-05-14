@@ -83,11 +83,12 @@
 <!-- if no active games -->
 {{ else }}
 
-<div class="text-center is-unselectable">
-  <h3 class="title is-3">Nobody is playing right now</h3>
-  <a href="/startgame" class="button mb is-large">Start Game</a>
+<div class="big-img-container big-img-start-game text-center is-unselectable">
+  <div>
+    <h3 class="title is-1 shadow" style="margin-top: 1rem">Nobody is playing right now</h3>
+    <a href="/startgame" class="button mb is-large is-dark">Start Game</a>
+  </div>
 </div>
-<img src="/assets/goal.svg" draggable="false" style="opacity: 0.5">
 <!-- end active games -->
 {{ end }}
 

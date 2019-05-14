@@ -1,6 +1,10 @@
 {{ define "content" }}
 
-<h3 class="title is-3 text-center">You're not allowed in here! Please log in</h3>
-<img style="width: 100%" src="/assets/blocked.svg" alt="Blocked" />
+<div class="big-img-container big-img-blocked text-center is-unselectable">
+  <div>
+    <h3 class="title is-1 shadow">You can't do that right now. Please log in.</h3>
+    <a href="/login" class="button mb is-large is-dark">Log In</a>
+  </div>
+</div>
 
 {{ end }}
