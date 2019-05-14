@@ -83,7 +83,6 @@ func main() {
 	r.GET("/games", ListGames)
 	r.GET("/game/:id", GetGame)
 	api.GET("/games/:id/eventcount", GetGameEventCount)
-	r.GET("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/goal", MarkGoal)
 	r.POST("/game/:id/antigoal", MarkAntiGoal)
 	r.POST("/game/:id/start", MarkStarted)

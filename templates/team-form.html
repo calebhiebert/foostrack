@@ -1,11 +1,9 @@
 {{ define "content" }}
 
 {{ range .errors }}
-<article class="message is-danger">
-    <div class="message-body">
-        {{ . }}
-    </div>
-</article>
+<div class="notification is-danger">
+    {{ . }}
+</div>
 {{ end }}
 
 <form action="/team/create" method="POST">

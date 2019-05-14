@@ -32,7 +32,7 @@ func MarkGoal(c *gin.Context) {
 
 	var game Game
 
-	if err := dbase.Preload("Events").First(&game, "id = ?", gameID).Error; err != nil {
+	if err := dbase.First(&game, "id = ?", gameID).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			SendNotFound(c)
 			return
@@ -44,11 +44,10 @@ func MarkGoal(c *gin.Context) {
 
 	var scoreUser User
 
-	if err := dbase.Raw(`SELECT users.*
-						FROM game_events
-							JOIN users ON game_events.user_id = users.id
-						WHERE game_id = ?
-						AND game_events.id = (SELECT MAX(id) FROM game_events WHERE position = ? AND team = ?)`, game.ID, position, team).
+	if err := dbase.Raw(`SELECT u.*
+						FROM current_positions cp
+							JOIN users u ON cp.user_id = u.id
+						WHERE cp.game_id = ? AND position = ? AND team = ?`, game.ID, position, team).
 		Scan(&scoreUser).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
@@ -56,7 +55,7 @@ func MarkGoal(c *gin.Context) {
 
 	event := GameEvent{
 		GameID:    game.ID,
-		EventType: GameEventAntiGoal,
+		EventType: GameEventGoal,
 		UserID:    &scoreUser.ID,
 		Team:      team,
 		Position:  position,

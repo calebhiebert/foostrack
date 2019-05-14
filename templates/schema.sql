@@ -80,7 +80,9 @@ CREATE OR REPLACE VIEW game_extended AS
       (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'oob') AS oob,
       (SELECT COUNT(id) FROM game_events WHERE game_id = g.id AND event_type = 'dead') AS dead_balls,
       (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
-      (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time
+      (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time,
+      (SELECT ARRAY_AGG(cp.user_id) AS blue_members FROM current_positions cp  WHERE cp.game_id = g.id AND cp.team = 'blue' GROUP BY cp.game_id),
+      (SELECT ARRAY_AGG(cp.user_id) AS red_members FROM current_positions cp  WHERE cp.game_id = g.id AND cp.team = 'red' GROUP BY cp.game_id)
     FROM games g;
 
 DROP VIEW IF EXISTS user_stats;

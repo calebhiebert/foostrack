@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -12,8 +13,7 @@ import (
 	TODO add some error handling when creating a new game
 */
 
-// GetStartGame renders the form that should be filled out to start a game
-func GetStartGame(c *gin.Context) {
+func renderStartGame(c *gin.Context, data gin.H) {
 	if !EnsureLoggedIn(c) {
 		return
 	}
@@ -25,14 +25,34 @@ func GetStartGame(c *gin.Context) {
 		return
 	}
 
-	SendHTML(http.StatusOK, c, "startgame", gin.H{
-		"users": users,
-	})
+	data["users"] = users
+
+	SendHTML(http.StatusOK, c, "startgame", data)
+}
+
+// GetStartGame renders the form that should be filled out to start a game
+func GetStartGame(c *gin.Context) {
+	renderStartGame(c, gin.H{})
 }
 
 // PostStartGame will create a new game
 func PostStartGame(c *gin.Context) {
 	if !EnsureLoggedIn(c) {
+		return
+	}
+
+	blueGoalieID := c.PostForm("blue_goalie")
+	blueForwardID := c.PostForm("blue_forward")
+	redGoalieID := c.PostForm("red_goalie")
+	redForwardID := c.PostForm("red_forward")
+
+	if blueGoalieID == redGoalieID ||
+		blueGoalieID == redForwardID ||
+		blueForwardID == redGoalieID ||
+		blueForwardID == redForwardID {
+		renderStartGame(c, gin.H{
+			"errors": []error{errors.New("One player cannot be on both teams")},
+		})
 		return
 	}
 
@@ -48,11 +68,6 @@ func PostStartGame(c *gin.Context) {
 		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
-
-	blueGoalieID := c.PostForm("blue_goalie")
-	blueForwardID := c.PostForm("blue_forward")
-	redGoalieID := c.PostForm("red_goalie")
-	redForwardID := c.PostForm("red_forward")
 
 	blueGoalieEvent := GameEvent{
 		GameID:    game.ID,

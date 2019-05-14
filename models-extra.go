@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 /*
@@ -23,7 +24,9 @@ type GameExtended struct {
 	BlueGoals   int        `gorm:"column:blue_goals"`
 	StartTime   *time.Time `gorm:"column:start_time"`
 	Started     bool
-	EndTime     *time.Time `gorm:"column:end_time"`
+	EndTime     *time.Time     `gorm:"column:end_time"`
+	BlueMembers pq.StringArray `gorm:"column:blue_members;type:VARCHAR(40)[]"`
+	RedMembers  pq.StringArray `gorm:"column:red_members;type:VARCHAR(40)[]"`
 	Ended       bool
 	BlueGoalie  User
 	BlueForward User

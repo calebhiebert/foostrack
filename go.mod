@@ -23,7 +23,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/karrick/godirwalk v1.9.1 // indirect
 	github.com/kr/pty v1.1.4 // indirect
-	github.com/lib/pq v1.1.1 // indirect
+	github.com/lib/pq v1.1.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20190506204251-e1dfcc566284 // indirect
 	golang.org/x/exp v0.0.0-20190429183610-475c5042d3f1 // indirect
