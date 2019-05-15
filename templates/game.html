@@ -196,7 +196,16 @@
       <div class="timeline-item">
         <div class="timeline-marker is-primary">
         </div>
-        <div class="timeline-content">
+        <div class="timeline-content is-wide">
+          <!-- Undo Button -->
+          {{ if ne .EventType "ptp" }}
+          {{ if not $.gameState.Ended }}
+          <form action="/events/{{ .ID }}/undo" method="POST">
+            <button class="button is-small is-pulled-right is-rounded is-danger is-outlined">X</button>
+          </form>
+          {{ end }}
+          {{ end }}
+
           <p class="heading">Out of Bounds</p>
           <p>+{{ call $.fmtdur .Elapsed }}</p>
         </div>
@@ -206,7 +215,16 @@
       {{ else if eq .EventType "dead" }}
       <div class="timeline-item">
         <div class="timeline-marker is-primary"></div>
-        <div class="timeline-content">
+        <div class="timeline-content is-wide">
+          <!-- Undo Button -->
+          {{ if ne .EventType "ptp" }}
+          {{ if not $.gameState.Ended }}
+          <form action="/events/{{ .ID }}/undo" method="POST">
+            <button class="button is-small is-pulled-right is-rounded is-danger is-outlined">X</button>
+          </form>
+          {{ end }}
+          {{ end }}
+
           <p class="heading">Dead Ball</p>
           <p>+{{ call $.fmtdur .Elapsed }}</p>
         </div>
@@ -246,7 +264,17 @@
         {{ end }}
 
         <!-- Define Timeline Content -->
-        <div class="timeline-content">
+        <div class="timeline-content is-wide">
+
+          <!-- Undo Button -->
+          {{ if ne .EventType "ptp" }}
+          {{ if not $.gameState.Ended }}
+          <form action="/events/{{ .ID }}/undo" method="POST">
+            <button class="button is-small is-pulled-right is-rounded is-danger is-outlined">X</button>
+          </form>
+          {{ end }}
+          {{ end }}
+
           <!-- Player Take Position -->
           {{ if eq .EventType "ptp" }}
           <p class="heading">
@@ -299,12 +327,10 @@
   </div>
 
   <!-- Charts -->
-  <div class="column is-one-third">
+  <div class="column is-two-thirds">
     <!-- Chart Test -->
-    <canvas id="goals-chart" width="400" height="400"></canvas>
-  </div>
-  <div class="column is-one-third">
-    <canvas id="timing-chart" width="400" height="400"></canvas>
+    <canvas id="goals-chart" width="400" height="200"></canvas>
+    <canvas id="timing-chart" width="400" height="200"></canvas>
   </div>
 </div>
 
@@ -313,12 +339,17 @@
 <!-- else if not game started -->
 {{ else }}
 
-<h3 class="title is-3 text-center">The game has not started yet!</h3>
-<form action="/game/{{ .id }}/start" method="POST">
-  <button class="button is-danger is-large is-fullwidth">
-    Start
-  </button>
-</form>
+<div class="big-img-container big-img-start text-center is-unselectable">
+  <div>
+    <h3 class="title is-1 shadow">The game has not started yet!</h3>
+    <form action="/game/{{ .id }}/start" method="POST">
+      <button class="button is-large is-dark">
+        Start
+      </button>
+    </form>
+  </div>
+</div>
+
 <!-- end if game started -->
 {{ end }}
 

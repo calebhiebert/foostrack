@@ -178,7 +178,7 @@ func GetGameEventCount(c *gin.Context) {
 
 	var eventCount Count
 
-	if err := dbase.Raw(`SELECT COUNT(id) FROM game_events WHERE game_id = ?`, id).Scan(&eventCount).Error; err != nil {
+	if err := dbase.Raw(`SELECT COUNT(id) FROM game_events WHERE game_id = ? AND deleted_at IS NULL`, id).Scan(&eventCount).Error; err != nil {
 		SendError(http.StatusBadRequest, c, err)
 		return
 	}

@@ -93,6 +93,8 @@ func main() {
 	r.POST("/game/:id/oob", MarkOutOfBounds)
 	r.POST("/game/:id/swap", MarkSwap)
 
+	r.POST("/events/:id/undo", PostEventUndo)
+
 	r.GET("/teams/:id/edit", GetTeamEditForm)
 	r.GET("/teams", GetTeamList)
 	r.GET("/team/create", GetTeamForm)
@@ -171,6 +173,24 @@ func initDB() {
 	}
 
 	if err := dbase.Exec(sql).Error; err != nil {
+		panic(err)
+	}
+
+	sql, err = files.FindString("migrate.sql")
+	if err != nil {
+		panic(err)
+	}
+
+	if err = dbase.Exec(sql).Error; err != nil {
+		panic(err)
+	}
+
+	sql, err = files.FindString("views.sql")
+	if err != nil {
+		panic(err)
+	}
+
+	if err = dbase.Exec(sql).Error; err != nil {
 		panic(err)
 	}
 }

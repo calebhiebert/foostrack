@@ -64,6 +64,8 @@ type UserWithStats struct {
 	AntiGoals           int     `gorm:"column:antigoals"`
 	Goals               int     `gorm:"column:goals"`
 	NonSaves            int     `gorm:"column:non_saves"`
+	GamesPlayedGoalie   int     `gorm:"column:games_played_goalie"`
+	GamesPlayedForward  int     `gorm:"column:games_played_forward"`
 }
 
 // Count is a helper struct for database queries where the only result is a single count column
