@@ -119,16 +119,3 @@ func ExtractFirstName(name string) string {
 
 	return ""
 }
-
-func MinifyMiddleware(c *gin.Context) {
-
-	m := minify.New()
-	m.AddFunc("text/html", html.Minify)
-	// add minfiers
-
-	mw := m.Writer("text/html", c.Writer)
-
-	c.Writer = MinifyResponseWriter{c.Writer, mw}
-
-	c.Next()
-}

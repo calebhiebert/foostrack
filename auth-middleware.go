@@ -38,7 +38,11 @@ func AuthMiddleware(c *gin.Context) {
 	}
 
 	c.Set("general", general)
-	session.Save()
+
+	if err := session.Save(); err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
 
 	c.Next()
 }

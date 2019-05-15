@@ -2,85 +2,112 @@
 
 {{ define "content" }}
 
-<!-- Errors -->
-{{ range .errors }}
-<div class="notification is-danger">
-  {{ . }}
-</div>
-{{ end }}
-
-<form method="POST">
-  <fieldset>
-    <h2 class="title is-2">
-      Start Game
-    </h2>
-
-    <!-- Blue Goalie -->
-    <div class="field">
-      <label for="blue-goalie" class="label">Blue Goalie</label>
-
-      <div class="control">
-        <div class="select is-fullwidth">
-          <select name="blue_goalie" id="blue-goalie" class="select" required>
-            <option disabled selected>Blue Goalie</option>
-            <!-- {{ range.users }} -->
-            <option value="{{ .ID }}">{{ .Username }}</option>
-            <!-- {{ end }} -->
-          </select>
+    <!-- Errors -->
+    {{ range .errors }}
+        <div class="notification is-danger">
+            {{ . }}
         </div>
-      </div>
-    </div>
+    {{ end }}
 
-    <!-- Blue Forward -->
-    <div class="field">
-      <label for="blue-forward" class="label">Blue Forward</label>
+    <form method="POST">
+        <fieldset>
+            <h2 class="title is-2">
+                Start Game
+            </h2>
 
-      <div class="control">
-        <div class="select is-fullwidth">
-          <select name="blue_forward" id="blue-forward" class="select" required>
-            <option disabled selected>Blue Forward</option>
-            <!-- {{ range.users }} -->
-            <option value="{{ .ID }}">{{ .Username }}</option>
-            <!-- {{ end }} -->
-          </select>
-        </div>
-      </div>
-    </div>
+            <div class="columns is-multiline">
 
-    <!-- Red Goalie -->
-    <div class="field">
-      <label for="red-goalie" class="label">Red Goalie</label>
+                <!-- Blue Forward -->
+                <div class="column is-half">
+                    <div class="field">
+                        <label for="blue-forward" class="label">Blue Forward</label>
 
-      <div class="control">
-        <div class="select is-fullwidth">
-          <select name="red_goalie" id="red-goalie" class="select" required>
-            <option disabled selected>Red Goalie</option>
-            <!-- {{ range.users }} -->
-            <option value="{{ .ID }}">{{ .Username }}</option>
-            <!-- {{ end }} -->
-          </select>
-        </div>
-      </div>
-    </div>
+                        <div class="control">
+                            <div class="select is-fullwidth is-info">
+                                <select name="blue_forward" id="blue-forward" oninput="checkInputs()" required>
+                                    <option disabled selected value="">Blue Forward</option>
+                                    <!-- {{ range.users }} -->
+                                    <option value="{{ .ID }}">{{ .Username }}</option>
+                                    <!-- {{ end }} -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Red Forward -->
-    <div class="field">
-      <label for="red-forward" class="label">Red Forward</label>
+                <!-- Blue Goalie -->
+                <div class="column is-half">
+                    <div class="field">
+                        <label for="blue-goalie" class="label">Blue Goalie</label>
 
-      <div class="control">
-        <div class="select is-fullwidth">
-          <select name="red_forward" id="red-forward" class="select" required>
-            <option disabled selected>Red Forward</option>
-            <!-- {{ range.users }} -->
-            <option value="{{ .ID }}">{{ .Username }}</option>
-            <!-- {{ end }} -->
-          </select>
-        </div>
-      </div>
-    </div>
-  </fieldset>
+                        <div class="control">
+                            <div class="select is-fullwidth is-info">
+                                <select name="blue_goalie" id="blue-goalie" oninput="checkInputs()" required>
+                                    <option disabled selected value="">Blue Goalie</option>
+                                    <!-- {{ range.users }} -->
+                                    <option value="{{ .ID }}">{{ .Username }}</option>
+                                    <!-- {{ end }} -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-  <button class="button is-primary mt" type="submit">Start Game</button>
-</form>
+                <!-- Red Forward -->
+                <div class="column is-half">
+                    <div class="field">
+                        <label for="red-forward" class="label">Red Forward</label>
+
+                        <div class="control">
+                            <div class="select is-fullwidth is-danger">
+                                <select name="red_forward" id="red-forward" oninput="checkInputs()" required>
+                                    <option disabled selected value="">Red Forward</option>
+                                    <!-- {{ range.users }} -->
+                                    <option value="{{ .ID }}">{{ .Username }}</option>
+                                    <!-- {{ end }} -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Red Goalie -->
+                <div class="column is-half">
+                    <div class="field">
+                        <label for="red-goalie" class="label">Red Goalie</label>
+
+                        <div class="control">
+                            <div class="select is-fullwidth is-danger">
+                                <select name="red_goalie" id="red-goalie" oninput="checkInputs()" required>
+                                    <option disabled selected value="">Red Goalie</option>
+                                    <!-- {{ range.users }} -->
+                                    <option value="{{ .ID }}">{{ .Username }}</option>
+                                    <!-- {{ end }} -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <button id="btn-start" class="button is-primary mt" type="submit">Start Game</button>
+    </form>
+
+    <script>
+        function checkInputs() {
+            var blueForward = document.getElementById('blue-forward');
+            var blueGoalie = document.getElementById('blue-goalie');
+            var redForward = document.getElementById('red-forward');
+            var redGoalie = document.getElementById('red-goalie');
+            var startGameButton = document.getElementById('btn-start');
+
+            var valid = blueForward.value !== '' && blueGoalie.value !== '' && redForward.value !== '' && redGoalie.value !== '';
+
+            startGameButton.disabled = !valid;
+        }
+
+        checkInputs();
+    </script>
 
 {{ end }}

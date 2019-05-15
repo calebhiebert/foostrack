@@ -132,5 +132,6 @@ func ListGames(c *gin.Context) {
 		"formatTime": prettyTime.Format,
 		"page":       currentPage + 1,
 		"totalPages": pageArr,
+		"exfname":    ExtractFirstName,
 	})
 }

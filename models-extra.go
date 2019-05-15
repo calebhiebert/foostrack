@@ -27,6 +27,7 @@ type GameExtended struct {
 	EndTime     *time.Time     `gorm:"column:end_time"`
 	BlueMembers pq.StringArray `gorm:"column:blue_members;type:VARCHAR(40)[]"`
 	RedMembers  pq.StringArray `gorm:"column:red_members;type:VARCHAR(40)[]"`
+	WinGoals    int            `gorm:"column:win_goals"`
 	Ended       bool
 	BlueGoalie  User
 	BlueForward User

@@ -69,3 +69,8 @@
 .shadow {
   text-shadow: 0px 0px 4px rgba(150, 150, 150, 0.75);
 }
+
+/* Fatten up timeline lines */
+.timeline-item::before {
+  width: 3px !important;
+}
