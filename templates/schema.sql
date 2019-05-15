@@ -26,3 +26,33 @@ CREATE TABLE IF NOT EXISTS game_events (
   updated_at    TIMESTAMPTZ,
   deleted_at    TIMESTAMPTZ
 );
+
+CREATE TABLE IF NOT EXISTS tournaments (
+  id            SERIAL        PRIMARY KEY     NOT NULL,
+  name          VARCHAR(40)   NOT NULL,
+  created_by_id VARCHAR(40)   NOT NULL        REFERENCES users(id),
+  status        VARCHAR(15)   NOT NULL        DEFAULT 'signup',
+  created_at    TIMESTAMPTZ,
+  updated_at    TIMESTAMPTZ,
+  deleted_at    TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS teams (
+  id            SERIAL        PRIMARY KEY     NOT NULL,
+  name          VARCHAR(40)   NOT NULL,
+  tournament_id INTEGER       NOT NULL        REFERENCES tournaments(id),
+  created_at    TIMESTAMPTZ,
+  updated_at    TIMESTAMPTZ,
+  deleted_at    TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS tournament_users (
+  tournament_id INTEGER       NOT NULL        REFERENCES tournaments(id),
+  user_id       VARCHAR(40)   NOT NULL        REFERENCES users(id),
+  team_id       INTEGER                       REFERENCES teams(id),
+  created_at    TIMESTAMPTZ,
+  updated_at    TIMESTAMPTZ,
+  deleted_at    TIMESTAMPTZ,
+
+  PRIMARY KEY (tournament_id, user_id)
+);

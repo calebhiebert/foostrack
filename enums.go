@@ -27,3 +27,10 @@ const (
 	GamePositionForward = "forward"
 	GamePositionGoalie  = "goalie"
 )
+
+// All possible tournament statuses
+const (
+	TournamentStatusSignup    = "signup"
+	TournamentStatusUnderway  = "underway"
+	TournamentStatusCompleted = "completed"
+)

@@ -75,13 +75,12 @@ func main() {
 
 	r.GET("/index", GetIndex)
 
-	r.GET("/startgame", GetStartGame)
-	r.POST("/startgame", PostStartGame)
-
+	// Auth
 	r.GET("/login", Login)
 	r.GET("/logout", Logout)
 	r.GET("/callback", Callback)
 
+	// Game Related Stuff
 	r.GET("/games", ListGames)
 	r.GET("/game/:id", GetGame)
 	api.GET("/games/:id/eventcount", GetGameEventCount)
@@ -92,13 +91,22 @@ func main() {
 	r.POST("/game/:id/deadball", MarkDeadBall)
 	r.POST("/game/:id/oob", MarkOutOfBounds)
 	r.POST("/game/:id/swap", MarkSwap)
+	r.GET("/startgame", GetStartGame)
+	r.POST("/startgame", PostStartGame)
 
+	// Leaderboards
 	r.GET("/leaderboards", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/leaderboards/avggoalspergame")
 	})
-
 	r.GET("/leaderboards/avggoalspergame", GetLeaderboardAvgGoalsPerGame)
 	r.GET("/leaderboards/winrate", GetLeaderboardWinrate)
+
+	// Tournament related stuff
+	r.GET("/tournaments", GetTournamentList)
+	r.GET("/tournaments/create", GetTournamentForm)
+	r.POST("/tournaments/create", PostTournamentForm)
+	r.GET("/tournament/:id", GetTournament)
+	r.POST("/tournament/:id/join", PostJoinTournament)
 
 	r.POST("/events/:id/undo", PostEventUndo)
 
@@ -134,6 +142,10 @@ func initTemplates() {
 	addTemplate("notfound", "base.html", "not-found.html")
 	addTemplate("blocked", "base.html", "blocked.html")
 	addTemplate("user", "base.html", "user.html")
+
+	addTemplate("tournaments", "base.html", "tournament-list.html")
+	addTemplate("tournamentform", "base.html", "tournament-form.html")
+	addTemplate("tournament", "base.html", "tournament.html")
 
 	addTemplate("l-avggoalspergame", "base.html", "leaderboards.html", "l-avg-goals-per-game.html")
 	addTemplate("l-winrate", "base.html", "leaderboards.html", "l-win-rate.html")

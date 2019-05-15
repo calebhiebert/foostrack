@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -14,15 +13,6 @@ import (
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/html"
 )
-
-type MinifyResponseWriter struct {
-	gin.ResponseWriter
-	io.WriteCloser
-}
-
-func (m MinifyResponseWriter) Write(b []byte) (int, error) {
-	return m.WriteCloser.Write(b)
-}
 
 // SendHTML is a wrapper around gin context HTML function, it includes the "general"
 // object to be sent to the template. This object contains info such as whether or not

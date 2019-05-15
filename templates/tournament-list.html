@@ -1,0 +1,38 @@
+{{ define "content" }}
+
+<style>
+  .box {
+    padding: 1rem;
+  }
+</style>
+
+<div class="level">
+  <div class="level-left">
+    <h2 class="title is-2">Tournaments</h2>
+  </div>
+  <div class="level-right">
+    <a href="/tournaments/create" class="button is-primary">Create Tournament</a>
+  </div>
+</div>
+
+<!-- Tournament List -->
+{{ range .tournaments }}
+<a href="/tournament/{{ .ID }}" class="box level">
+  <div class="level-left">
+    <h4 class="title is-4 is-marginless">{{ .Name }}</h4>
+  </div>
+
+  <!-- Status -->
+  <div class="level-right">
+    {{ if eq .Status "signup" }}
+    <span class="tag is-success">Signups Open</span>
+    {{ else if eq .Status "underway" }}
+    <span class="tag is-warning">Games Underway</span>
+    {{ else if eq .Status "completed" }}
+    <span class="tag is-dark">Completed</span>
+    {{ end }}
+  </div>
+</a>
+{{ end }}
+
+{{ end }}

@@ -1,0 +1,20 @@
+{{ define "content" }}
+
+<h2 class="title is-2">Create Tournament</h2>
+
+<form method="POST">
+
+  <!-- Name Field -->
+  <div class="field">
+    <label for="name" class="label">
+      Tournament Name
+    </label>
+    <div class="control">
+      <input id="name" class="input is-large" type="text" name="name" placeholder="Tournament Name" required>
+    </div>
+  </div>
+
+  <button class="button is-large is-primary is-pulled-right">Create</button>
+</form>
+
+{{ end }}

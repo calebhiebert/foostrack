@@ -1,0 +1,33 @@
+{{ define "content" }}
+
+<div class="level">
+
+  <!-- Title -->
+  <div class="level-left">
+    <div>
+      <h2 class="title is-2 is-marginless">{{ .tournament.Name }}</h2>
+      <span class="has-text-grey is-italic">Managed by {{ .tournament.User.Username }}</span>
+    </div>
+  </div>
+
+  <!-- Participation Information -->
+  <div class="level-right">
+    <form method="POST" action="/tournament/{{ .tournament.ID }}/join">
+      {{ if .isUserJoinedTournament }}
+      <button type="submit" class="button is-primary">
+        Join Tournament
+      </button>
+      {{ else }}
+      <button type="submit" class="button is-info" disabled>
+        Joined
+      </button>
+      {{ end }}
+    </form>
+  </div>
+</div>
+
+<!-- User List -->
+<div class="list is-hoverable">
+  <div class="list-item">Example User</div>
+</div>
+{{ end }}

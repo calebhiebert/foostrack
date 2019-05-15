@@ -38,20 +38,32 @@ type User struct {
 	Events     []GameEvent `gorm:"foreignkey:UserID" json:"-"`
 }
 
+// Tournament represents the tournaments table
+type Tournament struct {
+	gorm.Model
+	Name            string
+	CreatedByID     string
+	Status          string
+	User            User             `gorm:"association_foreignkey:CreatedByID;foreignkey:ID"`
+	TournamentUsers []TournamentUser `gorm:"foreignkey:TeamID"`
+}
+
 // Team represents the teams table
 type Team struct {
 	gorm.Model
-	Name      string
-	TeamUsers []TeamUser `gorm:"foreignkey:TeamID"`
+	Name    string
+	Members []TournamentUser `gorm:"foreignkey:TeamID"`
 }
 
-// TeamUser represents the team_user table
-type TeamUser struct {
-	TeamID    uint   `gorm:"primary_key"`
-	Team      Team   `gorm:"association_foreignkey:TeamID"`
-	UserID    string `gorm:"primary_key"`
-	User      User   `gorm:"association_foreignkey:UserID;foreignkey:ID"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time `sql:"index"`
+// TournamentUser represents the tournament_users table
+type TournamentUser struct {
+	TournamentID uint       `gorm:"primary_key" json:"tournamentId"`
+	Tournament   Tournament `gorm:"association_foreignkey:TournamentID;foreignkey:ID"`
+	TeamID       *uint      `json:"teamId"`
+	Team         Team       `gorm:"association_foreignkey:TeamID"`
+	UserID       string     `gorm:"primary_key"`
+	User         User       `gorm:"association_foreignkey:UserID;foreignkey:ID"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    *time.Time `sql:"index"`
 }
