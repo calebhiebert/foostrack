@@ -85,6 +85,20 @@ CREATE OR REPLACE VIEW game_extended AS
       (SELECT ARRAY_AGG(cp.user_id) AS red_members FROM current_positions cp  WHERE cp.game_id = g.id AND cp.team = 'red' GROUP BY cp.game_id)
     FROM games g;
 
+DROP VIEW IF EXISTS goals;
+
+CREATE OR REPLACE VIEW goals AS
+SELECT g.*, (SELECT user_id
+             FROM current_positions c
+             WHERE c.game_id = g.game_id
+               AND c.position = 'goalie'
+               AND c.created_at < g.created_at
+               AND c.team <> g.team
+             ORDER BY c.id DESC
+             LIMIT 1) AS goalie_id
+FROM game_events g
+WHERE g.event_type = 'goal';
+
 DROP VIEW IF EXISTS user_stats;
 
 CREATE OR REPLACE VIEW user_stats AS
@@ -134,15 +148,3 @@ SELECT u.*,
                             FROM goals g
                             WHERE g.goalie_id = u.id) AS non_saves
   FROM users u;
-
-CREATE OR REPLACE VIEW goals AS
-    SELECT g.*, (SELECT user_id
-                    FROM current_positions c
-                    WHERE c.game_id = g.game_id
-                        AND c.position = 'goalie'
-                        AND c.created_at < g.created_at
-                        AND c.team <> g.team
-                        ORDER BY c.id DESC
-                        LIMIT 1) AS goalie_id
-    FROM game_events g
-    WHERE g.event_type = 'goal';
