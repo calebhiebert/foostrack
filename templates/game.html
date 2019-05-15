@@ -37,14 +37,14 @@
         <input type="hidden" name="team" value="blue">
         <input type="hidden" name="position" value="forward">
         <button type="submit"
-          class="button is-info is-fullwidth">{{ call $.exfname .gameState.BlueForward.Username }}</button>
+          class="button is-info is-fullwidth is-large">{{ call $.exfname .gameState.BlueForward.Username }}</button>
       </form>
 
       <form action="/game/{{ .id }}/antigoal" method="POST" class="column is-narrow"
         style="padding-left: 0.5rem !important">
         <input type="hidden" name="team" value="blue">
         <input type="hidden" name="position" value="forward">
-        <button type="submit" class="button">
+        <button type="submit" class="button is-large">
           <span class="delete"></span>
         </button>
       </form>
@@ -61,14 +61,14 @@
         <input type="hidden" name="team" value="blue">
         <input type="hidden" name="position" value="goalie">
         <button type="submit"
-          class="button is-info is-outlined is-fullwidth">{{ call $.exfname .gameState.BlueGoalie.Username }}</button>
+          class="button is-info is-outlined is-fullwidth is-large">{{ call $.exfname .gameState.BlueGoalie.Username }}</button>
       </form>
 
       <form action="/game/{{ .id }}/antigoal" method="POST" class="column is-narrow"
         style="padding-left: 0.5rem !important">
         <input type="hidden" name="team" value="blue">
         <input type="hidden" name="position" value="goalie">
-        <button type="submit" class="button">
+        <button type="submit" class="button is-large">
           <span class="delete"></span>
         </button>
       </form>
@@ -85,7 +85,7 @@
         <input type="hidden" name="team" value="red">
         <input type="hidden" name="position" value="forward">
         <button type="submit"
-          class="button is-danger is-fullwidth">{{ call $.exfname .gameState.RedForward.Username }}</button>
+          class="button is-danger is-fullwidth is-large">{{ call $.exfname .gameState.RedForward.Username }}</button>
       </form>
 
       <!-- Antigoal -->
@@ -93,7 +93,7 @@
         style="padding-left: 0.5rem !important">
         <input type="hidden" name="team" value="red">
         <input type="hidden" name="position" value="forward">
-        <button type="submit" class="button">
+        <button type="submit" class="button is-large">
           <span class="delete"></span>
         </button>
       </form>
@@ -110,14 +110,14 @@
         <input type="hidden" name="team" value="red">
         <input type="hidden" name="position" value="goalie">
         <button type="submit"
-          class="button is-danger is-outlined is-fullwidth">{{ call $.exfname .gameState.RedGoalie.Username }}</button>
+          class="button is-danger is-outlined is-fullwidth is-large">{{ call $.exfname .gameState.RedGoalie.Username }}</button>
       </form>
 
       <form action="/game/{{ .id }}/antigoal" method="POST" class="column is-narrow"
         style="padding-left: 0.5rem !important">
         <input type="hidden" name="team" value="red">
         <input type="hidden" name="position" value="goalie">
-        <button type="submit" class="button">
+        <button type="submit" class="button is-large">
           <span class="delete"></span>
         </button>
       </form>
@@ -126,24 +126,24 @@
 
   <!-- Dead Ball -->
   <form action="/game/{{ .id }}/deadball" class="column is-half-tablet" method="POST">
-    <button type="submit" class="button is-primary is-fullwidth">Dead Ball</button>
+    <button type="submit" class="button is-primary is-fullwidth is-large">Dead Ball</button>
   </form>
 
   <!-- Out of Bounds -->
   <form action="/game/{{ .id }}/oob" class="column is-half-tablet" method="POST">
-    <button type="submit" class="button is-primary is-fullwidth">Out of Bounds</button>
+    <button type="submit" class="button is-primary is-fullwidth is-large">Out of Bounds</button>
   </form>
 
   <!-- Swap Blue Team Positions -->
   <form action="/game/{{ .id }}/swap" class="column is-half-tablet" method="POST">
     <input type="hidden" name="team" value="blue">
-    <button type="submit" class="button is-outlined is-info is-fullwidth">Swap Blue Players</button>
+    <button type="submit" class="button is-outlined is-info is-fullwidth is-large">Swap Blue Players</button>
   </form>
 
   <!-- Swap Red Team Positions -->
   <form action="/game/{{ .id }}/swap" class="column is-half-tablet" method="POST">
     <input type="hidden" name="team" value="red">
-    <button type="submit" class="button is-danger is-outlined is-fullwidth">Swap Red Players</button>
+    <button type="submit" class="button is-danger is-outlined is-fullwidth is-large">Swap Red Players</button>
   </form>
 </div>
 
