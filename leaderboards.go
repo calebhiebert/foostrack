@@ -14,6 +14,7 @@ func GetLeaderboardAvgGoalsPerGame(c *gin.Context) {
 	if err := dbase.Raw(`
 	SELECT id, username, avg_goals_per_game
 		FROM user_stats
+		WHERE avg_goals_per_game IS NOT NULL
 		ORDER BY avg_goals_per_game DESC
 		LIMIT 10;`).Scan(&users).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
@@ -35,6 +36,7 @@ func GetLeaderboardWinrate(c *gin.Context) {
 	if err := dbase.Raw(`
 	SELECT id, username, (CAST(games_won AS DECIMAL) / games_played) * 100 AS winrate
 		FROM user_stats
+		WHERE games_played > 0
 		ORDER BY winrate DESC
 		LIMIT 10;`).Scan(&users).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
