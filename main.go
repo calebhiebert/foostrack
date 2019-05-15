@@ -93,6 +93,13 @@ func main() {
 	r.POST("/game/:id/oob", MarkOutOfBounds)
 	r.POST("/game/:id/swap", MarkSwap)
 
+	r.GET("/leaderboards", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/leaderboards/avggoalspergame")
+	})
+
+	r.GET("/leaderboards/avggoalspergame", GetLeaderboardAvgGoalsPerGame)
+	r.GET("/leaderboards/winrate", GetLeaderboardWinrate)
+
 	r.POST("/events/:id/undo", PostEventUndo)
 
 	r.GET("/user/:id", GetUser)
@@ -127,6 +134,9 @@ func initTemplates() {
 	addTemplate("notfound", "base.html", "not-found.html")
 	addTemplate("blocked", "base.html", "blocked.html")
 	addTemplate("user", "base.html", "user.html")
+
+	addTemplate("l-avggoalspergame", "base.html", "leaderboards.html", "l-avg-goals-per-game.html")
+	addTemplate("l-winrate", "base.html", "leaderboards.html", "l-win-rate.html")
 }
 
 // Compiles multiple files into a single template

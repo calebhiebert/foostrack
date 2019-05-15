@@ -1,0 +1,23 @@
+{{ define "board" }}
+
+<table class="table is-hoverable is-striped is-fullwidth">
+  <thead>
+    <tr>
+      <th>Rank</th>
+      <th>User</th>
+      <th>Win rate</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {{ range $i, $a := .users }}
+    <tr>
+      <td>{{ call $.inc $i }}</td>
+      <td>{{ .Username }}</td>
+      <td>{{ call $.fmt "%.1f" .WinRate }}%</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+
+{{ end }}

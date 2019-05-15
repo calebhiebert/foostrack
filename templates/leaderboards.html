@@ -1,0 +1,13 @@
+{{ define "content" }}
+
+<div class="tabs is-centered">
+  <ul>
+    <li class="{{ if eq .board "avggoalspergame" }}is-active{{ end }}">
+      <a href="/leaderboards/avggoalspergame">Goals Per Game</a></li>
+    <li class="{{ if eq .board "winrate" }}is-active{{ end }}"><a href="/leaderboards/winrate">Winrate</a></li>
+  </ul>
+</div>
+
+{{ block "board" .}}Board{{ end }}
+
+{{ end }}
