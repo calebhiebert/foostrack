@@ -37,5 +37,6 @@ func GetUser(c *gin.Context) {
 		"avg_goals_per_game": fmt.Sprintf("%.1f", user.AverageGoalsPerGame),
 		"antigoals":          user.AntiGoals,
 		"goals":              user.Goals,
+		"non_saves":          user.NonSaves,
 	})
 }

@@ -126,7 +126,23 @@ SELECT u.*,
                                OR (cp.team = 'red' AND g.win_goals = g.red_goals))) AS games_won,
 
                           (SELECT COUNT(id)
-                                     FROM game_events g
-                                     WHERE g.user_id = u.id
-                                       AND g.event_type = 'goal') AS goals
+                             FROM game_events g
+                             WHERE g.user_id = u.id
+                                AND g.event_type = 'goal') AS goals,
+
+                          (SELECT COUNT(id)
+                            FROM goals g
+                            WHERE g.goalie_id = u.id) AS non_saves
   FROM users u;
+
+CREATE OR REPLACE VIEW goals AS
+    SELECT g.*, (SELECT user_id
+                    FROM current_positions c
+                    WHERE c.game_id = g.game_id
+                        AND c.position = 'goalie'
+                        AND c.created_at < g.created_at
+                        AND c.team <> g.team
+                        ORDER BY c.id DESC
+                        LIMIT 1) AS goalie_id
+    FROM game_events g
+    WHERE g.event_type = 'goal';
