@@ -95,11 +95,6 @@ func main() {
 
 	r.POST("/events/:id/undo", PostEventUndo)
 
-	r.GET("/teams/:id/edit", GetTeamEditForm)
-	r.GET("/teams", GetTeamList)
-	r.GET("/team/create", GetTeamForm)
-	r.POST("/team/create", PostCreateTeam)
-
 	r.GET("/user/:id", GetUser)
 
 	// Fallback route, if the request does not match any of the above routes
@@ -132,8 +127,6 @@ func initTemplates() {
 	addTemplate("notfound", "base.html", "not-found.html")
 	addTemplate("blocked", "base.html", "blocked.html")
 	addTemplate("user", "base.html", "user.html")
-	addTemplate("teamform", "base.html", "team-form.html")
-	addTemplate("teamlist", "base.html", "team-list.html")
 }
 
 // Compiles multiple files into a single template

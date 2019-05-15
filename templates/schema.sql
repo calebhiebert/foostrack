@@ -26,23 +26,3 @@ CREATE TABLE IF NOT EXISTS game_events (
   updated_at    TIMESTAMPTZ,
   deleted_at    TIMESTAMPTZ
 );
-
--- Create teams table
-CREATE TABLE IF NOT EXISTS teams (
-  id            SERIAL        PRIMARY KEY,
-  name          VARCHAR(40)   NOT NULL,
-  created_at    TIMESTAMPTZ,
-  updated_at    TIMESTAMPTZ,
-  deleted_at    TIMESTAMPTZ
-);
-
--- Create team_users table
-CREATE TABLE IF NOT EXISTS team_users (
-  team_id       INTEGER       NOT NULL,
-  user_id       VARCHAR(40)   NOT NULL,
-  created_at    TIMESTAMPTZ,
-  updated_at    TIMESTAMPTZ,
-  deleted_at    TIMESTAMPTZ,
-
-  PRIMARY KEY (team_id, user_id)
-);
