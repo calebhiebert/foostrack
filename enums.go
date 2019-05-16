@@ -34,3 +34,8 @@ const (
 	TournamentStatusUnderway  = "underway"
 	TournamentStatusCompleted = "completed"
 )
+
+// The type of operations when selecting a user
+const (
+	UserSelectTournament = "tourney"
+)

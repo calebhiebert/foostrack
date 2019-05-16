@@ -1,45 +1,66 @@
 {{ define "content" }}
 
-    <div class="level">
+<div class="level">
 
-        <!-- Title -->
-        <div class="level-left">
-            <div>
-                <h2 class="title is-2 is-marginless">{{ .tournament.Name }}</h2>
-                <span class="has-text-grey is-italic">Managed by {{ .tournament.User.Username }}</span>
-            </div>
-        </div>
-
-        <!-- Participation Information -->
-        <div class="level-right">
-            <form method="POST" action="/tournament/{{ .tournament.ID }}/join">
-                {{ if not .isUserJoinedTournament }}
-                    <button type="submit" class="button is-primary">
-                        Join Tournament
-                    </button>
-                {{ else }}
-                    <button type="submit" class="button is-info" disabled>
-                        Joined
-                    </button>
-                {{ end }}
-            </form>
+    <!-- Title -->
+    <div class="level-left">
+        <div>
+            <h2 class="title is-2 is-marginless">{{ .tournament.Name }}</h2>
+            <span class="has-text-grey is-italic">Managed by {{ .tournament.User.Username }}</span>
         </div>
     </div>
 
-    <h4 class="title is-4 is-marginless mb">
-        Participants
-    </h4>
-    <!-- User List -->
-    <div class="list is-hoverable">
-        {{ range .tournament.TournamentUsers }}
-            <a href="/user/{{ .User.ID }}" class="list-item">
-                <div class="is-flex align-items-center">
-                    <figure class="mr image is-32x32"><img src="{{ .User.PictureURL }}" alt="User Avatar"
-                                                           class="is-rounded"/>
-                    </figure>
-                    <span>{{ .User.Username }}</span>
+    <!-- Participation Information -->
+    <div class="level-right">
+        <form method="POST" action="/tournament/{{ .tournament.ID }}/join">
+            <div class="buttons">
+                <!-- Management Buttons -->
+                {{ if .isManager }}
+                <div class="dropdown is-hoverable mr">
+                    <div class="dropdown-trigger">
+                        <button type="button" class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span>Management</span>
+                        </button>
+                    </div>
+                    <div id="dropdown-menu" class="dropdown-menu" role="menu" style="padding-top: 0">
+                        <div class="dropdown-content">
+                            <a href="#" class="dropdown-item">Pick Teams</a>
+                            <a href="/tournament/{{ .tournament.ID }}/adduser" class="dropdown-item">Add User</a>
+                        </div>
+                    </div>
                 </div>
-            </a>
-        {{ end }}
+                {{ end }}
+
+                <!-- Tournament Join Buttons -->
+                {{ if eq .tournament.Status "signup" }}
+                {{ if not .isUserJoinedTournament }}
+                <button type="submit" class="button is-primary">
+                    Join Tournament
+                </button>
+                {{ else }}
+                <button type="submit" class="button is-info" disabled>
+                    Joined
+                </button>
+                {{ end }}
+                {{ end }}
+            </div>
+        </form>
     </div>
+</div>
+
+<h4 class="title is-4 is-marginless mb">
+    Participants
+</h4>
+<!-- User List -->
+<div class="list is-hoverable">
+    {{ range .tournament.TournamentUsers }}
+    <a href="/user/{{ .User.ID }}" class="list-item">
+        <div class="is-flex align-items-center">
+            <figure class="mr image is-32x32"><img src="{{ .User.PictureURL }}" alt="User Avatar" class="is-rounded" />
+            </figure>
+            <span>{{ .User.Username }}</span>
+        </div>
+    </a>
+    {{ end }}
+</div>
 {{ end }}

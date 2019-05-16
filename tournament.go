@@ -79,9 +79,12 @@ func GetTournament(c *gin.Context) {
 		}
 	}
 
+	isTournamentManager := tournament.CreatedByID == userID
+
 	SendHTML(http.StatusOK, c, "tournament", gin.H{
 		"tournament":             tournament,
 		"isUserJoinedTournament": isUserJoinedTournament,
+		"isManager":              isTournamentManager,
 	})
 }
 
@@ -113,6 +116,78 @@ func PostJoinTournament(c *gin.Context) {
 	}
 
 	if err := dbase.Create(&tournamentUser).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/tournament/%d", tournament.ID))
+}
+
+func GetTournamentUserSelect(c *gin.Context) {
+
+	if !EnsureLoggedIn(c) {
+		return
+	}
+
+	id := c.Param("id")
+
+	var tournament Tournament
+
+	if err := dbase.First(&tournament, "id = ?", id).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	general := c.GetStringMapString("general")
+
+	if general["user_id"] != tournament.CreatedByID {
+		SendForbid(c, "Only tournament managers can add users")
+		return
+	}
+
+	RenderUserSelect(c, UserSelectTournament, fmt.Sprintf("Pick a user for %s", tournament.Name), func(u User) string {
+		return fmt.Sprintf("/tournament/%d/adduser/%s", tournament.ID, u.ID)
+	})
+}
+
+func AddUserToTournament(c *gin.Context) {
+	tid := c.Param("id")
+	uid := c.Param("uid")
+
+	if !EnsureLoggedIn(c) {
+		return
+	}
+
+	var tournament Tournament
+
+	if err := dbase.First(&tournament, "id = ?", tid).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	general := c.GetStringMapString("general")
+
+	if general["user_id"] != tournament.CreatedByID {
+		SendForbid(c, "Only tournament managers can add users")
+		return
+	}
+
+	tUser := TournamentUser{
+		TournamentID: tournament.ID,
+		UserID:       uid,
+	}
+
+	if err := dbase.Create(&tUser).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
 	}

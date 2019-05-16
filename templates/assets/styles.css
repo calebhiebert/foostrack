@@ -74,6 +74,10 @@
   background-image: url('/assets/start.svg');
 }
 
+.big-img-forbid::after {
+  background-image: url('/assets/forbid.svg');
+}
+
 .shadow {
   text-shadow: 0px 0px 4px rgba(150, 150, 150, 0.75);
 }

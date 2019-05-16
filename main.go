@@ -106,6 +106,8 @@ func main() {
 	r.GET("/tournaments/create", GetTournamentForm)
 	r.POST("/tournaments/create", PostTournamentForm)
 	r.GET("/tournament/:id", GetTournament)
+	r.GET("/tournament/:id/adduser", GetTournamentUserSelect)
+	r.GET("/tournament/:id/adduser/:uid", AddUserToTournament)
 	r.POST("/tournament/:id/join", PostJoinTournament)
 
 	r.POST("/events/:id/undo", PostEventUndo)
@@ -136,12 +138,15 @@ func main() {
 func initTemplates() {
 	addTemplate("index", "base.html", "index.html")
 	addTemplate("startgame", "base.html", "start-game.html")
-	addTemplate("error", "base.html", "error.html")
 	addTemplate("game", "base.html", "game.html")
 	addTemplate("games", "base.html", "game-list.html")
-	addTemplate("notfound", "base.html", "not-found.html")
-	addTemplate("blocked", "base.html", "blocked.html")
 	addTemplate("user", "base.html", "user.html")
+	addTemplate("userselect", "base.html", "user-selection.html")
+
+	addTemplate("blocked", "base.html", "blocked.html")
+	addTemplate("notfound", "base.html", "not-found.html")
+	addTemplate("forbid", "base.html", "forbid.html")
+	addTemplate("error", "base.html", "error.html")
 
 	addTemplate("tournaments", "base.html", "tournament-list.html")
 	addTemplate("tournamentform", "base.html", "tournament-form.html")

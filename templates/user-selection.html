@@ -1,0 +1,20 @@
+{{ define "content" }}
+
+<h2 class="title is-2">
+  {{ .title }}
+</h2>
+
+<!-- Users -->
+<div class="list is-hoverable">
+  {{ range .users }}
+  <a href="{{ call $.href . }}" class="list-item">
+    <div class="is-flex align-items-center">
+      <figure class="mr image is-32x32"><img src="{{ .PictureURL }}" alt="Avatar" class="is-rounded" />
+      </figure>
+      <span>{{ .Username }}</span>
+    </div>
+  </a>
+  {{ end }}
+</div>
+
+{{ end }}

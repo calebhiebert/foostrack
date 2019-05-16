@@ -72,6 +72,13 @@ func SendNotFound(c *gin.Context) {
 	SendHTML(http.StatusNotFound, c, "notfound", nil)
 }
 
+// SendForbid sends a forbidden page with a custom message
+func SendForbid(c *gin.Context, message string) {
+	SendHTML(http.StatusForbidden, c, "forbid", gin.H{
+		"message": message,
+	})
+}
+
 // EnsureLoggedIn will send a not logged in page/message and return false if the
 // current user is not logged in, does nothing and returns true otherwise
 func EnsureLoggedIn(c *gin.Context) bool {
@@ -108,4 +115,22 @@ func ExtractFirstName(name string) string {
 	}
 
 	return ""
+}
+
+// RenderUserSelect render the user select list
+func RenderUserSelect(c *gin.Context, mode string, title string, href func(User) string) {
+
+	var users []User
+
+	if err := dbase.Find(&users).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	SendHTML(http.StatusOK, c, "userselect", gin.H{
+		"users": users,
+		"title": title,
+		"mode":  mode,
+		"href":  href,
+	})
 }
