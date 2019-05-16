@@ -67,6 +67,25 @@ func ListGames(c *gin.Context) {
 		return
 	}
 
+	teamIds := make([]uint, 0)
+
+	for _, game := range games {
+		if game.RedTeamID != nil {
+			teamIds = append(teamIds, *game.RedTeamID)
+		}
+
+		if game.BlueTeamID != nil {
+			teamIds = append(teamIds, *game.BlueTeamID)
+		}
+	}
+
+	var teams []Team
+
+	if err := dbase.Where(teamIds).Find(&teams).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
 	userIds := make([]string, 0)
 
 	for _, pos := range currentPositions {
@@ -90,6 +109,16 @@ func ListGames(c *gin.Context) {
 	for _, gi := range games {
 		gi.Started = gi.StartTime != nil
 		gi.Ended = gi.EndTime != nil
+
+		for _, team := range teams {
+			if *gi.BlueTeamID == team.ID {
+				gi.BlueTeam = team
+			}
+
+			if *gi.RedTeamID == team.ID {
+				gi.RedTeam = team
+			}
+		}
 
 		for _, pos := range currentPositions {
 			if pos.GameID == gi.ID {

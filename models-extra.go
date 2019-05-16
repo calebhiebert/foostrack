@@ -33,6 +33,10 @@ type GameExtended struct {
 	BlueForward User
 	RedGoalie   User
 	RedForward  User
+	BlueTeamID  *uint `gorm:"column:blue_team_id"`
+	BlueTeam    Team
+	RedTeamID   *uint `gorm:"column:red_team_id"`
+	RedTeam     Team
 }
 
 // CurrentGameState represents the current state of a single game

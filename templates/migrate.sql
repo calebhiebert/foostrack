@@ -63,3 +63,14 @@ DO $$
         END;
     END;
 $$;
+
+-- Add Team ID to game events
+DO $$ 
+    BEGIN
+        BEGIN
+            ALTER TABLE game_events ADD COLUMN team_id INTEGER REFERENCES teams(id);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column team_id already exists in game_events.';
+        END;
+    END;
+$$;

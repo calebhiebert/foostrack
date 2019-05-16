@@ -1,6 +1,6 @@
 CREATE OR REPLACE VIEW current_positions AS
   WITH positions AS (
-    SELECT g.*, ROW_NUMBER() OVER (PARTITION BY game_id, team, position, event_type ORDER BY id DESC) AS rn 
+    SELECT g.id, g.game_id, g.user_id, g.event_type, g.team, g.position, g.created_at, g.updated_at, g.deleted_at, ROW_NUMBER() OVER (PARTITION BY game_id, team, position, event_type ORDER BY id DESC) AS rn, g.team_id
     FROM game_events AS g
     WHERE g.deleted_at IS NULL
   )
@@ -23,7 +23,10 @@ CREATE OR REPLACE VIEW game_extended AS
       (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'start') AS start_time,
       (SELECT created_at FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'end') AS end_time,
       (SELECT ARRAY_AGG(cp.user_id) AS blue_members FROM current_positions cp  WHERE cp.game_id = g.id AND cp.team = 'blue' GROUP BY cp.game_id),
-      (SELECT ARRAY_AGG(cp.user_id) AS red_members FROM current_positions cp  WHERE cp.game_id = g.id AND cp.team = 'red' GROUP BY cp.game_id)
+      (SELECT ARRAY_AGG(cp.user_id) AS red_members FROM current_positions cp  WHERE cp.game_id = g.id AND cp.team = 'red' GROUP BY cp.game_id),
+      (SELECT team_id FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'teamjoin' AND team = 'blue') AS blue_team_id,
+      (SELECT team_id FROM game_events ge WHERE ge.game_id = g.id AND ge.event_type = 'teamjoin' AND team = 'red') AS red_team_id 
+
     FROM games g;
 
 DROP VIEW IF EXISTS user_stats;

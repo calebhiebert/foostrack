@@ -20,10 +20,13 @@ type Game struct {
 // GameEvent represents the game_events table
 type GameEvent struct {
 	gorm.Model
-	GameID    uint          `gorm:"not null" json:"gameId"`
-	Game      Game          `gorm:"association_foreignkey:GameID;" json:"-"`
-	UserID    *string       `json:"userId"`
-	User      User          `gorm:"association_foreignkey:UserID;foreignkey:ID" json:"-"`
+	GameID uint    `gorm:"not null" json:"gameId"`
+	Game   Game    `gorm:"association_foreignkey:GameID;" json:"-"`
+	UserID *string `json:"userId"`
+	User   User    `gorm:"association_foreignkey:UserID;foreignkey:ID" json:"-"`
+	TeamID *uint   `gorm:"column:team_id" json:"teamId"`
+	// TTeam stands for tournament team
+	TTeam     Team          `gorm:"association_foreignkey:TeamID"`
 	EventType string        `json:"eventType"`
 	Team      string        `json:"team"`
 	Position  string        `json:"position"`

@@ -362,7 +362,7 @@ func CreateTeams(c *gin.Context) {
 		t1 := teams[i]
 		t2 := teams[i+1]
 
-		game, err := createGame(t1.Members[0].UserID, t1.Members[1].UserID, t2.Members[0].UserID, t2.Members[0].UserID, 10)
+		game, err := createGame(t1.Members[0].UserID, t1.Members[1].UserID, t2.Members[0].UserID, t2.Members[0].UserID, 10, &t1.ID, &t2.ID, tx)
 		if err != nil {
 			tx.Rollback()
 			SendError(http.StatusInternalServerError, c, err)

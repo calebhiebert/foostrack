@@ -14,6 +14,7 @@ const (
 	GameEventAntiGoal           = "antigoal"
 	GameEventDeadBall           = "dead"
 	GameEventOutOfBounds        = "oob"
+	GameEventTeamJoin           = "teamjoin"
 )
 
 // Game team constants

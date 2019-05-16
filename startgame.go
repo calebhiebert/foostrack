@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 /*
@@ -46,7 +47,7 @@ func PostStartGame(c *gin.Context) {
 	redGoalieID := c.PostForm("red_goalie")
 	redForwardID := c.PostForm("red_forward")
 
-	game, err := createGame(blueGoalieID, blueForwardID, redGoalieID, redForwardID, 10)
+	game, err := createGame(blueGoalieID, blueForwardID, redGoalieID, redForwardID, 10, nil, nil, nil)
 	if err != nil {
 		renderStartGame(c, gin.H{
 			"errors": []error{err},
@@ -56,7 +57,15 @@ func PostStartGame(c *gin.Context) {
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
 }
 
-func createGame(bgID, bfID, rgID, rfID string, winGoals int) (*Game, error) {
+func createGame(bgID, bfID, rgID, rfID string, winGoals int, btID, rtID *uint, tx *gorm.DB) (*Game, error) {
+
+	commitTransaction := false
+
+	if tx == nil {
+		tx = dbase.Begin()
+		commitTransaction = true
+	}
+
 	if bgID == rgID ||
 		bgID == rfID ||
 		bfID == rgID ||
@@ -67,9 +76,6 @@ func createGame(bgID, bfID, rgID, rfID string, winGoals int) (*Game, error) {
 	game := Game{
 		WinGoals: winGoals,
 	}
-
-	// Create database events
-	tx := dbase.Begin()
 
 	if err := tx.Create(&game).Error; err != nil {
 		tx.Rollback()
@@ -128,8 +134,36 @@ func createGame(bgID, bfID, rgID, rfID string, winGoals int) (*Game, error) {
 		return nil, err
 	}
 
-	if err := tx.Commit().Error; err != nil {
-		return nil, err
+	if btID != nil && rtID != nil {
+		blueTeamEvent := GameEvent{
+			GameID:    game.ID,
+			EventType: GameEventTeamJoin,
+			Team:      GameTeamBlue,
+			TeamID:    btID,
+		}
+
+		redTeamEvent := GameEvent{
+			GameID:    game.ID,
+			EventType: GameEventTeamJoin,
+			Team:      GameTeamRed,
+			TeamID:    rtID,
+		}
+
+		if err := tx.Create(&blueTeamEvent).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+
+		if err := tx.Create(&redTeamEvent).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	if commitTransaction {
+		if err := tx.Commit().Error; err != nil {
+			return nil, err
+		}
 	}
 
 	return &game, nil

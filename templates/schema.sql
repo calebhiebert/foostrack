@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS game_events (
   game_id       INTEGER       NOT NULL        REFERENCES games(id),
   user_id       VARCHAR(40)                   REFERENCES users(id),
   event_type    VARCHAR(10)   NOT NULL,
+  team_id       INTEGER       REFERENCES teams(id),
   team          VARCHAR(10),
   position      VARCHAR(10),
   created_at    TIMESTAMPTZ,

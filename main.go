@@ -218,4 +218,6 @@ func initDB() {
 	if err = dbase.Exec(sql).Error; err != nil {
 		panic(err)
 	}
+
+	dbase.LogMode(true)
 }
