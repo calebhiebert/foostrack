@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS tournaments (
 CREATE TABLE IF NOT EXISTS teams (
   id            SERIAL        PRIMARY KEY     NOT NULL,
   name          VARCHAR(40)   NOT NULL,
+  color         CHAR(7)       NOT NULL        DEFAULT '#FFFFFF',
   tournament_id INTEGER       NOT NULL        REFERENCES tournaments(id),
   created_at    TIMESTAMPTZ,
   updated_at    TIMESTAMPTZ,

@@ -46,13 +46,17 @@ type Tournament struct {
 	Status          string
 	User            User             `gorm:"association_foreignkey:CreatedByID;foreignkey:ID"`
 	TournamentUsers []TournamentUser `gorm:"foreignkey:TournamentID"`
+	Teams           []Team           `gorm:"foreignkey:TournamentID"`
 }
 
 // Team represents the teams table
 type Team struct {
 	gorm.Model
-	Name    string
-	Members []TournamentUser `gorm:"foreignkey:TeamID"`
+	Name         string
+	Color        string
+	TournamentID uint             `gorm:"primary_key" json:"tournamentId"`
+	Tournament   Tournament       `gorm:"association_foreignkey:TournamentID;foreignkey:ID"`
+	Members      []TournamentUser `gorm:"foreignkey:TeamID"`
 }
 
 // TournamentUser represents the tournament_users table

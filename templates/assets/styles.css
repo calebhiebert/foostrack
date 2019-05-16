@@ -87,3 +87,7 @@
   width: 3px !important;
   left: -1.5px !important;
 }
+
+.has-cursor-disabled {
+  cursor: not-allowed;
+}

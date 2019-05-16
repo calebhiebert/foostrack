@@ -24,7 +24,13 @@
                     </div>
                     <div id="dropdown-menu" class="dropdown-menu" role="menu" style="padding-top: 0">
                         <div class="dropdown-content">
-                            <a href="#" class="dropdown-item">Pick Teams</a>
+                            {{ if .canMakeTeams }}
+                            <a href="/tournament/{{ .tournament.ID }}/createteams" class="dropdown-item">Make Teams</a>
+                            {{ else }}
+                            <span
+                                class="dropdown-item has-background-white-ter has-text-grey-light is-unselectable has-cursor-disabled">Make
+                                Teams</span>
+                            {{ end }}
                             <a href="/tournament/{{ .tournament.ID }}/adduser" class="dropdown-item">Add User</a>
                             <a href="/tournament/{{ .tournament.ID }}/nuke" class="dropdown-item">Nuke Tournament</a>
                         </div>
@@ -49,10 +55,19 @@
     </div>
 </div>
 
+<!-- Uneven Participants -->
+{{ if .unevenParticipants }}
+<div class="notification is-warning">
+    There are an uneven number of participants. The tournament will not be able to begin until there are an even number
+    of participants
+</div>
+{{ end }}
+
+
+<!-- User List -->
 <h4 class="title is-4 is-marginless mb">
     Participants
 </h4>
-<!-- User List -->
 <div class="list is-hoverable">
     {{ range .tournament.TournamentUsers }}
     <a href="/user/{{ .User.ID }}" class="list-item">
@@ -64,4 +79,56 @@
     </a>
     {{ end }}
 </div>
+
+<!-- Teams -->
+<h4 class="title is-4">
+    Teams
+</h4>
+{{ range .tournament.Teams }}
+<div id="tm-{{ .ID }}" class="card mb">
+
+    <!-- Team Name -->
+    <div class="card-header">
+        <p class="card-header-title">{{ .Name }}</p>
+    </div>
+
+    <!-- Members -->
+    <div class="card-content">
+        <div class="level">
+            <div class="level-left box is-marginless" style="padding: 0.5rem">
+                <div class="is-flex align-items-center">
+                    <figure class="mr image is-32x32"><img src="{{ (index .Members 0).User.PictureURL }}" alt="Avatar"
+                            class="is-rounded" />
+                    </figure>
+                    <span>{{ (index .Members 0).User.Username }}</span>
+                </div>
+            </div>
+
+            <div class="level-right box" style="padding: 0.5rem">
+                <div class="is-flex align-items-center">
+                    <span style="margin-left: auto">{{ (index .Members 1).User.Username }}</span>
+                    <figure class="ml image is-32x32"><img src="{{ (index .Members 1).User.PictureURL }}" alt="Avatar"
+                            class="is-rounded" />
+                    </figure>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    {{ if (call $.canEditTeam .) }}
+    <div class="card-footer">
+        <a href="/team/{{ .ID }}/edit" class="card-footer-item">Edit</a>
+    </div>
+    {{ end }}
+</div>
+{{ end }}
+
+<!-- Teams JSON -->
+<script>
+    var teams = {{ call $.marshal .teams -}};
+</script>
+<script src="/assets/tournament.js"></script>
+
+
 {{ end }}

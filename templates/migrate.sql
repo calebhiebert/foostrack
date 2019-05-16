@@ -30,3 +30,14 @@ DO $$
         END;
     END;
 $$;
+
+-- Add Team color
+DO $$ 
+    BEGIN
+        BEGIN
+            ALTER TABLE teams ADD COLUMN color CHAR(7) NOT NULL DEFAULT '#FFFFFF';
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column color already exists in teams.';
+        END;
+    END;
+$$;

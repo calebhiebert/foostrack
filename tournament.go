@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/lucasb-eyer/go-colorful"
 )
 
 // GetTournamentList returns the tournament list page
@@ -60,7 +61,7 @@ func GetTournament(c *gin.Context) {
 
 	var tournament Tournament
 
-	if err := dbase.Preload("TournamentUsers.User").Preload("User").First(&tournament, "id = ?", id).Error; err != nil {
+	if err := dbase.Preload("TournamentUsers.User").Preload("User").Preload("Teams.Members.User").First(&tournament, "id = ?", id).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			SendNotFound(c)
 			return
@@ -81,11 +82,36 @@ func GetTournament(c *gin.Context) {
 	}
 
 	isTournamentManager := tournament.CreatedByID == userID
+	canMakeTeams := tournament.Status == TournamentStatusSignup && len(tournament.TournamentUsers)%2 == 0
+
+	teams := make([]map[string]interface{}, 0)
+
+	for _, t := range tournament.Teams {
+		tm := make(map[string]interface{})
+
+		teams = append(teams, tm)
+
+		tm["id"] = t.ID
+		tm["color"] = t.Color
+		tm["name"] = t.Name
+	}
 
 	SendHTML(http.StatusOK, c, "tournament", gin.H{
 		"tournament":             tournament,
 		"isUserJoinedTournament": isUserJoinedTournament,
 		"isManager":              isTournamentManager,
+		"canMakeTeams":           canMakeTeams,
+		"unevenParticipants":     len(tournament.TournamentUsers)%2 != 0,
+		"teams":                  teams,
+		"canEditTeam": func(t Team) bool {
+			for _, tm := range t.Members {
+				if tm.UserID == userID {
+					return true
+				}
+			}
+			
+			return tournament.CreatedByID == userID
+		},
 	})
 }
 
@@ -235,4 +261,84 @@ func NukeTournament(c *gin.Context) {
 	}
 
 	c.Redirect(http.StatusFound, "/tournaments")
+}
+
+// CreateTeams will create teams for a tournament
+func CreateTeams(c *gin.Context) {
+	if !EnsureLoggedIn(c) {
+		return
+	}
+
+	id := c.Param("id")
+
+	var tournament Tournament
+
+	if err := dbase.Preload("TournamentUsers.User").Preload("User").First(&tournament, "id = ?", id).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	general := c.GetStringMapString("general")
+	userID := general["user_id"]
+
+	if tournament.CreatedByID != userID {
+		SendForbid(c, "Only tournament managers can create teams")
+		return
+	}
+
+	// Create Teams
+	tx := dbase.Begin()
+
+	for i := 0; i < len(tournament.TournamentUsers); i += 2 {
+		u1 := &tournament.TournamentUsers[i]
+		u2 := &tournament.TournamentUsers[i+1]
+
+		team := &Team{
+			TournamentID: tournament.ID,
+			Name:         fmt.Sprintf("Team %d", i/2+1),
+			Color:        colorful.HappyColor().Hex(),
+		}
+
+		if err := tx.Create(&team).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		u1.TeamID = &team.ID
+		u2.TeamID = &team.ID
+
+		if err := tx.Save(u1).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		if err := tx.Save(u2).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+	}
+
+	tournament.Status = TournamentStatusUnderway
+
+	if err := tx.Save(&tournament).Error; err != nil {
+		tx.Rollback()
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	// Commit Teams
+	if err := tx.Commit().Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/tournament/%d", tournament.ID))
 }
