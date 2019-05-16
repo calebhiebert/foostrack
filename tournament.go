@@ -107,7 +107,7 @@ func GetTournament(c *gin.Context) {
 
 	for _, bp := range bracketPositions {
 		for _, t := range tournament.Teams {
-			if t.ID == *bp.TeamID {
+			if t.ID == bp.TeamID {
 				bp.Team = t
 			}
 		}
@@ -263,6 +263,11 @@ func NukeTournament(c *gin.Context) {
 		return
 	}
 
+	if err := dbase.Unscoped().Where("tournament_id = ?", tournament.ID).Delete(&BracketPosition{}).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
 	if err := dbase.Unscoped().Where("tournament_id = ?", tournament.ID).Delete(&TournamentUser{}).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
@@ -310,6 +315,7 @@ func CreateTeams(c *gin.Context) {
 	}
 
 	bracketPosition := 0
+	teams := make([]*Team, 0)
 
 	// Create Teams
 	tx := dbase.Begin()
@@ -345,14 +351,80 @@ func CreateTeams(c *gin.Context) {
 			return
 		}
 
-		bracket := BracketPosition{
+		team.Members = make([]TournamentUser, 2)
+		team.Members[0] = *u1
+		team.Members[1] = *u2
+
+		teams = append(teams, team)
+	}
+
+	for i := 0; i < (len(teams) - (len(teams) % 2)); i += 2 {
+		t1 := teams[i]
+		t2 := teams[i+1]
+
+		game, err := createGame(t1.Members[0].UserID, t1.Members[1].UserID, t2.Members[0].UserID, t2.Members[0].UserID, 10)
+		if err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		b1 := BracketPosition{
 			TournamentID:    tournament.ID,
-			TeamID:          &team.ID,
+			TeamID:          t1.ID,
+			GameID:          &game.ID,
 			BracketLevel:    0,
 			BracketPosition: bracketPosition,
 		}
 
-		if err := tx.Create(&bracket).Error; err != nil {
+		if err := tx.Create(&b1).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		bracketPosition++
+
+		b2 := BracketPosition{
+			TournamentID:    tournament.ID,
+			TeamID:          t2.ID,
+			GameID:          &game.ID,
+			BracketLevel:    0,
+			BracketPosition: bracketPosition,
+		}
+
+		if err := tx.Create(&b2).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		bracketPosition++
+	}
+
+	// There is an odd team
+	if len(teams)%2 != 0 {
+		b1 := BracketPosition{
+			TournamentID:    tournament.ID,
+			TeamID:          teams[len(teams)-1].ID,
+			BracketLevel:    0,
+			BracketPosition: bracketPosition,
+		}
+
+		if err := tx.Create(&b1).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		b2 := BracketPosition{
+			TournamentID:    tournament.ID,
+			TeamID:          teams[len(teams)-1].ID,
+			BracketLevel:    1,
+			BracketPosition: 0,
+		}
+
+		if err := tx.Create(&b2).Error; err != nil {
 			tx.Rollback()
 			SendError(http.StatusInternalServerError, c, err)
 			return

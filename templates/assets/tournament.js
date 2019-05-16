@@ -7,8 +7,6 @@ const LUMINANCE_TOLERANCE = 0.43;
 const GRADIENT_CHANGE = -30;
 
 (function() {
-  console.log(teams);
-
   teams.forEach(function(team) {
     var card = document.getElementById(`tm-${team.id}`);
 
@@ -54,13 +52,9 @@ const GRADIENT_CHANGE = -30;
           hoverBackgroundColor: bl.map((bt) => getSecondaryColor(bt.team.color).css()),
         };
       }),
-      labels: bracketLevels[0].map(bt => bt.team.name),
+      labels: (bracketLevels[0] || []).map(bt => bt.team.name),
     },
     options: {
-      title: {
-        display: true,
-        text: 'Goals',
-      },
       cutoutPercentage: 10,
       gridLines: {
         display: false,
@@ -69,17 +63,39 @@ const GRADIENT_CHANGE = -30;
       tooltips: {
         callbacks: {
           label: function(tti, data) {
-            return 'TODO: Put game status in here';
+            var bl = bracketLevels[tti.datasetIndex][tti.index];
+
+            if (bl.gameId) {
+              return 'Game ' + bl.gameId;
+            } else {
+              return 'Game Not Created';
+            }
+          },
+
+          title: function(tti, data) {
+            var bl = bracketLevels[tti[0].datasetIndex][tti[0].index];
+
+            return bl.team.name;
           }
         }
       }
     },
   });
+
+  document.getElementById('bracket-chart').onclick = (e) => {
+    var ele = bracketChart.getElementAtEvent(e)[0];
+
+    if (ele) {
+      var bl = bracketLevels[ele._datasetIndex][ele._index];
+
+      if (bl.gameId) {
+        window.location = `/game/${bl.gameId}`
+      }
+    }
+  }
 })();
 
 function splitBracketLevels() {
-  console.log(bracketPositions);
-
   var bracketLevels = [];
 
   bracketPositions.forEach(bp => {

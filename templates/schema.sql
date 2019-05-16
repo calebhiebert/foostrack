@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS bracket_positions (
   team_id       INTEGER       NOT NULL        REFERENCES teams(id),
   bracket_level INTEGER       NOT NULL        DEFAULT 0,
   bracket_position INTEGER    NOT NULL        DEFAULT 0,
-  game_id       INTEGER       NOT NULL        REFERENCES games(id),
+  game_id       INTEGER       REFERENCES games(id),
   created_at    TIMESTAMPTZ,
   updated_at    TIMESTAMPTZ,
   deleted_at    TIMESTAMPTZ,
