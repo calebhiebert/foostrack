@@ -8,7 +8,7 @@
 
     if (card) {
       var color = chroma(team.color);
-      var useWhite = color.luminance() < 0.4;
+      var useWhite = color.luminance() < 0.43;
 
       var color2 = color.hsl();
 
@@ -21,7 +21,6 @@
       card.style.background = `linear-gradient(90deg, ${color.css()} 0%, ${chroma.hsl(color2[0], color2[1], color2[2]).css()} 100%)`;
 
       if (useWhite) {
-
         // Change Card Title
         var title = card.querySelector('.card-header > .card-header-title');
         title.classList.add('has-text-white');
@@ -29,9 +28,16 @@
         // Change card actions
         var actions = card.querySelectorAll('.card-footer > .card-footer-item');
 
-        actions.forEach(a => {
+        actions.forEach((a) => {
           a.classList.add('has-text-white');
-        })
+        });
+      } else {
+        // Change card actions
+        var actions = card.querySelectorAll('.card-footer > .card-footer-item');
+
+        actions.forEach((a) => {
+          a.classList.add('has-text-dark');
+        });
       }
     }
   });

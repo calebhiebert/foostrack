@@ -57,3 +57,15 @@ CREATE TABLE IF NOT EXISTS tournament_users (
 
   PRIMARY KEY (tournament_id, user_id)
 );
+
+CREATE TABLE IF NOT EXISTS bracket_positions (
+  tournament_id INTEGER       NOT NULL        REFERENCES tournaments(id),
+  team_id       INTEGER       NOT NULL        REFERENCES teams(id),
+  bracket_level INTEGER       NOT NULL        DEFAULT 0,
+  bracket_position INTEGER    NOT NULL        DEFAULT 0,
+  created_at    TIMESTAMPTZ,
+  updated_at    TIMESTAMPTZ,
+  deleted_at    TIMESTAMPTZ,
+
+  PRIMARY KEY (tournament_id, team_id, bracket_level, bracket_position)
+);

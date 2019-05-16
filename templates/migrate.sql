@@ -41,3 +41,14 @@ DO $$
         END;
     END;
 $$;
+
+-- Add Team tournament id
+DO $$ 
+    BEGIN
+        BEGIN
+            ALTER TABLE teams ADD COLUMN tournament_id INTEGER NOT NULL REFERENCES tournaments(id);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column tournament_id already exists in teams.';
+        END;
+    END;
+$$;

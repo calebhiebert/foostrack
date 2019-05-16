@@ -109,7 +109,7 @@ func GetTournament(c *gin.Context) {
 					return true
 				}
 			}
-			
+
 			return tournament.CreatedByID == userID
 		},
 	})
@@ -291,6 +291,8 @@ func CreateTeams(c *gin.Context) {
 		return
 	}
 
+	bracketPosition := 0
+
 	// Create Teams
 	tx := dbase.Begin()
 
@@ -324,6 +326,21 @@ func CreateTeams(c *gin.Context) {
 			SendError(http.StatusInternalServerError, c, err)
 			return
 		}
+
+		bracket := BracketPosition{
+			TournamentID:    tournament.ID,
+			TeamID:          &team.ID,
+			BracketLevel:    0,
+			BracketPosition: bracketPosition,
+		}
+
+		if err := tx.Create(&bracket).Error; err != nil {
+			tx.Rollback()
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		bracketPosition++
 	}
 
 	tournament.Status = TournamentStatusUnderway

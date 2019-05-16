@@ -71,3 +71,16 @@ type TournamentUser struct {
 	UpdatedAt    time.Time
 	DeletedAt    *time.Time `sql:"index"`
 }
+
+// BracketPosition represents the bracket_positions table
+type BracketPosition struct {
+	TournamentID    uint       `gorm:"primary_key" json:"tournamentId"`
+	Tournament      Tournament `gorm:"association_foreignkey:TournamentID;foreignkey:ID"`
+	TeamID          *uint      `json:"teamId"`
+	Team            Team       `gorm:"association_foreignkey:TeamID"`
+	BracketLevel    int        `gorm:"column:bracket_level"`
+	BracketPosition int        `gorm:"column:bracket_position"`
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	DeletedAt       *time.Time `sql:"index"`
+}
