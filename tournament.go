@@ -194,3 +194,44 @@ func AddUserToTournament(c *gin.Context) {
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/tournament/%d", tournament.ID))
 }
+
+func NukeTournament(c *gin.Context) {
+	id := c.Param("id")
+
+	var tournament Tournament
+
+	if err := dbase.Preload("TournamentUsers.User").Preload("User").First(&tournament, "id = ?", id).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			SendNotFound(c)
+			return
+		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	general := c.GetStringMapString("general")
+	userID := general["user_id"]
+
+	if tournament.CreatedByID != userID {
+		SendForbid(c, "Only tournament managers can delete tournaments")
+		return
+	}
+
+	if err := dbase.Unscoped().Where("tournament_id = ?", tournament.ID).Delete(&TournamentUser{}).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	if err := dbase.Unscoped().Where("tournament_id = ?", tournament.ID).Delete(&Team{}).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	if err := dbase.Unscoped().Where("id = ?", tournament.ID).Delete(&Tournament{}).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/tournaments")
+}

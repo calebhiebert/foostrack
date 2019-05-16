@@ -109,6 +109,7 @@ func main() {
 	r.GET("/tournament/:id/adduser", GetTournamentUserSelect)
 	r.GET("/tournament/:id/adduser/:uid", AddUserToTournament)
 	r.POST("/tournament/:id/join", PostJoinTournament)
+	r.GET("/tournament/:id/nuke", NukeTournament)
 
 	r.POST("/events/:id/undo", PostEventUndo)
 
