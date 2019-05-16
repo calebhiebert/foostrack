@@ -43,6 +43,7 @@ func PostTournamentForm(c *gin.Context) {
 	tournament := Tournament{
 		Name:        name,
 		CreatedByID: general["user_id"],
+		Status:      TournamentStatusSignup,
 	}
 
 	if err := dbase.Create(&tournament).Error; err != nil {
