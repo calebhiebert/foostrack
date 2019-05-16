@@ -96,6 +96,23 @@ func GetTournament(c *gin.Context) {
 		tm["name"] = t.Name
 	}
 
+	var bracketPositions []*BracketPosition
+
+	if err := dbase.Raw(`SELECT * FROM bracket_positions
+												WHERE tournament_id = ?
+												ORDER BY bracket_level ASC, bracket_position ASC;`, tournament.ID).Scan(&bracketPositions).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	for _, bp := range bracketPositions {
+		for _, t := range tournament.Teams {
+			if t.ID == *bp.TeamID {
+				bp.Team = t
+			}
+		}
+	}
+
 	SendHTML(http.StatusOK, c, "tournament", gin.H{
 		"tournament":             tournament,
 		"isUserJoinedTournament": isUserJoinedTournament,
@@ -112,6 +129,7 @@ func GetTournament(c *gin.Context) {
 
 			return tournament.CreatedByID == userID
 		},
+		"bracketPositions": bracketPositions,
 	})
 }
 

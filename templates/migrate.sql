@@ -52,3 +52,14 @@ DO $$
         END;
     END;
 $$;
+
+-- Add Bracket Position game id
+DO $$ 
+    BEGIN
+        BEGIN
+            ALTER TABLE bracket_positions ADD COLUMN game_id INTEGER NOT NULL REFERENCES games(id);
+        EXCEPTION
+            WHEN duplicate_column THEN RAISE NOTICE 'column game_id already exists in bracket_positions.';
+        END;
+    END;
+$$;

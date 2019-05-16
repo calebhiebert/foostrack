@@ -52,8 +52,8 @@ type Tournament struct {
 // Team represents the teams table
 type Team struct {
 	gorm.Model
-	Name         string
-	Color        string
+	Name         string           `json:"name"`
+	Color        string           `json:"color"`
 	TournamentID uint             `gorm:"primary_key" json:"tournamentId"`
 	Tournament   Tournament       `gorm:"association_foreignkey:TournamentID;foreignkey:ID"`
 	Members      []TournamentUser `gorm:"foreignkey:TeamID"`
@@ -75,12 +75,12 @@ type TournamentUser struct {
 // BracketPosition represents the bracket_positions table
 type BracketPosition struct {
 	TournamentID    uint       `gorm:"primary_key" json:"tournamentId"`
-	Tournament      Tournament `gorm:"association_foreignkey:TournamentID;foreignkey:ID"`
+	Tournament      Tournament `gorm:"association_foreignkey:TournamentID;foreignkey:ID" json:"-"`
 	TeamID          *uint      `json:"teamId"`
-	Team            Team       `gorm:"association_foreignkey:TeamID"`
-	BracketLevel    int        `gorm:"column:bracket_level"`
-	BracketPosition int        `gorm:"column:bracket_position"`
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-	DeletedAt       *time.Time `sql:"index"`
+	Team            Team       `gorm:"association_foreignkey:TeamID" json:"team"`
+	BracketLevel    int        `gorm:"column:bracket_level" json:"bracketLevel"`
+	BracketPosition int        `gorm:"column:bracket_position" json:"bracketPosition"`
+	CreatedAt       time.Time  `json:"createdAt"`
+	UpdatedAt       time.Time  `json:"updatedAt"`
+	DeletedAt       *time.Time `sql:"index" json:"deletedAt"`
 }

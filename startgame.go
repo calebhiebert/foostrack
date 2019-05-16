@@ -46,18 +46,26 @@ func PostStartGame(c *gin.Context) {
 	redGoalieID := c.PostForm("red_goalie")
 	redForwardID := c.PostForm("red_forward")
 
-	if blueGoalieID == redGoalieID ||
-		blueGoalieID == redForwardID ||
-		blueForwardID == redGoalieID ||
-		blueForwardID == redForwardID {
+	game, err := createGame(blueGoalieID, blueForwardID, redGoalieID, redForwardID, 10)
+	if err != nil {
 		renderStartGame(c, gin.H{
-			"errors": []error{errors.New("One player cannot be on both teams")},
+			"errors": []error{err},
 		})
-		return
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
+}
+
+func createGame(bgID, bfID, rgID, rfID string, winGoals int) (*Game, error) {
+	if bgID == rgID ||
+		bgID == rfID ||
+		bfID == rgID ||
+		bfID == rfID {
+		return nil, errors.New("One player cannot be on both teams")
 	}
 
 	game := Game{
-		WinGoals: 10,
+		WinGoals: winGoals,
 	}
 
 	// Create database events
@@ -65,14 +73,13 @@ func PostStartGame(c *gin.Context) {
 
 	if err := tx.Create(&game).Error; err != nil {
 		tx.Rollback()
-		SendError(http.StatusInternalServerError, c, err)
-		return
+		return nil, err
 	}
 
 	blueGoalieEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    &blueGoalieID,
+		UserID:    &bgID,
 		Team:      GameTeamBlue,
 		Position:  GamePositionGoalie,
 	}
@@ -80,7 +87,7 @@ func PostStartGame(c *gin.Context) {
 	blueForwardEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    &blueForwardID,
+		UserID:    &bfID,
 		Team:      GameTeamBlue,
 		Position:  GamePositionForward,
 	}
@@ -88,7 +95,7 @@ func PostStartGame(c *gin.Context) {
 	redGoalieEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    &redGoalieID,
+		UserID:    &rgID,
 		Team:      GameTeamRed,
 		Position:  GamePositionGoalie,
 	}
@@ -96,39 +103,34 @@ func PostStartGame(c *gin.Context) {
 	redForwardEvent := GameEvent{
 		GameID:    game.ID,
 		EventType: GameEventPlayerTakePosition,
-		UserID:    &redForwardID,
+		UserID:    &rfID,
 		Team:      GameTeamRed,
 		Position:  GamePositionForward,
 	}
 
 	if err := tx.Create(&blueGoalieEvent).Error; err != nil {
 		tx.Rollback()
-		SendError(http.StatusInternalServerError, c, err)
-		return
+		return nil, err
 	}
 
 	if err := tx.Create(&blueForwardEvent).Error; err != nil {
 		tx.Rollback()
-		SendError(http.StatusInternalServerError, c, err)
-		return
+		return nil, err
 	}
 
 	if err := tx.Create(&redGoalieEvent).Error; err != nil {
 		tx.Rollback()
-		SendError(http.StatusInternalServerError, c, err)
-		return
+		return nil, err
 	}
 
 	if err := tx.Create(&redForwardEvent).Error; err != nil {
 		tx.Rollback()
-		SendError(http.StatusInternalServerError, c, err)
-		return
+		return nil, err
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		SendError(http.StatusInternalServerError, c, err)
-		return
+		return nil, err
 	}
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
+	return &game, nil
 }

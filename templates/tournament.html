@@ -124,11 +124,17 @@
 </div>
 {{ end }}
 
+<canvas id="bracket-chart" width="400" height="400"></canvas>
+
+<!-- Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.bundle.min.js"
+  integrity="sha256-xKeoJ50pzbUGkpQxDYHD7o7hxe0LaOGeguUidbq6vis=" crossorigin="anonymous"></script>
+
 <!-- Teams JSON -->
 <script>
     var teams = {{ call $.marshal .teams -}};
+    var bracketPositions = {{ call $.marshal .bracketPositions -}};
 </script>
 <script src="/assets/tournament.js"></script>
-
 
 {{ end }}
