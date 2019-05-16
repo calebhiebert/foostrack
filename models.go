@@ -45,7 +45,7 @@ type Tournament struct {
 	CreatedByID     string
 	Status          string
 	User            User             `gorm:"association_foreignkey:CreatedByID;foreignkey:ID"`
-	TournamentUsers []TournamentUser `gorm:"foreignkey:TeamID"`
+	TournamentUsers []TournamentUser `gorm:"foreignkey:TournamentID"`
 }
 
 // Team represents the teams table

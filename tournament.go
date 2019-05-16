@@ -59,7 +59,7 @@ func GetTournament(c *gin.Context) {
 
 	var tournament Tournament
 
-	if err := dbase.Preload("TournamentUsers").Preload("User").First(&tournament, "id = ?", id).Error; err != nil {
+	if err := dbase.Preload("TournamentUsers.User").Preload("User").First(&tournament, "id = ?", id).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			SendNotFound(c)
 			return
@@ -71,7 +71,7 @@ func GetTournament(c *gin.Context) {
 
 	general := c.GetStringMapString("general")
 	userID := general["user_id"]
-	var isUserJoinedTournament bool
+	isUserJoinedTournament := false
 
 	for _, tu := range tournament.TournamentUsers {
 		if tu.UserID == userID {

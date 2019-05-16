@@ -1,33 +1,45 @@
 {{ define "content" }}
 
-<div class="level">
+    <div class="level">
 
-  <!-- Title -->
-  <div class="level-left">
-    <div>
-      <h2 class="title is-2 is-marginless">{{ .tournament.Name }}</h2>
-      <span class="has-text-grey is-italic">Managed by {{ .tournament.User.Username }}</span>
+        <!-- Title -->
+        <div class="level-left">
+            <div>
+                <h2 class="title is-2 is-marginless">{{ .tournament.Name }}</h2>
+                <span class="has-text-grey is-italic">Managed by {{ .tournament.User.Username }}</span>
+            </div>
+        </div>
+
+        <!-- Participation Information -->
+        <div class="level-right">
+            <form method="POST" action="/tournament/{{ .tournament.ID }}/join">
+                {{ if not .isUserJoinedTournament }}
+                    <button type="submit" class="button is-primary">
+                        Join Tournament
+                    </button>
+                {{ else }}
+                    <button type="submit" class="button is-info" disabled>
+                        Joined
+                    </button>
+                {{ end }}
+            </form>
+        </div>
     </div>
-  </div>
 
-  <!-- Participation Information -->
-  <div class="level-right">
-    <form method="POST" action="/tournament/{{ .tournament.ID }}/join">
-      {{ if .isUserJoinedTournament }}
-      <button type="submit" class="button is-primary">
-        Join Tournament
-      </button>
-      {{ else }}
-      <button type="submit" class="button is-info" disabled>
-        Joined
-      </button>
-      {{ end }}
-    </form>
-  </div>
-</div>
-
-<!-- User List -->
-<div class="list is-hoverable">
-  <div class="list-item">Example User</div>
-</div>
+    <h4 class="title is-4 is-marginless mb">
+        Participants
+    </h4>
+    <!-- User List -->
+    <div class="list is-hoverable">
+        {{ range .tournament.TournamentUsers }}
+            <a href="/user/{{ .User.ID }}" class="list-item">
+                <div class="is-flex align-items-center">
+                    <figure class="mr image is-32x32"><img src="{{ .User.PictureURL }}" alt="User Avatar"
+                                                           class="is-rounded"/>
+                    </figure>
+                    <span>{{ .User.Username }}</span>
+                </div>
+            </a>
+        {{ end }}
+    </div>
 {{ end }}
