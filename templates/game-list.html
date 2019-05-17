@@ -21,12 +21,14 @@
             <div class="card-content">
                 <!-- Blue Team -->
                 <div class="box has-text-centered tm-{{ .BlueTeamID }} title is-5 mb" style="padding: 0.5rem">
-                    {{ .BlueTeam.Name }}
+                    <a href="/tournament/{{ .BlueTeam.Tournament.ID }}" class="heading has-text-white">{{ .BlueTeam.Tournament.Name }}</a>
+                    {{ .BlueTeam.Name }} {{ if eq .WinGoals .BlueGoals }}👑{{ end }}
                 </div>
 
                 <!-- Red Team -->
                 <div class="box has-text-centered tm-{{ .RedTeamID }} title is-5" style="padding: 0.5rem">
-                    {{ .RedTeam.Name }}
+                    <a href="/tournament/{{ .RedTeam.Tournament.ID }}" class="heading has-text-white">{{ .RedTeam.Tournament.Name }}</a>
+                    {{ .RedTeam.Name }} {{ if eq .WinGoals .RedGoals }}👑{{ end }}
                 </div>
 
                 <!-- Score -->

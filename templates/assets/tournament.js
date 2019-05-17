@@ -36,20 +36,78 @@
 
   var bracketChartCTX = document.getElementById('bracket-chart').getContext('2d');
 
+  var cutoutPercentage = 0;
+
+  switch (bracketLevels.length) {
+    case 1:
+      cutoutPercentage = 80;
+      break;
+    case 2:
+      cutoutPercentage = 60;
+      break;
+    case 3:
+      cutoutPercentage = 40;
+      break;
+    case 4:
+      cutoutPercentage = 20;
+      break;
+    default:
+      cutoutPercentage = 0;
+  }
+
   var bracketChart = new Chart(bracketChartCTX, {
     type: 'doughnut',
     data: {
-      datasets: bracketLevels.map(bl => {
+      datasets: bracketLevels.map((bl, idx) => {
+
+        // Make the last circle in the set have no white border
+        // this gets around some ugly artifacts that chart.js creates
+        var borderColor = bl.map(bt => {
+          if (idx == bracketLevels.length - 1) {
+            var w = bracketChartCTX.canvas.width;
+            var h = bracketChartCTX.canvas.height;
+  
+            var graident = bracketChartCTX.createLinearGradient(0.5 * w, 0, 0.5 * w, h);
+  
+            graident.addColorStop(0, chroma(bt.team.color).css());
+            graident.addColorStop(1, getSecondaryColor(bt.team.color).css())
+  
+            return graident;
+          } else {
+            return '#FFFFFF'
+          }
+        });
+
+        var backgroundColor = bl.map(bt => {
+          var w = bracketChartCTX.canvas.width;
+          var h = bracketChartCTX.canvas.height;
+
+          var graident = bracketChartCTX.createLinearGradient(0.5 * w, 0, 0.5 * w, h);
+
+          graident.addColorStop(0, chroma(bt.team.color).css());
+          graident.addColorStop(1, getSecondaryColor(bt.team.color).css())
+
+          return graident;
+        })
+
+        var weight = 0.5;
+
+        // If the bar is the last in the circle, make it larger
+        if (idx == bracketLevels.length - 1) {
+          weight = 1;
+        }
+
         return {
           data: bl.map(() => 1),
-          backgroundColor: bl.map((bt) => chroma(bt.team.color).css()),
-          hoverBackgroundColor: bl.map((bt) => getSecondaryColor(bt.team.color).css()),
+          backgroundColor: backgroundColor,
+          borderColor: borderColor,
+          weight: weight,
         };
       }),
-      labels: (bracketLevels[0] || []).map(bt => bt.team.name),
+      labels: (bracketLevels[0] || []).map((bt) => bt.team.name),
     },
     options: {
-      cutoutPercentage: 10,
+      cutoutPercentage: bracketLevels[bracketLevels.length - 1].length == 1 ? 0 : cutoutPercentage,
       gridLines: {
         display: false,
       },
@@ -70,9 +128,9 @@
             var bl = bracketLevels[tti[0].datasetIndex][tti[0].index];
 
             return bl.team.name;
-          }
-        }
-      }
+          },
+        },
+      },
     },
   });
 
@@ -83,16 +141,16 @@
       var bl = bracketLevels[ele._datasetIndex][ele._index];
 
       if (bl.gameId) {
-        window.location = `/game/${bl.gameId}`
+        window.location = `/game/${bl.gameId}`;
       }
     }
-  }
+  };
 })();
 
 function splitBracketLevels() {
   var bracketLevels = [];
 
-  bracketPositions.forEach(bp => {
+  bracketPositions.forEach((bp) => {
     if (!bracketLevels[bp.bracketLevel]) {
       bracketLevels[bp.bracketLevel] = [];
     }

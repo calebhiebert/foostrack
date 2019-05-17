@@ -81,7 +81,7 @@ func ListGames(c *gin.Context) {
 
 	var teams []Team
 
-	if err := dbase.Where(teamIds).Find(&teams).Error; err != nil {
+	if err := dbase.Preload("Tournament").Where(teamIds).Find(&teams).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
 	}
