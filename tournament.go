@@ -112,7 +112,7 @@ func GetTournament(c *gin.Context) {
 			}
 		}
 	}
-
+	
 	SendHTML(http.StatusOK, c, "tournament", gin.H{
 		"tournament":             tournament,
 		"isUserJoinedTournament": isUserJoinedTournament,
@@ -263,7 +263,7 @@ func NukeTournament(c *gin.Context) {
 		SendForbid(c, "Only tournament managers can delete tournaments")
 		return
 	}
-
+	
 	if err := dbase.Unscoped().Where("tournament_id = ?", tournament.ID).Delete(&BracketPosition{}).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
@@ -363,7 +363,7 @@ func CreateTeams(c *gin.Context) {
 		t1 := teams[i]
 		t2 := teams[i+1]
 
-		game, err := createGame(t1.Members[0].UserID, t1.Members[1].UserID, t2.Members[0].UserID, t2.Members[0].UserID, 10, &t1.ID, &t2.ID, tx)
+		game, err := createGame(t1.Members[0].UserID, t1.Members[1].UserID, t2.Members[0].UserID, t2.Members[1].UserID, 10, &t1.ID, &t2.ID, tx)
 		if err != nil {
 			tx.Rollback()
 			SendError(http.StatusInternalServerError, c, err)

@@ -69,5 +69,5 @@ CREATE TABLE IF NOT EXISTS bracket_positions (
   updated_at    TIMESTAMPTZ,
   deleted_at    TIMESTAMPTZ,
 
-  PRIMARY KEY (tournament_id, team_id, bracket_level, bracket_position)
+  PRIMARY KEY (tournament_id, team_id, bracket_level)
 );

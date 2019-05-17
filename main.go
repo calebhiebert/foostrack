@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/avast/retry-go"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
@@ -183,14 +184,20 @@ func addTemplate(name string, filename ...string) {
 
 // Starts a connection to the database and executes the schema.sql file
 // Any migrations, etc... should go in that file
-// TODO: move migrations into their own sql script
 func initDB() {
-	db, err := gorm.Open("postgres", os.Getenv("CONNECTION_STRING"))
-	if err != nil {
-		panic(err)
-	}
 
-	dbase = db
+	err := retry.Do(func() error {
+		db, err := gorm.Open("postgres", os.Getenv("CONNECTION_STRING"))
+		if err != nil {
+			return err
+		}
+
+		dbase = db
+
+		return nil
+	}, retry.Attempts(10), retry.OnRetry(func(n uint, err error) {
+		fmt.Printf("Retrying Database Connection (%d): %v\n", n, err)
+	}))
 
 	sql, err := files.FindString("schema.sql")
 	if err != nil {

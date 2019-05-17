@@ -122,7 +122,7 @@ func RenderUserSelect(c *gin.Context, mode string, title string, href func(User)
 
 	var users []User
 
-	if err := dbase.Find(&users).Error; err != nil {
+	if err := dbase.Find(&users).Order("id").Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
 		return
 	}

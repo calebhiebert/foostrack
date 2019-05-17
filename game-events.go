@@ -150,16 +150,16 @@ func MarkStarted(c *gin.Context) {
 func MarkEnded(c *gin.Context) {
 	gameID := c.Param("id")
 
-	var game Game
+	var game GameExtended
 
-	if err := dbase.First(&game, "id = ?", gameID).Error; err != nil {
+	if err := dbase.Raw(`SELECT * FROM game_extended g WHERE g.id = ? LIMIT 1;`, gameID).Scan(&game).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			SendNotFound(c)
 			return
-		} else {
-			SendError(http.StatusInternalServerError, c, err)
-			return
 		}
+
+		SendError(http.StatusInternalServerError, c, err)
+		return
 	}
 
 	event := GameEvent{
@@ -169,6 +169,54 @@ func MarkEnded(c *gin.Context) {
 
 	if err := dbase.Create(&event).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	// Check if this is a tournament game
+	var bracketPosition []BracketPosition
+
+	if err := dbase.Find(&bracketPosition, "game_id = ?", game.ID).Error; err != nil {
+		SendError(http.StatusInternalServerError, c, err)
+		return
+	}
+
+	// If this is indeed a tournament game, bump the winning team to the next bracket
+	if len(bracketPosition) > 0 && game.BlueTeamID != nil && game.RedTeamID != nil {
+		var winningTeamID uint
+
+		if game.BlueGoals == game.WinGoals {
+			winningTeamID = *game.BlueTeamID
+		} else if game.RedGoals == game.WinGoals {
+			winningTeamID = *game.RedTeamID
+		}
+
+		// Find the next highest bracket position
+		var count Count
+
+		if err := dbase.Raw(`SELECT MAX(bracket_level) AS count
+													FROM bracket_positions
+													WHERE tournament_id = ?
+														AND bracket_level = ?`, bracketPosition[0].TournamentID, bracketPosition[0].BracketLevel+1).Scan(&count).Error; err != nil {
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		nextBracket := BracketPosition{
+			TournamentID:    bracketPosition[0].TournamentID,
+			TeamID:          winningTeamID,
+			BracketLevel:    bracketPosition[0].BracketLevel + 1,
+			BracketPosition: count.Count + 1,
+		}
+
+		if err := dbase.Create(&nextBracket).Error; err != nil {
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
+
+		if err := CheckBracket(bracketPosition[0].TournamentID); err != nil {
+			SendError(http.StatusInternalServerError, c, err)
+			return
+		}
 	}
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))
@@ -197,6 +245,7 @@ func MarkDeadBall(c *gin.Context) {
 
 	if err := dbase.Create(&event).Error; err != nil {
 		SendError(http.StatusInternalServerError, c, err)
+		return
 	}
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/game/%d", game.ID))

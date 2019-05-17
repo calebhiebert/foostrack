@@ -79,11 +79,11 @@ type TournamentUser struct {
 type BracketPosition struct {
 	TournamentID    uint       `gorm:"primary_key" json:"tournamentId"`
 	Tournament      Tournament `gorm:"association_foreignkey:TournamentID;foreignkey:ID" json:"-"`
-	TeamID          uint       `json:"teamId"`
+	TeamID          uint       `gorm:"primary_key" json:"teamId"`
 	Team            Team       `gorm:"association_foreignkey:TeamID" json:"team"`
-	GameID          *uint      `json:"gameId"`
+	GameID          *uint      `gorm:"primary_key" json:"gameId"`
 	Game            Game       `gorm:"association_foreignkey:GameID;" json:"-"`
-	BracketLevel    int        `gorm:"column:bracket_level" json:"bracketLevel"`
+	BracketLevel    int        `gorm:"primary_key;column:bracket_level" json:"bracketLevel"`
 	BracketPosition int        `gorm:"column:bracket_position" json:"bracketPosition"`
 	CreatedAt       time.Time  `json:"createdAt"`
 	UpdatedAt       time.Time  `json:"updatedAt"`

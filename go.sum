@@ -13,6 +13,8 @@ github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRF
 github.com/andanhm/go-prettytime v1.0.0 h1:4pweu5nz0fQrDjePi4/sJp/r60Vzt5M7hoj7GCfM8P0=
 github.com/andanhm/go-prettytime v1.0.0/go.mod h1:1JUUzhaE67n9bsj5Cx5Al4MVd0yft7NZgSA/qaRN408=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
+github.com/avast/retry-go v2.3.0+incompatible h1:GdXHi3qw0JvbR1Wg1Hr/kx0b6lS36xfypCP4VpZARm4=
+github.com/avast/retry-go v2.3.0+incompatible/go.mod h1:XtSnn+n/sHqQIpZ10K1qAevBhOOCWBLXXy3hyiqqBrY=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff/go.mod h1:+RTT1BOk5P97fT2CiHkbFQwkK3mjsFAP6zCYV2aXtjw=
 github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737/go.mod h1:PmM6Mmwb0LSuEubjR8N7PtNe1KxZLtOUHtbeikc5h60=

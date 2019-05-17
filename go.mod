@@ -5,6 +5,7 @@ go 1.12
 require (
 	cloud.google.com/go v0.38.0 // indirect
 	github.com/andanhm/go-prettytime v1.0.0
+	github.com/avast/retry-go v2.3.0+incompatible
 	github.com/gin-contrib/sessions v0.0.0-20190226023029-1532893d996f
 	github.com/gin-gonic/gin v1.3.0
 	github.com/gobuffalo/genny v0.1.1 // indirect
