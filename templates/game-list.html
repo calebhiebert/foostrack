@@ -1,100 +1,151 @@
 {{ define "content" }}
 
-    <h2 class="title is-2">Games</h2>
+<h2 class="title is-2">Games</h2>
 
-    <div class="columns is-multiline">
-        {{ range.games }}
-            <div class="column is-half-tablet is-one-third-desktop">
-                <div class="card mb">
-                    <div class="card-header">
-                        {{ if .Ended }}
-                            <p class="card-header-title">Finished {{ call $.formatTime .CreatedAt }}</p>
-                        {{ else if .Started }}
-                            <p class="card-header-title">Started {{ call $.formatTime .CreatedAt }}</p>
-                        {{ else }}
-                            <p class="card-header-title">Created {{ call $.formatTime .CreatedAt }}</p>
-                        {{ end }}
-                    </div>
-
-                    <div class="card-content">
-                        <!-- Players -->
-                        <div class="field is-grouped">
-                            <!-- Blue Forward -->
-                            <div class="control">
-                                <a href="/user/{{ .BlueForward.ID }}" class="tags has-addons">
-                                    <span class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">F</span>
-                                    <span class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-warning has-text-weight-bold{{ else }}is-info{{ end }}">{{  call $.exfname .BlueForward.Username }}</span>
-                                </a>
-                            </div>
-
-                            <!-- Blue Goalie -->
-                            <div class="control">
-                                <a href="/user/{{ .BlueGoalie.ID }}" class="tags has-addons">
-                                    <span class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">G</span>
-                                    <span class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-warning has-text-weight-bold{{ else }}is-info{{ end }}">{{ call $.exfname .BlueGoalie.Username }}</span>
-                                </a>
-                            </div>
-                        </div>
-
-
-                        <div class="field is-grouped">
-                            <!-- Red Forward -->
-                            <div class="control">
-                                <a href="/user/{{ .RedForward.ID }}" class="tags has-addons">
-                                    <span class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">F</span>
-                                    <span class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-warning has-text-weight-bold{{ else }}is-danger{{ end }}">{{ call $.exfname .RedForward.Username }}</span>
-                                </a>
-                            </div>
-
-                            <!-- Red Goalie -->
-                            <div class="control">
-                                <a href="/user/{{ .RedGoalie.ID }}" class="tags has-addons">
-                                    <span class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">G</span>
-                                    <span class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-warning has-text-weight-bold{{ else }}is-danger{{ end }}">{{ call $.exfname .RedGoalie.Username }}</span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Score -->
-                        <nav class="level is-mobile">
-                            <div class="level-item has-text-centered">
-                                <div>
-                                    <p class="heading">
-                                        Blue {{ if eq .WinGoals .BlueGoals }}👑{{ end }}
-                                    </p>
-                                    <p class="title is-2">{{ .BlueGoals }}</p>
-                                </div>
-                            </div>
-                            <div class="level-item has-text-centered">
-                                <div>
-                                    <p class="heading">
-                                        Red {{ if eq .WinGoals .RedGoals }}👑{{ end }}
-                                    </p>
-                                    <p class="title is-2">{{ .RedGoals }}</p>
-                                </div>
-                            </div>
-                        </nav>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="card-footer">
-                        <a href="/game/{{ .ID }}" class="card-footer-item">View Game</a>
-                    </div>
-                </div>
+<div class="columns is-multiline">
+    {{ range.games }}
+    <div class="column is-half-tablet is-one-third-desktop">
+        <div class="card mb">
+            <div class="card-header">
+                {{ if .Ended }}
+                <p class="card-header-title">Finished {{ call $.formatTime .CreatedAt }}</p>
+                {{ else if .Started }}
+                <p class="card-header-title">Started {{ call $.formatTime .CreatedAt }}</p>
+                {{ else }}
+                <p class="card-header-title">Created {{ call $.formatTime .CreatedAt }}</p>
+                {{ end }}
             </div>
 
-        {{ end }}
+            <!-- Tournament Game Content -->
+            {{ if and .RedTeamID .BlueTeamID }}
+            <div class="card-content">
+                <!-- Blue Team -->
+                <div class="box has-text-centered tm-{{ .BlueTeamID }} title is-5 mb" style="padding: 0.5rem">
+                    {{ .BlueTeam.Name }}
+                </div>
+
+                <!-- Red Team -->
+                <div class="box has-text-centered tm-{{ .RedTeamID }} title is-5" style="padding: 0.5rem">
+                    {{ .RedTeam.Name }}
+                </div>
+
+                <!-- Score -->
+                <nav class="level is-mobile">
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">
+                                {{ .BlueTeam.Name }} {{ if eq .WinGoals .BlueGoals }}👑{{ end }}
+                            </p>
+                            <p class="title is-2">{{ .BlueGoals }}</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">
+                                {{ .RedTeam.Name }} {{ if eq .WinGoals .RedGoals }}👑{{ end }}
+                            </p>
+                            <p class="title is-2">{{ .RedGoals }}</p>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Normal Game Content -->
+            {{ else }}
+            <div class="card-content">
+                <!-- Players -->
+                <div class="field is-grouped">
+                    <!-- Blue Forward -->
+                    <div class="control">
+                        <a href="/user/{{ .BlueForward.ID }}" class="tags has-addons">
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">F</span>
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-warning has-text-weight-bold{{ else }}is-info{{ end }}">{{  call $.exfname .BlueForward.Username }}</span>
+                        </a>
+                    </div>
+
+                    <!-- Blue Goalie -->
+                    <div class="control">
+                        <a href="/user/{{ .BlueGoalie.ID }}" class="tags has-addons">
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">G</span>
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .BlueGoals }}is-warning has-text-weight-bold{{ else }}is-info{{ end }}">{{ call $.exfname .BlueGoalie.Username }}</span>
+                        </a>
+                    </div>
+                </div>
+
+
+                <div class="field is-grouped">
+                    <!-- Red Forward -->
+                    <div class="control">
+                        <a href="/user/{{ .RedForward.ID }}" class="tags has-addons">
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">F</span>
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-warning has-text-weight-bold{{ else }}is-danger{{ end }}">{{ call $.exfname .RedForward.Username }}</span>
+                        </a>
+                    </div>
+
+                    <!-- Red Goalie -->
+                    <div class="control">
+                        <a href="/user/{{ .RedGoalie.ID }}" class="tags has-addons">
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-dark has-text-weight-bold{{ else }}is-light{{ end }}">G</span>
+                            <span
+                                class="tag is-medium {{ if eq .WinGoals .RedGoals }}is-warning has-text-weight-bold{{ else }}is-danger{{ end }}">{{ call $.exfname .RedGoalie.Username }}</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Score -->
+                <nav class="level is-mobile">
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">
+                                Blue {{ if eq .WinGoals .BlueGoals }}👑{{ end }}
+                            </p>
+                            <p class="title is-2">{{ .BlueGoals }}</p>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">
+                                Red {{ if eq .WinGoals .RedGoals }}👑{{ end }}
+                            </p>
+                            <p class="title is-2">{{ .RedGoals }}</p>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            {{ end }}
+
+            <!-- Actions -->
+            <div class="card-footer">
+                <a href="/game/{{ .ID }}" class="card-footer-item">View Game</a>
+            </div>
+        </div>
     </div>
 
-    <!-- Pagination -->
-    <nav class="pagination" role="navigation" aria-label="pagination">
-        <ul class="pagination-list">
-            <!-- {{ range .totalPages }} -->
-            <li>
-                <a href="?page={{ . }}" class="pagination-link{{ if eq . $.page }} is-current{{ end }}">{{ . }}</a>
-            </li>
-            <!-- {{ end }} -->
-        </ul>
-    </nav>
+    {{ end }}
+</div>
+
+<!-- Pagination -->
+<nav class="pagination" role="navigation" aria-label="pagination">
+    <ul class="pagination-list">
+        <!-- {{ range .totalPages }} -->
+        <li>
+            <a href="?page={{ . }}" class="pagination-link{{ if eq . $.page }} is-current{{ end }}">{{ . }}</a>
+        </li>
+        <!-- {{ end }} -->
+    </ul>
+</nav>
+
+<!-- JS Variables -->
+<script>
+    var teams = {{ call $.marshal .teams -}};
+</script>
+<script src="/assets/game-list.js"></script>
 
 {{ end }}

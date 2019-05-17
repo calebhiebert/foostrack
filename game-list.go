@@ -111,11 +111,11 @@ func ListGames(c *gin.Context) {
 		gi.Ended = gi.EndTime != nil
 
 		for _, team := range teams {
-			if *gi.BlueTeamID == team.ID {
+			if gi.BlueTeamID != nil && *gi.BlueTeamID == team.ID {
 				gi.BlueTeam = team
 			}
 
-			if *gi.RedTeamID == team.ID {
+			if gi.RedTeamID != nil && *gi.RedTeamID == team.ID {
 				gi.RedTeam = team
 			}
 		}
@@ -162,5 +162,6 @@ func ListGames(c *gin.Context) {
 		"page":       currentPage + 1,
 		"totalPages": pageArr,
 		"exfname":    ExtractFirstName,
+		"teams":      teams,
 	})
 }

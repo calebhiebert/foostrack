@@ -82,7 +82,7 @@ func GetTournament(c *gin.Context) {
 	}
 
 	isTournamentManager := tournament.CreatedByID == userID
-	canMakeTeams := tournament.Status == TournamentStatusSignup && len(tournament.TournamentUsers)%2 == 0
+	canMakeTeams := tournament.Status == TournamentStatusSignup && len(tournament.TournamentUsers)%2 == 0 && len(tournament.TournamentUsers) >= 4
 
 	teams := make([]map[string]interface{}, 0)
 
@@ -119,6 +119,7 @@ func GetTournament(c *gin.Context) {
 		"isManager":              isTournamentManager,
 		"canMakeTeams":           canMakeTeams,
 		"unevenParticipants":     len(tournament.TournamentUsers)%2 != 0,
+		"minParticipants": len(tournament.TournamentUsers) >= 4,
 		"teams":                  teams,
 		"canEditTeam": func(t Team) bool {
 			for _, tm := range t.Members {

@@ -55,14 +55,20 @@
     </div>
 </div>
 
-<!-- Uneven Participants -->
-{{ if .unevenParticipants }}
-<div class="notification is-warning">
-    There are an uneven number of participants. The tournament will not be able to begin until there are an even number
-    of participants
-</div>
-{{ end }}
 
+<!-- Not Enough Participants -->
+{{ if not .minParticipants }}
+<div class="notification is-warning">
+    There are not enough participants to start a tournament
+</div>
+
+<!-- Uneven Participants -->
+{{ else if .unevenParticipants }}
+<div class="notification is-warning">
+        There are an uneven number of participants. The tournament will not be able to begin until there are an even number
+        of participants
+    </div>
+{{ end }}
 
 <!-- User List -->
 <h4 class="title is-4 is-marginless mb">

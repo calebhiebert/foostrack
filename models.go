@@ -58,8 +58,8 @@ type Team struct {
 	Name         string           `json:"name"`
 	Color        string           `json:"color"`
 	TournamentID uint             `gorm:"primary_key" json:"tournamentId"`
-	Tournament   Tournament       `gorm:"association_foreignkey:TournamentID;foreignkey:ID"`
-	Members      []TournamentUser `gorm:"foreignkey:TeamID"`
+	Tournament   Tournament       `gorm:"association_foreignkey:TournamentID;foreignkey:ID" json:"-"`
+	Members      []TournamentUser `gorm:"foreignkey:TeamID" json:"members,omitempty"`
 }
 
 // TournamentUser represents the tournament_users table
